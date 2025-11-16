@@ -203,7 +203,7 @@ const MaleSpecialOffers: React.FC = () => {
         scroll={{ x: 800 }}
         style={{ marginTop: 16 }}
       />
-
+      
       <MaleSpecialOfferForm
         visible={modalVisible}
         onCancel={() => {
