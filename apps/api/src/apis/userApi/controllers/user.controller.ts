@@ -24,9 +24,9 @@ export const createUser = async (req: Request, res: Response) => {
 			email,
 		} = req.body;
 
-		let imageUrl;
+		let imageId;
 		if (req.file) {
-			imageUrl = (await saveUploadedFile(req.file)).url;
+			imageId = await saveUploadedFile(req.file);
 		}
 
 		const count = await User.countDocuments();
@@ -39,9 +39,25 @@ export const createUser = async (req: Request, res: Response) => {
 				.status(400)
 				.json({ success: false, message: "Number of Chairs Can't be 0." });
 		}
+<<<<<<< HEAD
    // EXpiry date calculator Logic
 		const subscriptionStartDate = new Date();
 let subscriptionEndDate: Date = subscriptionStartDate;
+=======
+		const newUser = await UserService.createUser({
+			email,
+			fullName,
+			password,
+			phone,
+			address,
+			isActive: status === "active",
+			subscriptionPeriod,
+			expireDate:
+				subscriptionPeriod === "custom" && customDate ? customDate : undefined,
+			avatar: imageId || undefined,
+			// noOfChairs: Number(noOfChairs)||0,
+			noOfChairs: noOfChairs ? Number(noOfChairs) : 0,
+>>>>>>> 9488caa707a1787bcf48fb3f5635aa583485d273
 
 if(subscriptionPeriod === "halfyearly"){
 	subscriptionEndDate = dayjs(subscriptionStartDate).add(6,"month").toDate();
@@ -155,7 +171,11 @@ export const updateUser = async (req: Request, res: Response) => {
 		// if (req.file) {
 		// 	imageUrl = (await updateUploadedFile(user)).url;
 		// }
-		const updated = await UserService.updateUser(req.params.id, req.body);
+		const updated = await UserService.updateUser(
+			req.params.id,
+			req.body,
+			req.file
+		);
 		if (!updated) {
 			res.status(404).json({ error: "User not found" });
 			return;
