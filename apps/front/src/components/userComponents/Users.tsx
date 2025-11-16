@@ -266,6 +266,7 @@ import type { IUser } from "../../redux/types/usera.types";
 import { Modal, Button, Table, Input, Tag, Avatar, Popconfirm, Card, Space, message } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, UserAddOutlined } from "@ant-design/icons";
 import UserForm from "./UserForm";
+import dayjs, { Dayjs } from "dayjs";
 
 const { Search } = Input;
 
@@ -385,11 +386,27 @@ const ManageUsers: React.FC = () => {
       ),
     },
     {
-      title: "Expire Date",
-      dataIndex: "expireDate",
-      key: "expireDate",
-      render: (date: string) => (date ? new Date(date).toLocaleDateString() : "-"),
+    title: "Subscription Period",
+    dataIndex: "subscriptionPeriod",
+    key: "subscriptionPeriod",
+    render: (period: string) => {
+      if (period === "halfyearly") return "Half-Yearly";
+      if (period === "yearly") return "Yearly";
+      return "-";
     },
+  },
+  {
+  title: "Start Date",
+  dataIndex: "subscriptionStartDate",
+  key: "subscriptionStartDate",
+  render: (date: string) => (date ? dayjs(date).format('DD/MM/YYYY') : "-"),
+},
+{
+  title: "End Date", 
+  dataIndex: "subscriptionEndDate",
+  key: "subscriptionEndDate",
+  render: (date: string) => (date ? dayjs(date).format('DD/MM/YYYY') : "-"),
+},
     {
       title: "App Name",
       dataIndex: "appName",
@@ -481,8 +498,9 @@ const ManageUsers: React.FC = () => {
           isEditMode={isEditMode}
           loading={loading}
         />
+
       </Modal>
-    </div>
+    </div> 
   );
 };
 

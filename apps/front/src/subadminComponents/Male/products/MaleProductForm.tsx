@@ -91,7 +91,7 @@ const MaleProductForm: React.FC<MaleProductFormProps> = ({
       formData.append("tag", values.tag || "");
       formData.append("description", values.description || "");
       formData.append("reviews", values.reviews || "");
-      formData.append("gender", "Male"); // ✅ Fixed as Male
+      formData.append("gender", "male"); // ✅ Fixed as Male
 
       // Append main image if exists
       if (imageFileList.length > 0 && imageFileList[0].originFileObj) {

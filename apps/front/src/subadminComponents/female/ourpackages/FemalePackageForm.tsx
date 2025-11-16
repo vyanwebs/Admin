@@ -82,7 +82,7 @@ const FemalePackageForm: React.FC<FemalePackageFormProps> = ({
       formData.append("discount", values.discount || "");
       formData.append("review", values.review?.toString() || "0");
       formData.append("rating", values.rating?.toString() || "0");
-      formData.append("gender", "Female"); // ✅ Auto-set as Female
+      formData.append("gender", "female"); // ✅ Auto-set as Female
 
       // Append image if exists
       if (fileList.length > 0 && fileList[0].originFileObj) {

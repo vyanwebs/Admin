@@ -48,7 +48,7 @@ const ManageFemalePackages: React.FC = () => {
   }, [error]);
 
   // ✅ Only female packages filter
-  const femalePackages = packages.filter((pkg: Package) => pkg.gender === "Female");
+  const femalePackages = packages.filter((pkg: Package) => pkg.gender === "female");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {

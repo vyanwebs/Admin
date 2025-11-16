@@ -49,7 +49,7 @@ const MaleProductPackages: React.FC = () => {
   }, [error]);
 
   // ✅ Filter only male product packages
-  const malePackages = packages.filter((pkg: ProductPackage) => pkg.gender === "Male");
+  const malePackages = packages.filter((pkg: ProductPackage) => pkg.gender === "male");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {

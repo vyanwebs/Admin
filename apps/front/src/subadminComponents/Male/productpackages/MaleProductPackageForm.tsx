@@ -82,7 +82,7 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
       formData.append("description", values.description || "");
       formData.append("offers", values.offers || "");
       formData.append("usage", values.usage || "");
-      formData.append("gender", "Male"); // ✅ Fixed as Male
+      formData.append("gender", "male"); // ✅ Fixed as Male
 
       // Convert items string to array
       const itemsArray = values.items.split(",").map((item: string) => item.trim()).filter((item: string) => item);

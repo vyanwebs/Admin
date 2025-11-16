@@ -76,7 +76,7 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
       formData.append("discount", values.discount.toString());
       formData.append("date", values.date.format("YYYY-MM-DD"));
       formData.append("description", values.description);
-      formData.append("gender", "Female"); // ✅ Fixed as Female
+      formData.append("gender", "female"); // ✅ Fixed as Female
 
       // Append image if exists
       if (fileList.length > 0 && fileList[0].originFileObj) {
@@ -162,7 +162,7 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
             placeholder="Enter offer description for female customers"
           />
         </Form.Item>
-
+        
         <Form.Item 
           label="Offer Image"
           rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}

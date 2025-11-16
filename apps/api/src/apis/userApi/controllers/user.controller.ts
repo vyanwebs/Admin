@@ -8,7 +8,7 @@ import { saveUploadedFile } from "../../mediaApi/services/saveFile";
 import { nanoid } from "nanoid";
 import uploadedFile from "../../mediaApi/models/uploadedFile";
 import { updateUploadedFile } from "../../mediaApi/services/updateUploadedFile";
-
+import dayjs from "dayjs";
 // create subAdmin
 export const createUser = async (req: Request, res: Response) => {
 	try {
@@ -39,25 +39,59 @@ export const createUser = async (req: Request, res: Response) => {
 				.status(400)
 				.json({ success: false, message: "Number of Chairs Can't be 0." });
 		}
-		const newUser = await UserService.createUser({
-			email,
-			fullName,
-			password,
-			phone,
-			address,
-			isActive: status === "active",
-			subscriptionPeriod,
-			expireDate:
-				subscriptionPeriod === "custom" && customDate ? customDate : undefined,
-			avatar: imageUrl || undefined,
-			// noOfChairs: Number(noOfChairs)||0,
-			noOfChairs: noOfChairs ? Number(noOfChairs) : 0,
+   // EXpiry date calculator Logic
+		const subscriptionStartDate = new Date();
+let subscriptionEndDate: Date = subscriptionStartDate;
 
-			role: UserRole.ADMIN,
-			appName,
-			appRegistrationCode,
-			// admin: req.user?._id
-		});
+if(subscriptionPeriod === "halfyearly"){
+	subscriptionEndDate = dayjs(subscriptionStartDate).add(6,"month").toDate();
+} else if(subscriptionPeriod === "yearly"){
+	subscriptionEndDate = dayjs(subscriptionStartDate).add(1,"year").toDate();
+} else if(subscriptionPeriod === "custom" && customDate){
+	subscriptionEndDate = dayjs(customDate).toDate();
+}
+
+   // Controller:
+const newUser = await UserService.createUser({
+  email,
+  fullName,
+  password,
+  phone,
+  address,
+  isActive: status === "active",
+  subscriptionPeriod,
+  customDate,
+  avatar: imageUrl || undefined,
+  noOfChairs: Number(noOfChairs) || 0,
+  role: UserRole.ADMIN,
+  appName,
+  appRegistrationCode,
+  // Remove subscriptionStartDate & subscriptionEndDate here
+});
+
+
+
+		// const newUser = await UserService.createUser({
+		// 	email,
+		// 	fullName,
+		// 	password,
+		// 	phone,
+		// 	address,
+		// 	isActive: status === "active",
+		// 	subscriptionPeriod,
+		// 	subscriptionStartDate,
+		// 	subscriptionEndDate,
+
+		// 	// subscriptionPeriod === "custom" && customDate ? customDate : undefined,
+		// 	avatar: imageUrl || undefined,
+		// 	// noOfChairs: Number(noOfChairs)||0,
+		// 	noOfChairs: noOfChairs ? Number(noOfChairs) : 0,
+			
+		// 	role: UserRole.ADMIN,
+		// 	appName,
+		// 	appRegistrationCode,
+		// 	// admin: req.user?._id
+		// });
 
 		res.status(201).json({ message: "User created", user: newUser });
 	} catch (error: any) {

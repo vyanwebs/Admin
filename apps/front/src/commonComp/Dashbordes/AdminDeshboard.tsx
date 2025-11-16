@@ -6,10 +6,17 @@ import {
 	resetUserState,
 } from "../../redux/Slice/useSliceForAdmin/userSlice";
 import { UserOutlined, TeamOutlined, CrownOutlined } from "@ant-design/icons";
+import SubscriptionTimer from "./SubscriptionTimer"; 
+import dayjs from "dayjs";
 
 const AdminDashboard: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const { users, loading, error } = useAppSelector((state) => state.users);
+
+	// ✅ assuming logged-in subadmin info stored in localStorage or Redux
+	//const subAdmin = JSON.parse(localStorage.getItem("user") || "{}");
+	//const expiryDate = subAdmin?.expireDate;
+	const expiryDate = "2025-11-14T00:00:00.000Z"; 
 
 	useEffect(() => {
 		const req = dispatch(fetchUsers());
@@ -32,6 +39,9 @@ const AdminDashboard: React.FC = () => {
 	return (
 		<div className="p-6">
 			<h1 className="text-2xl font-semibold mb-6">Admin Dashboard</h1>
+
+			{/* ✅ Show Timer Only if expiryDate is available */}
+			{expiryDate && <SubscriptionTimer expiryDate={expiryDate} />}
 
 			<Row gutter={[16, 16]}>
 				<Col xs={24} sm={12} md={8}>

@@ -47,7 +47,7 @@ const FemaleSpecialOffers: React.FC = () => {
   }, [error]);
 
   // ✅ Filter only female offers
-  const femaleOffers = offers.filter((offer: SpecialOffer) => offer.gender === "Female");
+  const femaleOffers = offers.filter((offer: SpecialOffer) => offer.gender === "female");
 
   // ✅ Handle Add or Edit
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {

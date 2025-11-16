@@ -82,7 +82,7 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
       formData.append("discount", values.discount || "");
       formData.append("review", values.review?.toString() || "0");
       formData.append("rating", values.rating?.toString() || "0");
-      formData.append("gender", "Male"); // ✅ Auto-set as Male
+      formData.append("gender", "male"); // ✅ Auto-set as Male
 
       // Append image if exists
       if (fileList.length > 0 && fileList[0].originFileObj) {

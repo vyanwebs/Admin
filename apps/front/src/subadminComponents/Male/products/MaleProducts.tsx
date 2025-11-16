@@ -49,7 +49,7 @@ const MaleProducts: React.FC = () => {
   }, [error]);
 
   // ✅ Filter only male products
-  const maleProducts = products.filter((product: Product) => product.gender === "Male");
+  const maleProducts = products.filter((product: Product) => product.gender === "male");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
