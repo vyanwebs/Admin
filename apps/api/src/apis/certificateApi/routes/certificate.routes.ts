@@ -45,37 +45,37 @@ import { upload } from "../../mediaApi/services/multerConfig";
 import { protect } from "../../userApi/middlewares/auth.middleware";
 import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
 import {
-  uploadCertificate,
-  getAllCertificates,
-  deleteCertificate,
-  updateCertificate,
+	uploadCertificate,
+	getAllCertificates,
+	deleteCertificate,
+	updateCertificate,
 } from "../controllers/certificate.controllers";
 
 const router = express.Router();
 
 router.post(
-  "/upload",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  upload.single("certificateImage"),
-  uploadCertificate
+	"/upload",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	upload.single("certificateImage"),
+	uploadCertificate
 );
 
-router.get("/", protect, getAllCertificates);
+router.get("/", getAllCertificates);
 
 router.put(
-  "/:id",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  upload.single("certificateImage"),
-  updateCertificate
+	"/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	upload.single("certificateImage"),
+	updateCertificate
 );
 
 router.delete(
-  "/:id",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  deleteCertificate
+	"/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	deleteCertificate
 );
 
 export default router;
