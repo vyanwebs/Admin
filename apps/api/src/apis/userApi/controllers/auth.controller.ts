@@ -334,6 +334,7 @@ export const getUserProfile = async (
 				subscriptionStatus: foundUser.subscriptionStatus,
 				createdAt: foundUser.createdAt,
 				updatedAt: foundUser.updatedAt,
+				address: foundUser.address,
 			},
 		});
 	} catch (error) {
