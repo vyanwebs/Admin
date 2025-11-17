@@ -29,9 +29,7 @@ export const createOurService = async (req: Request, res: Response) => {
 				.status(400)
 				.json({ success: false, message: "Service image is required!" });
 		}
-		const imageUrl = `${req.protocol}://${req.get("host")}/uploads/images/${
-			customReq.file.filename
-		}`;
+		const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
 
 		//const imageUrl = customReq.file.path;
 
