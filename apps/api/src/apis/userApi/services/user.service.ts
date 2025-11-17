@@ -489,6 +489,8 @@ class UserService {
       chairData = await ChairsModel.insertMany(chairs);
     }
 
+
+    
     await user.populate("avatar", "url");
 
     return { user, chairs: chairData };
