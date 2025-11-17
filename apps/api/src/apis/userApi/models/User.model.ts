@@ -168,7 +168,7 @@ const userSchema: Schema<IUser> = new Schema(
 
 		noOfChairs: {
 			type: Number,
-			default:0
+			default: 0,
 		},
 
 		email: {
@@ -212,7 +212,7 @@ const userSchema: Schema<IUser> = new Schema(
 		},
 		subscriptionPeriod: {
 			type: String,
-			enum: [ "halfyearly", "yearly", "custom"],
+			enum: ["halfyearly", "yearly", "custom"],
 			default: "halfyearly",
 		},
 		subscriptionStartDate: Date,
@@ -223,7 +223,7 @@ const userSchema: Schema<IUser> = new Schema(
 			default: SubscriptionStatus.PENDING,
 		},
 		paymentMethod: { type: String, enum: Object.values(PaymentMethod) },
-		address:{type:String},
+		address: { type: String },
 		billingInfo: {
 			address: String,
 			city: String,

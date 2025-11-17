@@ -64,8 +64,14 @@ export const register = async (req: Request, res: Response) => {
 			});
 		}
 
+		let imageId;
+		if (req.file) {
+			imageId = await saveUploadedFile(req.file);
+		}
+
 		const user = new User({
 			...userData,
+			avatar: imageId || undefined,
 			subAdminEmail: userDetails.email,
 			subAdminId: userDetails._id,
 		});
@@ -336,6 +342,74 @@ export const getUserProfile = async (
 	}
 };
 
+// export const updateUserInfo = async (
+// 	req: Request,
+// 	res: Response
+// ): Promise<void> => {
+// 	try {
+// 		const userId = (req as any).user?._id;
+
+// 		if (!userId) {
+// 			res.status(401).json({ message: "Unauthorized" });
+// 			return;
+// 		}
+
+// 		// Validate incoming data using Zod
+// 		const parseResult = req.body;
+// 		if (!parseResult.success) {
+// 			res
+// 				.status(400)
+// 				.json({ message: "Invalid data", errors: parseResult.error.format() });
+// 			return;
+// 		}
+
+// 		// const updates = parseResult.data;
+// 		// const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
+// 		// 	new: true,
+// 		// 	runValidators: true,
+// 		// }).populate("avatar");
+
+// 		// if (!updatedUser) {
+// 		// 	res.status(404).json({ message: "User not found" });
+// 		// 	return;
+// 		// }
+
+// 		const user = await User.findById(userId);
+// 		if (!user) {
+// 			res.status(404).json({ message: "User not found" });
+// 			return;
+// 		}
+
+// 		if (req.file) {
+// 			if (user.avatar) {
+// 				// Update existing avatar file
+// 				await updateUploadedFile(user.avatar as Types.ObjectId, req.file);
+// 			} else {
+// 				// Save new avatar file
+// 				const newFile = await saveUploadedFile(req.file);
+// 				user.avatar = (newFile as any)._id;
+// 			}
+// 		}
+
+// 		Object.assign(user, parseResult.data);
+
+// 		await user.save();
+
+// 		// Populate avatar URL
+// 		await user.populate("avatar", "url");
+
+// 		res.status(200).json({
+// 			message: "Profile updated successfully",
+// 			user,
+// 		});
+// 	} catch (error: any) {
+// 		console.error("Update user info error:", error);
+// 		res
+// 			.status(500)
+// 			.json({ message: "Something went wrong", error: error.message });
+// 	}
+// };
+
 export const updateUserInfo = async (
 	req: Request,
 	res: Response
@@ -348,35 +422,49 @@ export const updateUserInfo = async (
 			return;
 		}
 
-		// Validate incoming data using Zod
+		// ALWAYS validate using zod
 		const parseResult = updateUserSchema.safeParse(req.body);
+
 		if (!parseResult.success) {
-			res
-				.status(400)
-				.json({ message: "Invalid data", errors: parseResult.error.format() });
+			res.status(400).json({
+				message: "Invalid data",
+				errors: parseResult.error.format(),
+			});
 			return;
 		}
 
-		// const updates = parseResult.data;
-		const updatedUser = await User.findByIdAndUpdate(userId, req.body, {
-			new: true,
-			runValidators: true,
-		}).populate("avatar");
-
-		if (!updatedUser) {
+		const user = await User.findById(userId);
+		if (!user) {
 			res.status(404).json({ message: "User not found" });
 			return;
 		}
 
+		// Handle avatar
+		if (req.file) {
+			if (user.avatar) {
+				await updateUploadedFile(user.avatar as Types.ObjectId, req.file);
+			} else {
+				const newFile = await saveUploadedFile(req.file);
+				user.avatar = (newFile as any)._id;
+			}
+		}
+
+		// Merge validated fields
+		Object.assign(user, parseResult.data);
+
+		await user.save();
+		await user.populate("avatar", "url");
+
 		res.status(200).json({
 			message: "Profile updated successfully",
-			user: updatedUser,
+			user,
 		});
 	} catch (error: any) {
 		console.error("Update user info error:", error);
-		res
-			.status(500)
-			.json({ message: "Something went wrong", error: error.message });
+		res.status(500).json({
+			message: "Something went wrong",
+			error: error.message,
+		});
 	}
 };
 

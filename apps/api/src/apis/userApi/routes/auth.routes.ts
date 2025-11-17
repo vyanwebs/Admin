@@ -34,7 +34,7 @@ router.get("/logout", protect, userLogout);
 router.put("/profile", protect, upload.single("avatar"), updateProfile);
 router.get("/profile", protect, getUserProfile);
 router.get("/check-email", checkUserEmailExists);
-router.put("/profile-update", protect, updateUserInfo);
+router.put("/profile-update", protect, upload.single("avatar"), updateUserInfo);
 router.put("/send-otp", generateOTP);
 
 // razorpay routes
