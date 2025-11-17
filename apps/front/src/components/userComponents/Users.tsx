@@ -266,7 +266,7 @@ import type { IUser } from "../../redux/types/usera.types";
 import { Modal, Button, Table, Input, Tag, Avatar, Popconfirm, Card, Space, message } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, UserAddOutlined } from "@ant-design/icons";
 import UserForm from "./UserForm";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 const { Search } = Input;
 

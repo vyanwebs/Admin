@@ -429,6 +429,8 @@ type CreateUserDto = {
   role?: string;
   appName?: string;
   appRegistrationCode?: string;
+  subscriptionStartDate?: Date;
+  subscriptionEndDate?: Date;
 };
 
 class UserService {

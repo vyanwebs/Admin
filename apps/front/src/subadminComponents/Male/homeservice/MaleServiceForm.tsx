@@ -7,7 +7,6 @@ import {
   InputNumber,
   Button,
   Upload,
-  DatePicker,
 } from "antd";
 
 interface MaleHomeServiceFormProps {
