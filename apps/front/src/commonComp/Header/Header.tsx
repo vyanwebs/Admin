@@ -10,7 +10,6 @@ interface NavItem {
 	icon?: React.ReactNode;
 	subItems?: NavItem[];
 }
-
 // interface UserProfile {
 //   name: string;
 //   avatar?: string;

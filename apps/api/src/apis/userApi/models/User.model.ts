@@ -223,6 +223,7 @@ const userSchema: Schema<IUser> = new Schema(
 			default: SubscriptionStatus.PENDING,
 		},
 		paymentMethod: { type: String, enum: Object.values(PaymentMethod) },
+		address:{type:String},
 		billingInfo: {
 			address: String,
 			city: String,
