@@ -46,7 +46,7 @@ app.use("/api/notification", notificationRoutes);
 // subscription-plans
 
 //best routes 
-
+//routes
 
 
 export default app;
