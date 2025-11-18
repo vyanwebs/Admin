@@ -5,7 +5,7 @@ import youtubeRoutes from "./apis/youtubeApi/routes/youtube.routes";
 import certificateRoutes from "./apis/certificateApi/routes/certificate.routes";
 import packagesRoutes from "./apis/packageApi/routes/packages.routes"; //
 import productPackageRoutes from "./apis/productPackageApi/routes/productPackage.routes";
-//import ourServiceRoutes from "./apis/ourserviceApi/routes/ourservice.route";
+import ourServiceRoutes from "./apis/ourserviceApi/routes/ourservice.route";
 import homeServiceRoutes from "./apis/homeServiceApi/routes/homeService.routes";
 import aboutSalonRoutes from "./apis/aboutOurSalon/routes/aboutSalon.routes";
 import aboutUsRoutes from "./apis/documentation/routes/aboutUs.routes";
