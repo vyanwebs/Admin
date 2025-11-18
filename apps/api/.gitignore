@@ -1,3 +1,4 @@
 .turbo
 apps/api/uploads/videos/*.mp4
 apps/api/uploads/videos/
+uploads
