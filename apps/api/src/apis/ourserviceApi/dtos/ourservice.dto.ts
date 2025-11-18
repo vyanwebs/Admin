@@ -1,4 +1,5 @@
 // src/apis/ourserviceApi/dtos/ourservice.dto.ts
+//dtos
 export interface CreateOurServiceDto {
 	serviceName: string;
 	price: number;

@@ -1,7 +1,7 @@
 // src/apis/ourserviceApi/services/ourservice.service.ts
 import { IOurService } from "../types/ourservice.type";
 import OurService from "../models/ourservice.model";
-
+//service
 class OurServiceService {
 	async create(data: {
 		serviceName: string;

@@ -1,7 +1,7 @@
 // src/apis/ourserviceApi/models/ourservice.model.ts
 import { Schema, model } from "mongoose";
 import { IOurService } from "../types/ourservice.type";
-
+//model
 const ourServiceSchema = new Schema<IOurService>(
 	{
 		serviceName: { type: String, required: true },
