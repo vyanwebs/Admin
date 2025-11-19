@@ -7,6 +7,7 @@ const homeServiceSchema = new Schema<IHomeService>(
     price: { type: Number, required: true },
     description: { type: String, required: true },
     image: { type: String },
+    gender: { type: String, required: true }, 
     addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }

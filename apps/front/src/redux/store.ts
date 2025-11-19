@@ -14,6 +14,10 @@ import aboutSalonReducer from "./Slice/AboutOurSaloon/aboutSalonSlice";
 import aboutUsReducer  from "./Slice/documents/aboutUsSlice";
 import privacyPolicyReducer from "./Slice/documents/privacyPolicySlice";
 import termsConditionReducer from "./Slice/documents/termsConditionSlice";
+//import ourServiceReducer from "./Slice/OurService/ourService.slice"
+import commonServiceReducer from "./Slice/OurService/commonServiceSlice";
+import homeServicesReducer from "./Slice/homeservice/homeServiceSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -33,7 +37,8 @@ export const store = configureStore({
     aboutUs: aboutUsReducer,
     privacyPolicy: privacyPolicyReducer,
     termsCondition: termsConditionReducer, 
-
+    commonService: commonServiceReducer,
+    homeServices: homeServicesReducer,
   },
 });
 

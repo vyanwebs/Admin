@@ -21,11 +21,11 @@ import {
   deleteHomeService,
 } from "../../../redux/Slice/homeservice/homeServiceSlice";
 
-import FemaleHomeServiceForm from "./FemaleHomeServiceForm";
+import MaleHomeServiceForm from "./MaleHomeServiceForm";
 
 const { Search } = Input;
 
-const FemaleHomeService: React.FC = () => {
+const MaleHomeService: React.FC = () => {
   const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
   const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
@@ -35,7 +35,7 @@ const FemaleHomeService: React.FC = () => {
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    dispatch(fetchHomeServices("female"));
+    dispatch(fetchHomeServices("male"));
   }, [dispatch]);
 
   const handleSubmit = async (formData: FormData, id?: string) => {
@@ -47,7 +47,7 @@ const FemaleHomeService: React.FC = () => {
       }
       setModalVisible(false);
       setEditing(null);
-      dispatch(fetchHomeServices("female"));
+      dispatch(fetchHomeServices("male"));
     } catch (err: any) {
       console.error(err);
     }
@@ -55,11 +55,11 @@ const FemaleHomeService: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     await dispatch(deleteHomeService(id));
-    dispatch(fetchHomeServices("female"));
+    dispatch(fetchHomeServices("male"));
   };
 
   const filtered = data
-    .filter((s) => s.gender === "female")
+    .filter((s) => s.gender === "male")
     .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
 
   const columns = [
@@ -80,7 +80,7 @@ const FemaleHomeService: React.FC = () => {
     },
     { title: "Name", dataIndex: "name" },
     { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
-    { title: "Description", dataIndex: "description", width: "35%", ellipsis: true },
+    { title: "Description", dataIndex: "description", ellipsis: true, width: "35%" },
     {
       title: "Actions",
       render: (_: any, row: any) => (
@@ -103,11 +103,11 @@ const FemaleHomeService: React.FC = () => {
 
   return (
     <Card
-      title={`Female Home Services (${filtered.length})`}
+      title={`Male Home Services (${filtered.length})`}
       extra={
         !screens.xs && (
           <Space>
-            <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("female"))}>
+            <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("male"))}>
               Refresh
             </Button>
             <Button
@@ -124,6 +124,7 @@ const FemaleHomeService: React.FC = () => {
         )
       }
     >
+      {/* Search + Responsive Buttons */}
       <Row gutter={[12, 12]}>
         <Col xs={24} sm={12}>
           <Search
@@ -141,7 +142,7 @@ const FemaleHomeService: React.FC = () => {
               <Button
                 block
                 icon={<ReloadOutlined />}
-                onClick={() => dispatch(fetchHomeServices("female"))}
+                onClick={() => dispatch(fetchHomeServices("male"))}
               >
                 Refresh
               </Button>
@@ -173,7 +174,7 @@ const FemaleHomeService: React.FC = () => {
         style={{ marginTop: 16 }}
       />
 
-      <FemaleHomeServiceForm
+      <MaleHomeServiceForm
         open={modalVisible}
         onClose={() => {
           setModalVisible(false);
@@ -187,4 +188,4 @@ const FemaleHomeService: React.FC = () => {
   );
 };
 
-export default FemaleHomeService;
+export default MaleHomeService;

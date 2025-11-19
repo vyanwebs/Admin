@@ -4,7 +4,8 @@ export interface IHomeService extends Document {
   name: string;
   price: number;
   description: string;
-  image?: string;       // Multer se uploaded file ka path
+  image?: string;
+  gender: string;       
   addedBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

@@ -132,9 +132,6 @@ const menuItems = [
   ],
 },
 
-
-
-
   {
     name: "Upload Certificate",
     icon: <Upload className="w-5 h-5" />,

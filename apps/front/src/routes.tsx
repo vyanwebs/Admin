@@ -42,6 +42,8 @@ const MaleSpecialOffers = lazy(()=>import("./subadminComponents/Male/specialoffe
 const ManageMalePackages = lazy(()=>import("./subadminComponents/Male/ourpackages/ManageMalePackages"));
 const MaleProducts = lazy(()=>import("./subadminComponents/Male/products/MaleProducts"));
 const MaleProductPackages = lazy(()=>import("./subadminComponents/Male/productpackages/MaleProductPackages"));
+const MaleOurServices = lazy(()=>import("./subadminComponents/Male/ourservice/MaleOurServices"));
+const MaleHomeService = lazy(()=>import("./subadminComponents/Male/homeservice/MaleHomeService"))
 //const MaleHomeService = lazy(()=>import("./subadminComponents/Male/homeservice/MaleService"));
 //Female Components
 const FemaleSpecialOffers = lazy(()=>import("./subadminComponents/female/specialoffers/FemaleSpecialOffers"));
@@ -49,6 +51,8 @@ const ManageFemalePackages = lazy(()=>import("./subadminComponents/female/ourpac
 const FemaleProducts = lazy(()=>import("./subadminComponents/female/products/FemaleProducts"));
 const FemaleProductPackages = lazy(()=>import("./subadminComponents/female/productpackages/FemaleProductPackages"));
 const ManageAboutSalon = lazy(()=>import("./subadminComponents/AboutOurSalon/ManageAboutSalon"));
+const FemaleOurServices = lazy(()=>import("./subadminComponents/female/ourservice/FemaleOurServices"));
+const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservice/FemaleHomeService"))
 //const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservice/FemaleService"));
 //Documents
 const ManageAboutUs = lazy(()=>import("./subadminComponents/documents/AboutUs/ManageAboutUs"));
@@ -200,7 +204,7 @@ export const router = createBrowserRouter([
           path: "our-service",
           element: (
             <Suspense fallback={Loader}>
-              {/* <UploadOurservice /> */}
+               <MaleOurServices /> 
             </Suspense>
           ),
         },
@@ -236,14 +240,14 @@ export const router = createBrowserRouter([
             </Suspense>
           ),
         },
-        // {
-        //   path: "home-service",
-        //   element: (
-        //     <Suspense fallback={Loader}>
-        //       <MaleHomeService />
-        //     </Suspense>
-        //   ),
-        // },
+        {
+          path: "home-service",
+          element: (
+            <Suspense fallback={Loader}>
+              <MaleHomeService />
+            </Suspense>
+          ),
+        },
       ],
     },
 
@@ -263,7 +267,7 @@ export const router = createBrowserRouter([
           path: "our-service",
           element: (
             <Suspense fallback={Loader}>
-              {/* <UploadOurservice /> */}
+              <FemaleOurServices />
             </Suspense>
           ),
         },
@@ -307,14 +311,14 @@ export const router = createBrowserRouter([
             </Suspense>
           ),
         },
-        // {
-        //   path: "home-service",
-        //   element: (
-        //     <Suspense fallback={Loader}>
-        //       <FemaleHomeService  />
-        //     </Suspense>
-        //   ),
-        // },
+        {
+          path: "home-service",
+          element: (
+            <Suspense fallback={Loader}>
+              <FemaleHomeService  />
+            </Suspense>
+          ),
+        },
       ],
     },
 

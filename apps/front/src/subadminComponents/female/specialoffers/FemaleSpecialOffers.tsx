@@ -1,155 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Card, 
-  Table, 
-  Input, 
-  Button, 
-  Tag, 
-  Space, 
-  message,
-  Popconfirm 
-} from "antd";
-import { 
-  PlusOutlined, 
-  DeleteOutlined, 
-  EditOutlined, 
-  ReloadOutlined, 
-} from "@ant-design/icons";
+import { Card, Table, Input, Button, Tag, Space, Popconfirm, Row, Col } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Grid } from "antd";
+
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  fetchOffers,
-  addOffer,
-  updateOffer,
-  deleteOffer,
-} from "../../../redux/Slice/specialOffer/offerSlice";
+import { fetchOffers, addOffer, updateOffer, deleteOffer } from "../../../redux/Slice/specialOffer/offerSlice";
 import FemaleSpecialOfferForm, { type SpecialOffer } from "./FemaleSpecialOfferForm";
 
 const { Search } = Input;
 
 const FemaleSpecialOffers: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  const { offers, loading, error } = useAppSelector((state: any) => state.offers);
+  const { offers, loading } = useAppSelector((state: any) => state.offers);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingOffer, setEditingOffer] = useState<SpecialOffer | null>(null);
   const [searchText, setSearchText] = useState("");
-  
-  // ✅ Fetch all offers on mount
+
   useEffect(() => {
     dispatch(fetchOffers());
   }, [dispatch]);
 
-  // ✅ Handle errors
-  useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
-  }, [error]);
-
-  // ✅ Filter only female offers
   const femaleOffers = offers.filter((offer: SpecialOffer) => offer.gender === "female");
 
-  // ✅ Handle Add or Edit
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
       if (id) {
         await dispatch(updateOffer({ id, formData })).unwrap();
-        message.success("✅ Female offer updated successfully");
       } else {
         await dispatch(addOffer(formData)).unwrap();
-        message.success("✅ Female offer added successfully");
       }
       setModalVisible(false);
       setEditingOffer(null);
       dispatch(fetchOffers());
-    } catch (error: any) {
-      message.error(error || "Operation failed");
+    } catch (err: any) {
+      console.error(err);
     }
   };
 
-  // ✅ Delete Offer
   const handleDelete = async (id: string) => {
-    try {
-      await dispatch(deleteOffer(id)).unwrap();
-      message.success("🗑️ Female offer deleted successfully");
-      dispatch(fetchOffers());
-    } catch (error: any) {
-      message.error("Failed to delete offer");
-    }
+    await dispatch(deleteOffer(id)).unwrap();
+    dispatch(fetchOffers());
   };
 
-  // ✅ Filter search results
   const filteredOffers = femaleOffers.filter((offer: SpecialOffer) =>
     offer.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // ✅ Table Columns
   const columns = [
     {
       title: "Image",
       dataIndex: "imageUrl",
-      key: "imageUrl",
-      render: (imageUrl: string) =>
-        imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="offer"
-            style={{ width: 60, height: 60, borderRadius: 6, objectFit: "cover" }}
-          />
+      render: (url: string) =>
+        url ? (
+          <img src={url} alt="offer" style={{ width: 60, height: 60, borderRadius: 6, objectFit: "cover" }} />
         ) : (
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
-    },
-    {
-      title: "Discount",
-      dataIndex: "discount",
-      key: "discount",
-      render: (discount: string) => `${discount}%`,
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      render: (date: string) => <Tag color="blue">{date}</Tag>,
-    },
-    { 
-      title: "Description", 
-      dataIndex: "description", 
-      key: "description",
-      ellipsis: true 
-    },
-    // {
-    //   title: "Male/Female",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //               {gender}
-    //   ),
-    // },
+    { title: "Title", dataIndex: "title" },
+    { title: "Discount", dataIndex: "discount", render: (d: number) => `${d}%` },
+    { title: "Date", dataIndex: "date", render: (d: string) => <Tag color="blue">{d}</Tag> },
+    { title: "Description", dataIndex: "description", ellipsis: true },
     {
       title: "Actions",
-      key: "actions",
       render: (_: any, record: SpecialOffer) => (
         <Space>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditingOffer(record);
-              setModalVisible(true);
-            }}
-          />
-          <Popconfirm
-            title="Are you sure to delete this female offer?"
-            onConfirm={() => handleDelete(record._id!)}
-            okText="Yes"
-            cancelText="No"
-          >
+          <Button type="primary" icon={<EditOutlined />} onClick={() => { setEditingOffer(record); setModalVisible(true); }} />
+          <Popconfirm title="Delete this offer?" onConfirm={() => handleDelete(record._id!)}>
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -159,41 +78,46 @@ const FemaleSpecialOffers: React.FC = () => {
 
   return (
     <Card
-      title={
-        <span>
-          {/* <WomanOutlined style={{ marginRight: 8 }} /> */}
-          Female Special Offers    ({femaleOffers.length} offers)
-        </span>
-      }
+      title={`Female Special Offers (${femaleOffers.length})`}
       extra={
-        <Space>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={() => dispatch(fetchOffers())} 
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingOffer(null);
-              setModalVisible(true);
-            }}
-          >
-            Add New Offer
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchOffers())} loading={loading}>
+              Refresh
+            </Button>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingOffer(null); setModalVisible(true); }}>
+              Add New
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search female offers by title..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search female offers..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button block icon={<ReloadOutlined />} onClick={() => dispatch(fetchOffers())} loading={loading}>
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button block type="primary" icon={<PlusOutlined />} onClick={() => { setEditingOffer(null); setModalVisible(true); }}>
+                Add Offer
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -201,15 +125,13 @@ const FemaleSpecialOffers: React.FC = () => {
         dataSource={filteredOffers}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No female offers found" }}
+        scroll={{ x: 800 }}
+        style={{ marginTop: 16 }}
       />
 
       <FemaleSpecialOfferForm
         visible={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          setEditingOffer(null);
-        }}
+        onCancel={() => { setModalVisible(false); setEditingOffer(null); }}
         onSubmit={handleAddOrUpdate}
         initialData={editingOffer}
         loading={loading}

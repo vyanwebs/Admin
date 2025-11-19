@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  DatePicker,
-  message,
-} from "antd";
+import { Modal, Form, Input, InputNumber, Upload, Button, DatePicker, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
@@ -67,61 +58,53 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
     }
   }, [initialData, form, visible]);
 
-  const handleFinish = async (values: any) => {
-    try {
-      const formData = new FormData();
-      
-      // Append all fields - gender fixed as "Female"
-      formData.append("title", values.title);
-      formData.append("discount", values.discount.toString());
-      formData.append("date", values.date.format("YYYY-MM-DD"));
-      formData.append("description", values.description);
-      formData.append("gender", "female"); // ✅ Fixed as Female
+  const handleFinish = (values: any) => {
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("discount", values.discount.toString());
+    formData.append("date", values.date.format("YYYY-MM-DD"));
+    formData.append("description", values.description);
+    formData.append("gender", "female"); // Fixed gender
 
-      // Append image if exists
-      if (fileList.length > 0 && fileList[0].originFileObj) {
-        formData.append("image", fileList[0].originFileObj);
-      }
-
-      onSubmit(formData, initialData?._id);
-    } catch (error) {
-      message.error("Something went wrong while saving the female offer");
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      formData.append("image", fileList[0].originFileObj);
     }
-  };
 
-  const handleCancel = () => {
-    form.resetFields();
-    setFileList([]);
-    onCancel();
+    onSubmit(formData, initialData?._id);
   };
 
   return (
     <Modal
-      title={
-        <span>
-          {/* <WomanOutlined style={{ marginRight: 8 }} /> */}
-          {initialData ? "Edit Female Offer" : "Add Offer"}
-        </span>
-      }
+      title={initialData ? "Edit Female Offer" : "Add Female Offer"}
       open={visible}
-      onCancel={handleCancel}
-      onOk={() => form.submit()}
-      okText={initialData ? "Update Female Offer" : "Add Offer"}
-      confirmLoading={loading}
+      onCancel={() => {
+        form.resetFields();
+        setFileList([]);
+        onCancel();
+      }}
+      footer={[
+        <Button key="cancel" onClick={onCancel}>
+          Cancel
+        </Button>,
+        <Button
+          key="submit"
+          type="primary"
+          loading={loading}
+          onClick={() => form.submit()}
+        >
+          {initialData ? "Update" : "Add"}
+        </Button>,
+      ]}
       destroyOnClose
       width={600}
     >
-      <Form 
-        form={form} 
-        layout="vertical" 
-        onFinish={handleFinish}
-      >
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           label="Title"
           name="title"
           rules={[{ required: true, message: "Please enter title" }]}
         >
-          <Input placeholder="Enter female offer title" />
+          <Input placeholder="Enter offer title" />
         </Form.Item>
 
         <Form.Item
@@ -129,15 +112,10 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
           name="discount"
           rules={[
             { required: true, message: "Please enter discount" },
-            { type: 'number', min: 0, max: 100, message: 'Discount must be between 0 and 100' }
+            { type: "number", min: 0, max: 100, message: "Discount must be between 0 and 100" },
           ]}
         >
-          <InputNumber 
-            min={0} 
-            max={100} 
-            style={{ width: "100%" }} 
-            placeholder="Enter discount percentage"
-          />
+          <InputNumber min={0} max={100} style={{ width: "100%" }} placeholder="Enter discount %" />
         </Form.Item>
 
         <Form.Item
@@ -145,11 +123,7 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
           name="date"
           rules={[{ required: true, message: "Please select date" }]}
         >
-          <DatePicker 
-            style={{ width: "100%" }} 
-            format="YYYY-MM-DD" 
-            placeholder="Select offer date"
-          />
+          <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" placeholder="Select date" />
         </Form.Item>
 
         <Form.Item
@@ -157,13 +131,10 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
           name="description"
           rules={[{ required: true, message: "Please enter description" }]}
         >
-          <Input.TextArea 
-            rows={3} 
-            placeholder="Enter offer description for female customers"
-          />
+          <Input.TextArea rows={3} placeholder="Enter description" />
         </Form.Item>
-        
-        <Form.Item 
+
+        <Form.Item
           label="Offer Image"
           rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
         >
@@ -175,15 +146,8 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
             beforeUpload={() => false}
             accept="image/*"
           >
-            <Button icon={<UploadOutlined />}>
-              {initialData ? "Change Image" : "Select Image"}
-            </Button>
+            <Button icon={<UploadOutlined />}>{initialData ? "Change Image" : "Select Image"}</Button>
           </Upload>
-          {!initialData && (
-            <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-              Image is required for new offers
-            </div>
-          )}
         </Form.Item>
       </Form>
     </Modal>

@@ -3,15 +3,14 @@ import {
   Card,
   Table,
   Button,
+  Modal,
   Space,
   Tag,
   Popconfirm,
+  message,
   Input,
-  Row,
-  Col,
 } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Grid } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
@@ -25,10 +24,10 @@ import FemaleHomeServiceForm from "./FemaleHomeServiceForm";
 
 const { Search } = Input;
 
-const FemaleHomeService: React.FC = () => {
-  const screens = Grid.useBreakpoint();
+const FemaleHomeService = () => {
   const dispatch = useAppDispatch();
-  const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
+  const homeServiceState = useAppSelector((state) => state.homeServices || {});
+  const { data = [], loading = false } = homeServiceState;
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editing, setEditing] = useState<any>(null);
@@ -45,11 +44,12 @@ const FemaleHomeService: React.FC = () => {
       } else {
         await dispatch(addHomeService(formData)).unwrap();
       }
+      message.success("Success!");
       setModalVisible(false);
       setEditing(null);
       dispatch(fetchHomeServices("female"));
     } catch (err: any) {
-      console.error(err);
+      message.error(err);
     }
   };
 
@@ -58,9 +58,12 @@ const FemaleHomeService: React.FC = () => {
     dispatch(fetchHomeServices("female"));
   };
 
+  // 🔥 FINAL FIX — yaha gender filter add kiya
   const filtered = data
     .filter((s) => s.gender === "female")
-    .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
+    .filter((s) =>
+      s?.name?.toLowerCase().includes(searchText.toLowerCase())
+    );
 
   const columns = [
     {
@@ -75,19 +78,28 @@ const FemaleHomeService: React.FC = () => {
             style={{ borderRadius: 8, objectFit: "cover" }}
           />
         ) : (
-          <Tag color="red">No Image</Tag>
+          <Tag>No Image</Tag>
         ),
     },
     { title: "Name", dataIndex: "name" },
-    { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
-    { title: "Description", dataIndex: "description", width: "35%", ellipsis: true },
+    {
+      title: "Price",
+      dataIndex: "price",
+      render: (p: number) => `₹${p}`,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      width: "35%",
+      ellipsis: true,
+    },
     {
       title: "Actions",
       render: (_: any, row: any) => (
         <Space>
           <Button
-            type="primary"
             icon={<EditOutlined />}
+            type="primary"
             onClick={() => {
               setEditing(row);
               setModalVisible(true);
@@ -103,74 +115,31 @@ const FemaleHomeService: React.FC = () => {
 
   return (
     <Card
-      title={`Female Home Services (${filtered.length})`}
+      title="Female Home Services"
       extra={
-        !screens.xs && (
-          <Space>
-            <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("female"))}>
-              Refresh
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setEditing(null);
-                setModalVisible(true);
-              }}
-            >
-              Add New
-            </Button>
-          </Space>
-        )
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setEditing(null);
+            setModalVisible(true);
+          }}
+        >
+          Add
+        </Button>
       }
     >
-      <Row gutter={[12, 12]}>
-        <Col xs={24} sm={12}>
-          <Search
-            placeholder="Search services..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            allowClear
-            style={{ width: "100%" }}
-          />
-        </Col>
-
-        {screens.xs && (
-          <>
-            <Col xs={24}>
-              <Button
-                block
-                icon={<ReloadOutlined />}
-                onClick={() => dispatch(fetchHomeServices("female"))}
-              >
-                Refresh
-              </Button>
-            </Col>
-            <Col xs={24}>
-              <Button
-                block
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setEditing(null);
-                  setModalVisible(true);
-                }}
-              >
-                Add Service
-              </Button>
-            </Col>
-          </>
-        )}
-      </Row>
+      <Search
+        placeholder="Search services..."
+        onChange={(e) => setSearchText(e.target.value)}
+        style={{ marginBottom: 16 }}
+      />
 
       <Table
-        rowKey={(r) => r._id}
         columns={columns}
         dataSource={filtered}
         loading={loading}
-        pagination={{ pageSize: 5 }}
-        scroll={{ x: 800 }}
-        style={{ marginTop: 16 }}
+        rowKey={(r) => r._id}
       />
 
       <FemaleHomeServiceForm

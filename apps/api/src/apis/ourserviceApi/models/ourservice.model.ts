@@ -1,25 +1,20 @@
-// src/apis/ourserviceApi/models/ourservice.model.ts
 import { Schema, model } from "mongoose";
 import { IOurService } from "../types/ourservice.type";
-//model
-const ourServiceSchema = new Schema<IOurService>(
-	{
-		serviceName: { type: String, required: true },
-		price: { type: Number, required: true },
-		title: { type: String, required: true },
-		highlights: { type: [String], default: [] },
-		estimatedTime: { type: Number, required: true },
-		extra: [
-			{
-				name: { type: String, required: true },
-				price: { type: Number, required: true },
-			},
-		],
 
-		imageUrl: { type: String, required: true },
-		addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-	},
-	{ timestamps: true }
+const ourServiceSchema = new Schema<IOurService>(
+  {
+    serviceName: { type: String, required: true },
+    price: { type: Number, required: true },
+    title: { type: String, required: true },
+    highlights: { type: [String], default: [] },
+    estimatedTime: { type: Number, required: true },
+    extra: { type: String, required: true },
+    category: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    gender: { type: String },
+  },
+  { timestamps: true }
 );
 
 export default model<IOurService>("OurService", ourServiceSchema);

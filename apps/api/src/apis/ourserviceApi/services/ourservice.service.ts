@@ -1,31 +1,60 @@
-// src/apis/ourserviceApi/services/ourservice.service.ts
 import { IOurService } from "../types/ourservice.type";
 import OurService from "../models/ourservice.model";
-//service
+
 class OurServiceService {
-	async create(data: {
-		serviceName: string;
-		price: number;
-		title: string;
-		highlights: string[];
-		extra: { name: string; price: number }[];
-		imageUrl: string;
-		addedBy: string;
-		estimatedTime: number;
-	}): Promise<IOurService> {
-		const newService = new OurService(data);
-		return newService.save();
-	}
+  
+  // CREATE
+  async create(data: {
+    serviceName: string;
+    price: number;
+    title: string;
+    highlights: string[];
+    extra: string;
+    imageUrl: string;
+    addedBy: string;
+    estimatedTime: number;
+    category: string;
+    gender?: string;
+  }): Promise<IOurService> {
+    const newService = new OurService(data);
+    return newService.save();
+  }
 
-	async getByUser(userId: string): Promise<IOurService[]> {
-		return OurService.find({ addedBy: userId })
-			.populate("addedBy", "name email")
-			.sort({ createdAt: -1 });
-	}
+  // GET ALL BY USER
+  async getByUser(userId: string): Promise<IOurService[]> {
+    return OurService.find({ addedBy: userId })
+      .populate("addedBy", "name email")
+      .sort({ createdAt: -1 });
+  }
 
-	async deleteById(id: string): Promise<IOurService | null> {
-		return OurService.findByIdAndDelete(id);
-	}
+  // GET BY ID
+  async getById(id: string): Promise<IOurService | null> {
+    return OurService.findById(id);
+  }
+
+  // UPDATE
+  async updateById(
+    id: string,
+    data: {
+      serviceName?: string;
+      price?: number;
+      title?: string;
+      highlights?: string[];
+      extra?: string;
+      estimatedTime?: number;
+      category?: string;
+      gender?: string;
+      imageUrl?: string;
+    }
+  ): Promise<IOurService | null> {
+    return OurService.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  // DELETE
+  async deleteById(id: string): Promise<IOurService | null> {
+    return OurService.findByIdAndDelete(id);
+  }
+
 }
 
 export default new OurServiceService();
