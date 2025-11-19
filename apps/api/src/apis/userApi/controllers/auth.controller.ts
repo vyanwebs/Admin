@@ -12,6 +12,7 @@ import { updateUserSchema } from "../validators/user.validator"; // Your Zod sch
 import { sendOTP } from "../../../config/mailconfig";
 import { EmailOTP } from "../models/UserOTP.model";
 import { nanoid } from "nanoid";
+import { parse } from "path";
 export const register = async (req: Request, res: Response) => {
 	try {
 		const { ref } = req.query;
@@ -424,15 +425,17 @@ export const updateUserInfo = async (
 		}
 
 		// ALWAYS validate using zod
-		const parseResult = updateUserSchema.safeParse(req.body);
+		// const parseResult = updateUserSchema.safeParse(req.body);
+		const parseResult = req.body;
+		console.log("parseResult", parseResult);
 
-		if (!parseResult.success) {
-			res.status(400).json({
-				message: "Invalid data",
-				errors: parseResult.error.format(),
-			});
-			return;
-		}
+		// if (!parseResult.success) {
+		// 	res.status(400).json({
+		// 		message: "Invalid data",
+		// 		errors: parseResult.error.format(),
+		// 	});
+		// 	return;
+		// }
 
 		const user = await User.findById(userId);
 		if (!user) {
@@ -451,7 +454,7 @@ export const updateUserInfo = async (
 		}
 
 		// Merge validated fields
-		Object.assign(user, parseResult.data);
+		Object.assign(user, req.body);
 
 		await user.save();
 		await user.populate("avatar", "url");
