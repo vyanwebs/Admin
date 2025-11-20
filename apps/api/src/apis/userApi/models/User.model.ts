@@ -162,7 +162,6 @@ const userSchema: Schema<IUser> = new Schema(
 		// ✅ Make firstName & lastName optional (they’ll be auto-filled from fullName)
 		firstName: { type: String, trim: true, maxlength: 50 },
 		lastName: { type: String, trim: true, maxlength: 50 },
-
 		// ✅ Keep fullName required but auto-generate it if missing
 		fullName: { type: String, required: true, trim: true, maxlength: 100 },
 

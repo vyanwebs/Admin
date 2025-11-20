@@ -11,34 +11,55 @@ import {
 
 const router = Router();
 
-// ✅ Multer storage
+// =======================
+//  MULTER STORAGE (FINAL)
+// =======================
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const folder =
-      file.fieldname === "icons"
-        ? path.join(__dirname, "../../../../uploads/icons")
-        : path.join(__dirname, "../../../../uploads/images");
+    // ✔ Image + Icons both go to uploads/images
+    const folder = path.join(__dirname, "../../../../uploads/images");
     cb(null, folder);
   },
+
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
+// Multer upload
 const upload = multer({ storage });
 
-// ✅ Routes
+// =======================
+//       ROUTES
+// =======================
+
+// ✔ Create product (image + icons)
 router.post(
   "/upload",
   upload.fields([
-    { name: "image" },
-    { name: "icons"},
+    { name: "image", maxCount: 1 },
+    { name: "icons", maxCount: 20 },
   ]),
   createProduct
 );
+
+// ✔ Get All
 router.get("/", getAllProducts);
+
+// ✔ Get One
 router.get("/:id", getProductById);
-router.put("/:id", upload.single("image"), updateProduct);
+
+// ✔ Update (can update image/icons)
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "image" },
+    { name: "icons" },
+  ]),
+  updateProduct
+);
+
+// ✔ Delete
 router.delete("/:id", deleteProduct);
 
 export default router;

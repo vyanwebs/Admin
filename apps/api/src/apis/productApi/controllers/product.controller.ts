@@ -41,7 +41,7 @@ export const createProduct = async (req: Request, res: Response) => {
 		const image = `${process.env.URL}/uploads/images/${customReq.files.image[0].filename}`;
 		const icons =
 			customReq.files?.icons?.map(
-				(file) => `${process.env.URL}/uploads/icons/${file.filename}`
+				(file) => `${process.env.URL}/uploads/images/${file.filename}`
 			) || [];
 
 		const product = await ProductService.create({

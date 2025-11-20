@@ -1,159 +1,191 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  Table,
-  Button,
-  Modal,
-  Space,
-  Tag,
-  Popconfirm,
-  message,
-  Input,
-} from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+// import React, { useEffect, useState } from "react";
+// import {
+//   Card,
+//   Table,
+//   Button,
+//   Space,
+//   Tag,
+//   Popconfirm,
+//   Input,
+//   Row,
+//   Col,
+// } from "antd";
+// import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+// import { Grid } from "antd";
 
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  fetchHomeServices,
-  addHomeService,
-  updateHomeService,
-  deleteHomeService,
-} from "../../../redux/Slice/homeservice/homeServiceSlice";
+// import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+// import {
+//   fetchHomeServices,
+//   addHomeService,
+//   updateHomeService,
+//   deleteHomeService,
+// } from "../../../redux/Slice/homeservice/homeServiceSlice";
 
-import FemaleHomeServiceForm from "./FemaleHomeServiceForm";
-//cahnge
-const { Search } = Input;
+// import FemaleHomeServiceForm from "./FemaleHomeServiceForm";
 
-const FemaleHomeService = () => {
-  const dispatch = useAppDispatch();
-  const homeServiceState = useAppSelector((state) => state.homeServices || {});
-  const { data = [], loading = false } = homeServiceState;
+// const { Search } = Input;
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editing, setEditing] = useState<any>(null);
-  const [searchText, setSearchText] = useState("");
+// const FemaleHomeService: React.FC = () => {
+//   const screens = Grid.useBreakpoint();
+//   const dispatch = useAppDispatch();
+//   const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
 
-  useEffect(() => {
-    dispatch(fetchHomeServices("female"));
-  }, [dispatch]);
+//   const [modalVisible, setModalVisible] = useState(false);
+//   const [editing, setEditing] = useState<any>(null);
+//   const [searchText, setSearchText] = useState("");
 
-  const handleSubmit = async (formData: FormData, id?: string) => {
-    try {
-      if (id) {
-        await dispatch(updateHomeService({ id, formData })).unwrap();
-      } else {
-        await dispatch(addHomeService(formData)).unwrap();
-      }
-      message.success("Success!");
-      setModalVisible(false);
-      setEditing(null);
-      dispatch(fetchHomeServices("female"));
-    } catch (err: any) {
-      message.error(err);
-    }
-  };
+//   useEffect(() => {
+//     dispatch(fetchHomeServices("female"));
+//   }, [dispatch]);
 
-  const handleDelete = async (id: string) => {
-    await dispatch(deleteHomeService(id));
-    dispatch(fetchHomeServices("female"));
-  };
+//   const handleSubmit = async (formData: FormData, id?: string) => {
+//     try {
+//       if (id) {
+//         await dispatch(updateHomeService({ id, formData })).unwrap();
+//       } else {
+//         await dispatch(addHomeService(formData)).unwrap();
+//       }
+//       setModalVisible(false);
+//       setEditing(null);
+//       dispatch(fetchHomeServices("female"));
+//     } catch (err: any) {
+//       console.error(err);
+//     }
+//   };
 
-  // 🔥 FINAL FIX — yaha gender filter add kiya
-  const filtered = data
-    .filter((s) => s.gender === "female")
-    .filter((s) =>
-      s?.name?.toLowerCase().includes(searchText.toLowerCase())
-    );
+//   const handleDelete = async (id: string) => {
+//     await dispatch(deleteHomeService(id));
+//     dispatch(fetchHomeServices("female"));
+//   };
 
-  const columns = [
-    {
-      title: "Image",
-      dataIndex: "image",
-      render: (img: string) =>
-        img ? (
-          <img
-            src={img}
-            width={60}
-            height={60}
-            style={{ borderRadius: 8, objectFit: "cover" }}
-          />
-        ) : (
-          <Tag>No Image</Tag>
-        ),
-    },
-    { title: "Name", dataIndex: "name" },
-    {
-      title: "Price",
-      dataIndex: "price",
-      render: (p: number) => `₹${p}`,
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      width: "35%",
-      ellipsis: true,
-    },
-    {
-      title: "Actions",
-      render: (_: any, row: any) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            type="primary"
-            onClick={() => {
-              setEditing(row);
-              setModalVisible(true);
-            }}
-          />
-          <Popconfirm title="Delete?" onConfirm={() => handleDelete(row._id)}>
-            <Button danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+//   const filtered = data
+//     .filter((s) => s.gender === "female")
+//     .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
 
-  return (
-    <Card
-      title="Female Home Services"
-      extra={
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setEditing(null);
-            setModalVisible(true);
-          }}
-        >
-          Add
-        </Button>
-      }
-    >
-      <Search
-        placeholder="Search services..."
-        onChange={(e) => setSearchText(e.target.value)}
-        style={{ marginBottom: 16 }}
-      />
+//   const columns = [
+//     {
+//       title: "Image",
+//       dataIndex: "image",
+//       render: (img: string) =>
+//         img ? (
+//           <img
+//             src={img}
+//             width={60}
+//             height={60}
+//             style={{ borderRadius: 8, objectFit: "cover" }}
+//           />
+//         ) : (
+//           <Tag color="red">No Image</Tag>
+//         ),
+//     },
+//     { title: "Name", dataIndex: "name" },
+//     { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
+//     { title: "Description", dataIndex: "description", ellipsis: true, width: "35%" },
+//     {
+//       title: "Actions",
+//       render: (_: any, row: any) => (
+//         <Space>
+//           <Button
+//             type="primary"
+//             icon={<EditOutlined />}
+//             onClick={() => {
+//               setEditing(row);
+//               setModalVisible(true);
+//             }}
+//           />
+//           <Popconfirm title="Delete?" onConfirm={() => handleDelete(row._id)}>
+//             <Button danger icon={<DeleteOutlined />} />
+//           </Popconfirm>
+//         </Space>
+//       ),
+//     },
+//   ];
 
-      <Table
-        columns={columns}
-        dataSource={filtered}
-        loading={loading}
-        rowKey={(r) => r._id}
-      />
+//   return (
+//     <Card
+//       title={`Female Home Services (${filtered.length})`}
+//       extra={
+//         !screens.xs && (
+//           <Space>
+//             <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("female"))}>
+//               Refresh
+//             </Button>
+//             <Button
+//               type="primary"
+//               icon={<PlusOutlined />}
+//               onClick={() => {
+//                 setEditing(null);
+//                 setModalVisible(true);
+//               }}
+//             >
+//               Add New
+//             </Button>
+//           </Space>
+//         )
+//       }
+//     >
+//       {/* Search + Responsive Buttons */}
+//       <Row gutter={[12, 12]}>
+//         <Col xs={24} sm={12}>
+//           <Search
+//             placeholder="Search services..."
+//             value={searchText}
+//             onChange={(e) => setSearchText(e.target.value)}
+//             allowClear
+//             style={{ width: "100%" }}
+//           />
+//         </Col>
 
-      <FemaleHomeServiceForm
-        open={modalVisible}
-        onClose={() => {
-          setModalVisible(false);
-          setEditing(null);
-        }}
-        onSubmit={handleSubmit}
-        initialData={editing}
-        loading={loading}
-      />
-    </Card>
-  );
-};
+//         {screens.xs && (
+//           <>
+//             <Col xs={24}>
+//               <Button
+//                 block
+//                 icon={<ReloadOutlined />}
+//                 onClick={() => dispatch(fetchHomeServices("female"))}
+//               >
+//                 Refresh
+//               </Button>
+//             </Col>
+//             <Col xs={24}>
+//               <Button
+//                 block
+//                 type="primary"
+//                 icon={<PlusOutlined />}
+//                 onClick={() => {
+//                   setEditing(null);
+//                   setModalVisible(true);
+//                 }}
+//               >
+//                 Add Service
+//               </Button>
+//             </Col>
+//           </>
+//         )}
+//       </Row>
 
-export default FemaleHomeService;
+//       <Table
+//         rowKey={(r) => r._id}
+//         columns={columns}
+//         dataSource={filtered}
+//         loading={loading}
+//         pagination={{ pageSize: 5 }}
+//         scroll={{ x: 800 }}
+//         style={{ marginTop: 16 }}
+//       />
+
+//       <FemaleHomeServiceForm
+//         open={modalVisible}
+//         onClose={() => {
+//           setModalVisible(false);
+//           setEditing(null);
+//         }}
+//         onSubmit={handleSubmit}
+//         initialData={editing}
+//         loading={loading}
+//       />
+//     </Card>
+//   );
+// };
+
+// export default FemaleHomeService;

@@ -6,7 +6,6 @@ import {
 	updateCartById,
 	deleteCartById,
 } from "../services/cart.service";
-
 // ✅ Create a cart item
 export const createCart = async (req: Request, res: Response) => {
 	try {
@@ -14,7 +13,7 @@ export const createCart = async (req: Request, res: Response) => {
 		const image = req.file
 			? `${process.env.URL}/uploads/images/${req.file.filename}`
 			: req.body.image;
-
+			
 		const cartData = { ...req.body, image };
 		const newCart = await createCartService(cartData);
 		res.status(201).json({
@@ -45,7 +44,6 @@ export const getAllCartItems = async (_req: Request, res: Response) => {
 		});
 	}
 };
-
 // ✅ Get cart by ID
 export const getCartItemById = async (req: Request, res: Response) => {
 	try {

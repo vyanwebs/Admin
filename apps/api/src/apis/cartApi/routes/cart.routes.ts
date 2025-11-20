@@ -6,10 +6,9 @@ import {
   updateCartItem,
   deleteCartItem,
 } from "../controllers/cart.controller";
-import { upload } from "../../mediaApi/services/multerConfig"; // adjust path as per your multer file
+import { upload } from "../../mediaApi/services/multerConfig"; 
 
 const router = Router();
-
 router.post("/", upload.single("image"), createCart);
 router.get("/", getAllCartItems);
 router.get("/:id", getCartItemById);
