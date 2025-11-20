@@ -211,7 +211,7 @@ const userSchema: Schema<IUser> = new Schema(
 		},
 		subscriptionPeriod: {
 			type: String,
-			enum: ["halfyearly", "yearly", "custom"],
+			enum: ["halfyearly", "yearly", "custom", "biannual"],
 			default: "halfyearly",
 		},
 		subscriptionStartDate: Date,

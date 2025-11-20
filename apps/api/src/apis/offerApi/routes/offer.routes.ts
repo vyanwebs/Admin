@@ -3,22 +3,22 @@ import { upload } from "../../mediaApi/services/multerConfig";
 import { protect } from "../../userApi/middlewares/auth.middleware";
 import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
 import {
-  createOffer,
-  getAllOffers,
-  getOfferById,
-  updateOffer,
-  deleteOffer,
+	createOffer,
+	getAllOffers,
+	getOfferById,
+	updateOffer,
+	deleteOffer,
 } from "../controllers/offer.controller";
 
 const router = express.Router();
 
 // CREATE
 router.post(
-  "/upload",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  upload.single("image"),
-  createOffer
+	"/upload",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	upload.single("image"),
+	createOffer
 );
 
 // READ ALL
@@ -29,21 +29,19 @@ router.get("/:id", getOfferById);
 
 // UPDATE
 router.put(
-  "/:id",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  upload.single("image"),
-  updateOffer
+	"/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	upload.single("image"),
+	updateOffer
 );
 
 // DELETE
 router.delete(
-  "/:id",
-  protect,
-  authorizeRole("admin", "superadmin"),
-  deleteOffer
+	"/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	deleteOffer
 );
-
-
 
 export default router;
