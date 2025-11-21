@@ -28,8 +28,7 @@ interface Props {
 const FemaleOurServiceForm: React.FC<Props> = ({
   visible,
   onSubmit,
-  initialData,
-  loading = false,
+  initialData, 
 }) => {
   const [form] = Form.useForm();
   const [imageFileList, setImageFileList] = useState<any[]>([]);

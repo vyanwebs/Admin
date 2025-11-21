@@ -43,7 +43,7 @@ const ManageMalePackages = lazy(()=>import("./subadminComponents/Male/ourpackage
 const MaleProducts = lazy(()=>import("./subadminComponents/Male/products/MaleProducts"));
 const MaleProductPackages = lazy(()=>import("./subadminComponents/Male/productpackages/MaleProductPackages"));
 const MaleOurServices = lazy(()=>import("./subadminComponents/Male/ourservice/MaleOurServices"));
-//const MaleHomeService = lazy(()=>import("./subadminComponents/Male/homeservice/MaleHomeService"))
+const MaleHomeService = lazy(()=>import("./subadminComponents/Male/homeservice/MaleHomeService"))
 //const MaleHomeService = lazy(()=>import("./subadminComponents/Male/homeservice/MaleService"));
 //Female Components
 const FemaleSpecialOffers = lazy(()=>import("./subadminComponents/female/specialoffers/FemaleSpecialOffers"));
@@ -52,7 +52,7 @@ const FemaleProducts = lazy(()=>import("./subadminComponents/female/products/Fem
 const FemaleProductPackages = lazy(()=>import("./subadminComponents/female/productpackages/FemaleProductPackages"));
 const ManageAboutSalon = lazy(()=>import("./subadminComponents/AboutOurSalon/ManageAboutSalon"));
 const FemaleOurServices = lazy(()=>import("./subadminComponents/female/ourservice/FemaleOurServices"));
-//const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservice/FemaleHomeService"))
+const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservice/FemaleHomeService"))
 //const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservice/FemaleService"));
 //Documents
 const ManageAboutUs = lazy(()=>import("./subadminComponents/documents/AboutUs/ManageAboutUs"));
@@ -244,7 +244,7 @@ export const router = createBrowserRouter([
           path: "home-service",
           element: (
             <Suspense fallback={Loader}>
-              {/* <MaleHomeService /> */}
+              <MaleHomeService />
             </Suspense>
           ),
         },
@@ -315,7 +315,7 @@ export const router = createBrowserRouter([
           path: "home-service",
           element: (
             <Suspense fallback={Loader}>
-              {/* <FemaleHomeService  /> */}
+              <FemaleHomeService  />
             </Suspense>
           ),
         },

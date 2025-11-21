@@ -1,191 +1,160 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Card,
-//   Table,
-//   Button,
-//   Space,
-//   Tag,
-//   Popconfirm,
-//   Input,
-//   Row,
-//   Col,
-// } from "antd";
-// import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
-// import { Grid } from "antd";
+// MaleHomeService.tsx
+import React, { useEffect, useState } from "react";
+import { Card, Table, Button, Space, Tag, Popconfirm, Input, Modal } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import {
+  fetchHomeServices,
+  addHomeService,
+  updateHomeService,
+  deleteHomeService,
+} from "../../../redux/Slice/homeservice/homeServiceSlice";
+import MaleHomeServiceForm, { type HomeService } from "./MaleHomeServiceForm";
 
-// import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-// import {
-//   fetchHomeServices,
-//   addHomeService,
-//   updateHomeService,
-//   deleteHomeService,
-// } from "../../../redux/Slice/homeservice/homeServiceSlice";
+const { Search } = Input;
 
-// import MaleHomeServiceForm from "./MaleHomeServiceForm";
+const MaleHomeService: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
 
-// const { Search } = Input;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingService, setEditingService] = useState<HomeService | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [submitLoading, setSubmitLoading] = useState(false);
 
-// const MaleHomeService: React.FC = () => {
-//   const screens = Grid.useBreakpoint();
-//   const dispatch = useAppDispatch();
-//   const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
+  useEffect(() => {
+    dispatch(fetchHomeServices("male"));
+  }, [dispatch]);
 
-//   const [modalVisible, setModalVisible] = useState(false);
-//   const [editing, setEditing] = useState<any>(null);
-//   const [searchText, setSearchText] = useState("");
+  const handleAddOrUpdate = async (formData: FormData, id?: string) => {
+    try {
+      setSubmitLoading(true);
+      if (id) {
+        await dispatch(updateHomeService({ id, formData })).unwrap();
+      } else {
+        await dispatch(addHomeService(formData)).unwrap();
+      }
+      setModalVisible(false);
+      setEditingService(null);
+      dispatch(fetchHomeServices("male"));
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
-//   useEffect(() => {
-//     dispatch(fetchHomeServices("male"));
-//   }, [dispatch]);
+  const handleDelete = async (id: string) => {
+    try {
+      await dispatch(deleteHomeService(id)).unwrap();
+      dispatch(fetchHomeServices("male"));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-//   const handleSubmit = async (formData: FormData, id?: string) => {
-//     try {
-//       if (id) {
-//         await dispatch(updateHomeService({ id, formData })).unwrap();
-//       } else {
-//         await dispatch(addHomeService(formData)).unwrap();
-//       }
-//       setModalVisible(false);
-//       setEditing(null);
-//       dispatch(fetchHomeServices("male"));
-//     } catch (err: any) {
-//       console.error(err);
-//     }
-//   };
+  const handleModalOk = () => {
+    const formButton = document.querySelector(".male-home-service-form-submit-button");
+    if (formButton) (formButton as HTMLButtonElement).click();
+  };
 
-//   const handleDelete = async (id: string) => {
-//     await dispatch(deleteHomeService(id));
-//     dispatch(fetchHomeServices("male"));
-//   };
+  const filteredServices = data
+    .filter((s) => s.gender === "male")
+    .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
 
-//   const filtered = data
-//     .filter((s) => s.gender === "male")
-//     .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
+  const columns = [
+    {
+      title: "Image",
+      dataIndex: "image",
+      render: (img: string) =>
+        img ? <img src={img} width={60} height={60} style={{ borderRadius: 6, objectFit: "cover" }} /> : <Tag color="red">No Image</Tag>,
+    },
+    { title: "Name", dataIndex: "name" },
+    { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
+    { title: "Description", dataIndex: "description", ellipsis: true, width: "35%" },
+    {
+      title: "Actions",
+      render: (_: any, record: HomeService) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingService(record);
+              setModalVisible(true);
+            }}
+          />
+          <Popconfirm title="Delete?" onConfirm={() => handleDelete(record._id!)}>
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
-//   const columns = [
-//     {
-//       title: "Image",
-//       dataIndex: "image",
-//       render: (img: string) =>
-//         img ? (
-//           <img
-//             src={img}
-//             width={60}
-//             height={60}
-//             style={{ borderRadius: 8, objectFit: "cover" }}
-//           />
-//         ) : (
-//           <Tag color="red">No Image</Tag>
-//         ),
-//     },
-//     { title: "Name", dataIndex: "name" },
-//     { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
-//     { title: "Description", dataIndex: "description", ellipsis: true, width: "35%" },
-//     {
-//       title: "Actions",
-//       render: (_: any, row: any) => (
-//         <Space>
-//           <Button
-//             type="primary"
-//             icon={<EditOutlined />}
-//             onClick={() => {
-//               setEditing(row);
-//               setModalVisible(true);
-//             }}
-//           />
-//           <Popconfirm title="Delete?" onConfirm={() => handleDelete(row._id)}>
-//             <Button danger icon={<DeleteOutlined />} />
-//           </Popconfirm>
-//         </Space>
-//       ),
-//     },
-//   ];
+  return (
+    <Card
+      title={`Male Home Services (${filteredServices.length})`}
+      extra={
+        <Space>
+          <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("male"))} loading={loading}>
+            Refresh
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingService(null);
+              setModalVisible(true);
+            }}
+          >
+            Add New
+          </Button>
+        </Space>
+      }
+    >
+      <Search
+        placeholder="Search services..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        allowClear
+        style={{ marginBottom: 16, width: "50%" }}
+      />
 
-//   return (
-//     <Card
-//       title={`Male Home Services (${filtered.length})`}
-//       extra={
-//         !screens.xs && (
-//           <Space>
-//             <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("male"))}>
-//               Refresh
-//             </Button>
-//             <Button
-//               type="primary"
-//               icon={<PlusOutlined />}
-//               onClick={() => {
-//                 setEditing(null);
-//                 setModalVisible(true);
-//               }}
-//             >
-//               Add New
-//             </Button>
-//           </Space>
-//         )
-//       }
-//     >
-//       {/* Search + Responsive Buttons */}
-//       <Row gutter={[12, 12]}>
-//         <Col xs={24} sm={12}>
-//           <Search
-//             placeholder="Search services..."
-//             value={searchText}
-//             onChange={(e) => setSearchText(e.target.value)}
-//             allowClear
-//             style={{ width: "100%" }}
-//           />
-//         </Col>
+      <Table
+        rowKey="_id"
+        columns={columns}
+        dataSource={filteredServices}
+        loading={loading || submitLoading}
+        pagination={{ pageSize: 5 }}
+        scroll={{ x: 800 }}
+      />
 
-//         {screens.xs && (
-//           <>
-//             <Col xs={24}>
-//               <Button
-//                 block
-//                 icon={<ReloadOutlined />}
-//                 onClick={() => dispatch(fetchHomeServices("male"))}
-//               >
-//                 Refresh
-//               </Button>
-//             </Col>
-//             <Col xs={24}>
-//               <Button
-//                 block
-//                 type="primary"
-//                 icon={<PlusOutlined />}
-//                 onClick={() => {
-//                   setEditing(null);
-//                   setModalVisible(true);
-//                 }}
-//               >
-//                 Add Service
-//               </Button>
-//             </Col>
-//           </>
-//         )}
-//       </Row>
+      <Modal
+        title={editingService ? "Edit Male Home Service" : "Add Male Home Service"}
+        open={modalVisible}
+        onCancel={() => {
+          setModalVisible(false);
+          setEditingService(null);
+        }}
+        onOk={handleModalOk}
+        confirmLoading={submitLoading}
+        width={700}
+        destroyOnClose
+      >
+        <MaleHomeServiceForm
+          visible={modalVisible}
+          onCancel={() => {
+            setModalVisible(false);
+            setEditingService(null);
+          }}
+          onSubmit={handleAddOrUpdate}
+          initialData={editingService}
+          loading={submitLoading}
+        />
+      </Modal>
+    </Card>
+  );
+};
 
-//       <Table
-//         rowKey={(r) => r._id}
-//         columns={columns}
-//         dataSource={filtered}
-//         loading={loading}
-//         pagination={{ pageSize: 5 }}
-//         scroll={{ x: 800 }}
-//         style={{ marginTop: 16 }}
-//       />
-
-//       <MaleHomeServiceForm
-//         open={modalVisible}
-//         onClose={() => {
-//           setModalVisible(false);
-//           setEditing(null);
-//         }}
-//         onSubmit={handleSubmit}
-//         initialData={editing}
-//         loading={loading}
-//       />
-//     </Card>
-//   );
-// };
-
-// export default MaleHomeService;
+export default MaleHomeService;

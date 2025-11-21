@@ -29,7 +29,7 @@ const MaleOurServiceForm: React.FC<Props> = ({
   visible,
   onSubmit,
   initialData,
-  loading = false,
+  
 }) => {
   const [form] = Form.useForm();
   const [imageFileList, setImageFileList] = useState<any[]>([]);

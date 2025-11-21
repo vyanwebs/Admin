@@ -1,143 +1,127 @@
+// FemaleHomeServiceForm.tsx
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, InputNumber, Upload, Button, message } from "antd";
+import { Form, Input, InputNumber, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
+export interface HomeService {
+  _id?: string;
+  name: string;
+  price: number;
+  description: string;
+  gender: string;
+  image?: string;
+}
+
 interface Props {
-  open: boolean;
-  onClose: () => void;
+  visible: boolean;
+  onCancel: () => void;
   onSubmit: (formData: FormData, id?: string) => void;
-  initialData?: {
-    _id?: string;
-    name: string;
-    price: number;
-    description: string;
-    image?: string;
-  } | null;
+  initialData?: HomeService | null;
   loading?: boolean;
 }
 
 const FemaleHomeServiceForm: React.FC<Props> = ({
-  open,
-  onClose,
+  visible,
+ // onCancel,
   onSubmit,
   initialData,
-  loading = false,
+  //loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && visible) {
       form.setFieldsValue({
         name: initialData.name,
         price: initialData.price,
         description: initialData.description,
       });
 
-      if (initialData.image) {
-        setFileList([
-          {
-            uid: "-1",
-            name: "Current Image",
-            status: "done",
-            url: initialData.image,
-          },
-        ]);
-      } else {
-        setFileList([]);
-      }
+      setFileList(
+        initialData.image
+          ? [
+              {
+                uid: "-1",
+                name: "Existing Image",
+                status: "done",
+                url: initialData.image,
+              },
+            ]
+          : []
+      );
     } else {
       form.resetFields();
       setFileList([]);
     }
-  }, [initialData, open]);
+  }, [initialData, visible]);
 
   const handleFinish = (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("price", values.price.toString());
-    formData.append("description", values.description);
-    formData.append("gender", "female"); 
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("price", values.price.toString());
+      formData.append("description", values.description);
+      formData.append("gender", "female");
 
-    if (fileList.length > 0 && fileList[0].originFileObj) {
-      formData.append("image", fileList[0].originFileObj);
+      if (fileList.length > 0 && fileList[0].originFileObj) {
+        formData.append("image", fileList[0].originFileObj);
+      }
+
+      onSubmit(formData, initialData?._id);
+    } catch (err) {
+      message.error("Something went wrong while saving the service.");
     }
-
-    onSubmit(formData, initialData?._id);
   };
 
   return (
-    <Modal
-      title={initialData ? "Edit feMale Home Service" : "Add  female home Service"}
-      open={open}
-      onCancel={() => {
-        form.resetFields();
-        setFileList([]);
-        onClose();
-      }}
-      footer={[
-        <Button key="cancel" onClick={onClose}>
-          Cancel
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={() => form.submit()}
-        >
-          {initialData ? "Update" : "Add"}
-        </Button>,
-      ]}
-      destroyOnClose
-    >
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
-        <Form.Item
-          name="name"
-          label="Service Name"
-          rules={[{ required: true, message: "Please enter service name" }]}
-        >
-          <Input size="large" placeholder="Enter service name" />
-        </Form.Item>
+    <Form form={form} layout="vertical" onFinish={handleFinish} className="female-home-service-form">
+      <Form.Item
+        label="Service Name"
+        name="name"
+        rules={[{ required: true, message: "Please enter service name" }]}
+      >
+        <Input placeholder="Enter service name" />
+      </Form.Item>
 
-        <Form.Item
-          name="price"
-          label="Price"
-          rules={[{ required: true, message: "Please enter price" }]}
-        >
-          <InputNumber
-            size="large"
-            min={0}
-            style={{ width: "100%" }}
-            placeholder="Enter price"
-          />
-        </Form.Item>
+      <Form.Item
+        label="Price"
+        name="price"
+        rules={[{ required: true, message: "Please enter price" }]}
+      >
+        <InputNumber min={0} style={{ width: "100%" }} placeholder="Enter price" />
+      </Form.Item>
 
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[{ required: true, message: "Please enter description" }]}
-        >
-          <Input.TextArea rows={3} size="large" placeholder="Enter description" />
-        </Form.Item>
+      <Form.Item
+        label="Description"
+        name="description"
+        rules={[{ required: true, message: "Please enter description" }]}
+      >
+        <Input.TextArea rows={3} placeholder="Enter description" />
+      </Form.Item>
 
-        <Form.Item label="Upload Image">
-          <Upload
-            listType="picture-card"
-            fileList={fileList}
-            beforeUpload={() => false}
-            onChange={(info) => setFileList(info.fileList)}
-            accept="image/*"
-          >
-            {fileList.length === 0 && (
-              <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 5 }}>Upload</div>
-              </div>
-            )}
-          </Upload>
-        </Form.Item>
-      </Form>
-    </Modal>
+      <Form.Item label="Service Image">
+        <Upload
+          listType="picture"
+          maxCount={1}
+          fileList={fileList}
+          onChange={({ fileList }) => setFileList(fileList)}
+          beforeUpload={() => false}
+          accept="image/*"
+        >
+          <Button icon={<UploadOutlined />}>
+            {initialData ? "Change Image" : "Select Image"}
+          </Button>
+        </Upload>
+      </Form.Item>
+
+      {/* Hidden submit button for modal OK */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
+        className="female-home-service-form-submit-button"
+      />
+    </Form>
   );
 };
 
