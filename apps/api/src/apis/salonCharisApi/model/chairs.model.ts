@@ -3,7 +3,7 @@ import mongoose, { Types, Schema } from "mongoose";
 export interface IChairs {
 	chairNumber: number;
 	isChairAvailable: boolean;
-	subAdminId: string | Types.ObjectId;
+	subAdminId: Types.ObjectId;
 	subAdminEmail: string;
 }
 

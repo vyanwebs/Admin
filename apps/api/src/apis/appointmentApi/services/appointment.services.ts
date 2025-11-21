@@ -7,6 +7,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import User from "../../userApi/models/User.model";
 import { ChairsModel } from "../../salonCharisApi/model/chairs.model";
+import mongoose from "mongoose";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -60,13 +61,19 @@ class AppointmentService {
 			appointmentCode,
 			subAdminId: user?.subAdminId,
 		});
-		await ChairsModel.findOneAndUpdate(
+
+		const status = await ChairsModel.findOneAndUpdate(
 			{
-				$and: [{ subAdminId: user?.subAdminId }, { chairNumber: data.chairNo }],
+				$and: [
+					{ subAdminId: new mongoose.Types.ObjectId(appointment.subAdminId) },
+					{ chairNumber: Number(data.chairNo) },
+				],
 			},
 			{ isChairAvailable: false },
 			{ new: true }
 		);
+
+		console.log("status", status);
 
 		await InAppNotifications.create({
 			message: `Your appointment has been booked for ${dayjs(
