@@ -211,3 +211,56 @@ export const getChairsBySubAdminId = async (req: Request, res: Response) => {
 			.json({ success: false, error: (error as Error).message });
 	}
 };
+
+export const getChairsByDateTime = async (req: Request, res: Response) => {
+	try {
+		const user = req.user;
+		console.log(user);
+		const { date, time } = req.params;
+
+		if (!date || !time) {
+			return res.status(400).json({
+				success: false,
+				message: "Date and time are required",
+			});
+		}
+
+		// Build fromDateTime
+		const from = new Date(`${date}T${time}:00+05:30`);
+
+		// FIXED duration — keep simple (10 mins or 30 mins)
+		const durationMinutes = 10;
+		const to = new Date(from);
+		to.setMinutes(to.getMinutes() + durationMinutes);
+
+		console.log("subadminId", user.subAdminId);
+		// Find overlapping appointments
+		const overlappingAppointments = await appointmentModel.find({
+			subAdminId: user.subAdminId,
+			fromDateTime: { $lt: to },
+			toDateTime: { $gt: from },
+		});
+
+		const bookedChairs = overlappingAppointments.map((a: any) =>
+			Number(a.chairNo)
+		);
+
+		const chairs = await ChairsModel.find({ subAdminId: user.subAdminId });
+
+		const result = chairs.map((chair) => ({
+			...chair.toObject(),
+			isChairAvailable: !bookedChairs.includes(Number(chair.chairNumber)),
+		}));
+
+		return res.status(200).json({
+			success: true,
+			message: "Chairs fetched successfully",
+			data: result,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			error: (error as Error).message,
+		});
+	}
+};
