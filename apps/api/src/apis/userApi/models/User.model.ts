@@ -281,6 +281,7 @@ const userSchema: Schema<IUser> = new Schema(
 				lastAccess: Date,
 			},
 		],
+		wallet: { type: Number },
 	},
 	{ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

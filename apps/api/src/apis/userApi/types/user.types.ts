@@ -118,6 +118,7 @@ export interface IUser extends Document {
 	subAdminId: string | mongoose.Types.ObjectId;
 
 	address?: string;
+	wallet?: number;
 
 	// Virtuals
 	fullName: string;
