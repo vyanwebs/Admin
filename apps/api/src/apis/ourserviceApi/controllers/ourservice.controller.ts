@@ -163,7 +163,7 @@
 
 import { Request, Response } from "express";
 import OurServiceService from "../services/ourservice.service";
-
+import mongoose from "mongoose";
 // CREATE
 export const createOurService = async (req: Request, res: Response) => {
   const customReq = req as any;
@@ -205,21 +205,40 @@ export const createOurService = async (req: Request, res: Response) => {
 };
 
 // GET ALL
+// export const getAllOurServices = async (req: Request, res: Response) => {
+//   const customReq = req as any;
+
+//   try {
+//     let services;
+
+//     // Admin / Superadmin → sab services
+//     // Normal user → sab services bhi access kar sakta hai
+//     services = await OurServiceService.getAll();
+
+//     return res.status(200).json({ success: true, data: services });
+//   } catch (error: unknown) {
+//     res.status(500).json({ success: false, error: (error as Error).message });
+//   }
+// };
+
 export const getAllOurServices = async (req: Request, res: Response) => {
-  const customReq = req as any;
-
   try {
-    let services;
+    let services
+    const subAdminId = req.user.id
+    if(req.user.role === "admin"){
+      services = await OurServiceService.getAll(subAdminId)
+          res.status(200).json({ success: true, data: services });
 
-    // Admin / Superadmin → sab services
-    // Normal user → sab services bhi access kar sakta hai
-    services = await OurServiceService.getAll();
-
-    return res.status(200).json({ success: true, data: services });
-  } catch (error: unknown) {
+    }
+    const addedBy = req.user.subAdminId
+     services = await OurServiceService.getAll( new mongoose.Types.ObjectId( addedBy));
+    res.status(200).json({ success: true, data: services });
+  } catch (error) {
     res.status(500).json({ success: false, error: (error as Error).message });
   }
 };
+
+
 
 // GET BY ID
 export const getOurServiceById = async (req: Request, res: Response) => {

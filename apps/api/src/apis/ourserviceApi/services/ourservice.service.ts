@@ -62,6 +62,7 @@
 
 import { IOurService } from "../types/ourservice.type";
 import OurService from "../models/ourservice.model";
+import mongoose from "mongoose";
 
 class OurServiceService {
   // CREATE
@@ -72,19 +73,27 @@ class OurServiceService {
     highlights: string[];
     extra: string;
     imageUrl: string;
-    addedBy: string;
+   // addedBy: string;
     estimatedTime: number;
     category: string;
     gender?: string;
+        addedBy: mongoose.Types.ObjectId;
+    
   }): Promise<IOurService> {
     const newService = new OurService(data);
     return newService.save();
   }
 
   // GET ALL → sabko accessible
-  async getAll(): Promise<IOurService[]> {
-    return OurService.find().populate("addedBy", "name email").sort({ createdAt: -1 });
+  // async getAll(): Promise<IOurService[]> {
+  //   return OurService.find().populate("addedBy", "name email").sort({ createdAt: -1 });
+  // }
+
+
+  async getAll(addedBy:mongoose.Types.ObjectId): Promise<IOurService[]> {
+    return OurService.find({addedBy }).sort({ createdAt: -1 });
   }
+
 
   // GET BY ID
   async getById(id: string): Promise<IOurService | null> {

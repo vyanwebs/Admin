@@ -70,7 +70,9 @@ router.post(
 );
 
 // GET ALL → Admin + User
-router.get("/", protect, getAllOurServices);
+//router.get("/", protect, getAllOurServices);
+router.get("/", protect,authorizeRole("admin", "superadmin", "user"), getAllOurServices);
+
 
 // GET BY ID → Admin + User
 router.get("/:id", protect, getOurServiceById);
