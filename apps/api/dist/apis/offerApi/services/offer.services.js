@@ -9,8 +9,8 @@ class OfferService {
         const newOffer = new offer_model_1.default(data);
         return newOffer.save();
     }
-    async getAll() {
-        return offer_model_1.default.find().sort({ createdAt: -1 });
+    async getAll(addedBy) {
+        return offer_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async getById(id) {
         return offer_model_1.default.findById(id);

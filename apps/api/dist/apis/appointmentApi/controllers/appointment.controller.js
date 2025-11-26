@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getChairsBySubAdminId = exports.verifyAppointmentCode = exports.getAppointmentsByUserId = exports.deleteAppointment = exports.updateAppointment = exports.getAppointmentById = exports.getAppointments = exports.createAppointment = void 0;
+exports.getChairsByDateTime = exports.getChairsBySubAdminId = exports.verifyAppointmentCode = exports.getAppointmentsByUserId = exports.deleteAppointment = exports.updateAppointment = exports.getAppointmentById = exports.getAppointments = exports.createAppointment = void 0;
 const appointment_services_1 = __importDefault(require("../services/appointment.services"));
 const appointment_model_1 = __importDefault(require("../models/appointment.model"));
 const User_model_1 = __importDefault(require("../../userApi/models/User.model"));
@@ -210,3 +210,47 @@ const getChairsBySubAdminId = async (req, res) => {
     }
 };
 exports.getChairsBySubAdminId = getChairsBySubAdminId;
+const getChairsByDateTime = async (req, res) => {
+    try {
+        const user = req.user;
+        console.log(user);
+        const { date, time } = req.params;
+        if (!date || !time) {
+            return res.status(400).json({
+                success: false,
+                message: "Date and time are required",
+            });
+        }
+        // Build fromDateTime
+        const from = new Date(`${date}T${time}:00+05:30`);
+        // FIXED duration — keep simple (10 mins or 30 mins)
+        const durationMinutes = 10;
+        const to = new Date(from);
+        to.setMinutes(to.getMinutes() + durationMinutes);
+        console.log("subadminId", user.subAdminId);
+        // Find overlapping appointments
+        const overlappingAppointments = await appointment_model_1.default.find({
+            subAdminId: user.subAdminId,
+            fromDateTime: { $lt: to },
+            toDateTime: { $gt: from },
+        });
+        const bookedChairs = overlappingAppointments.map((a) => Number(a.chairNo));
+        const chairs = await chairs_model_1.ChairsModel.find({ subAdminId: user.subAdminId });
+        const result = chairs.map((chair) => ({
+            ...chair.toObject(),
+            isChairAvailable: !bookedChairs.includes(Number(chair.chairNumber)),
+        }));
+        return res.status(200).json({
+            success: true,
+            message: "Chairs fetched successfully",
+            data: result,
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+};
+exports.getChairsByDateTime = getChairsByDateTime;

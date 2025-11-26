@@ -7,12 +7,14 @@ exports.deleteOffer = exports.updateOffer = exports.getOfferById = exports.getAl
 const offer_services_1 = __importDefault(require("../services/offer.services"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const offer_services_2 = __importDefault(require("../services/offer.services"));
 const createOffer = async (req, res) => {
     var _a;
     const customReq = req;
     try {
         const { title, discount, date, description, gender } = req.body;
-        const addedBy = (_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id;
+        const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id) ? new mongoose_1.default.Types.ObjectId(customReq.user._id) : undefined;
         if (!addedBy)
             return res.status(401).json({ success: false, message: "Unauthorized" });
         if (!customReq.file)
@@ -45,7 +47,14 @@ const createOffer = async (req, res) => {
 exports.createOffer = createOffer;
 const getAllOffers = async (req, res) => {
     try {
-        const offers = await offer_services_1.default.getAll();
+        let offers;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            offers = await offer_services_2.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: offers });
+        }
+        const addedBy = req.user.subAdminId;
+        offers = await offer_services_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: offers });
     }
     catch (error) {

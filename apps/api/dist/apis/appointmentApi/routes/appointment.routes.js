@@ -9,6 +9,7 @@ router.post("/", auth_middleware_1.protect, appointment_controller_1.createAppoi
 router.get("/", appointment_controller_1.getAppointments);
 router.get("/fetch-by-userId/:userId", auth_middleware_1.protect, appointment_controller_1.getAppointmentsByUserId);
 router.get("/get-chairs", auth_middleware_1.protect, appointment_controller_1.getChairsBySubAdminId);
+router.get("/chairs/:date/:time", auth_middleware_1.protect, appointment_controller_1.getChairsByDateTime);
 router.get("/:id", appointment_controller_1.getAppointmentById);
 router.put("/:id", appointment_controller_1.updateAppointment);
 router.delete("/:id", appointment_controller_1.deleteAppointment);

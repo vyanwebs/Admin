@@ -1,4 +1,5 @@
 "use strict";
+// import mongoose, { Document, Schema } from "mongoose";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -34,10 +35,22 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AboutUs = void 0;
+// export interface IAboutUs extends Document {
+//   title: string;
+//   content: string;
+//   updatedAt: Date;
+// }
+// const AboutUsSchema: Schema = new Schema({
+//   title: { type: String, required: true },
+//   content: { type: String, required: true },
+//   updatedAt: { type: Date, default: Date.now },
+//   addedBy: {type:Schema.Types.ObjectId, ref: "User", required: true},
+// });
+// export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
 const mongoose_1 = __importStar(require("mongoose"));
 const AboutUsSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
-    updatedAt: { type: Date, default: Date.now },
-});
+    addedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true }, // ⭐ SAME AS OFFER
+}, { timestamps: true });
 exports.AboutUs = mongoose_1.default.model("AboutUs", AboutUsSchema);

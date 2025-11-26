@@ -12,7 +12,7 @@ const router = express_1.default.Router();
 // CREATE
 router.post("/upload", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), multerConfig_1.upload.single("image"), offer_controller_1.createOffer);
 // READ ALL
-router.get("/", offer_controller_1.getAllOffers);
+router.get("/", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin", "user"), offer_controller_1.getAllOffers);
 // READ SINGLE
 router.get("/:id", offer_controller_1.getOfferById);
 // UPDATE

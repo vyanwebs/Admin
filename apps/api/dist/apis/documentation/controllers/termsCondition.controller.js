@@ -4,22 +4,35 @@ exports.getTerms = exports.createOrUpdateTerms = void 0;
 const termsCondition_model_1 = require("../models/termsCondition.model");
 const termsCondition_validator_1 = require("../validators/termsCondition.validator");
 const createOrUpdateTerms = async (req, res) => {
+    var _a, _b;
     try {
+        const addedBy = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
         const validated = termsCondition_validator_1.termsConditionSchema.parse({
             title: req.body.title,
             content: req.body.content,
-            accepted: req.body.accepted === "true" || req.body.accepted === true, // ✅ convert checkbox value
+            accepted: (_b = req.body.accepted) !== null && _b !== void 0 ? _b : false,
         });
         let doc = await termsCondition_model_1.TermsCondition.findOne();
         if (doc) {
             doc.title = validated.title;
             doc.content = validated.content;
             doc.accepted = validated.accepted;
+            doc.updatedAt = new Date();
+            doc.addedBy = addedBy;
             await doc.save();
-            return res.status(200).json({ message: "Terms updated", data: doc });
+            return res.status(200).json({
+                message: "Terms & Conditions updated",
+                data: doc,
+            });
         }
-        doc = await termsCondition_model_1.TermsCondition.create(validated);
-        return res.status(201).json({ message: "Terms created", data: doc });
+        doc = await termsCondition_model_1.TermsCondition.create({
+            ...validated,
+            addedBy,
+        });
+        return res.status(201).json({
+            message: "Terms & Conditions created",
+            data: doc,
+        });
     }
     catch (error) {
         return res.status(400).json({ message: error.errors || error.message });
