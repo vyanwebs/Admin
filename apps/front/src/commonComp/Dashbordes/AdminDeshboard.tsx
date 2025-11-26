@@ -5,7 +5,7 @@ import {
 	fetchUsers,
 	resetUserState,
 } from "../../redux/Slice/useSliceForAdmin/userSlice";
-import { UserOutlined, TeamOutlined, CrownOutlined } from "@ant-design/icons";
+import { UserOutlined, } from "@ant-design/icons";
 import SubscriptionTimer from "./SubscriptionTimer"; 
 // import dayjs from "dayjs";
 const AdminDashboard: React.FC = () => {
@@ -30,10 +30,10 @@ const AdminDashboard: React.FC = () => {
 	}, [error, dispatch]);
 
 	const totalUsers = users.length;
-	const totalAdmins = users.filter((u) => u.role === "admin").length;
-	const totalSubAdmins = users.filter(
-		(u) => (u.role as string) === "subadmin"
-	).length;
+	// const totalAdmins = users.filter((u) => u.role === "admin").length;
+	// const totalSubAdmins = users.filter(
+	// 	(u) => (u.role as string) === "subadmin"
+	// ).length;
 
 	return (
 		<div className="p-6">
