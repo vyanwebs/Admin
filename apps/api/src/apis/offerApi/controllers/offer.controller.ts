@@ -3,17 +3,19 @@ import OfferService from "../services/offer.services";
 import { CreateOfferDto } from "../dtos/offer.dto";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
+import offerServices from "../services/offer.services";
 
 export const createOffer = async (req: Request, res: Response) => {
 	const customReq = req as unknown as {
 		file?: Express.Multer.File;
 		user?: { _id: string };
 	};
-
+	
 	try {
 		const { title, discount, date, description, gender }: CreateOfferDto =
 			req.body;
-		const addedBy = customReq.user?._id;
+const addedBy = customReq.user?._id ? new mongoose.Types.ObjectId(customReq.user._id) : undefined;
 
 		if (!addedBy)
 			return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -50,7 +52,15 @@ export const createOffer = async (req: Request, res: Response) => {
 
 export const getAllOffers = async (req: Request, res: Response) => {
 	try {
-		const offers = await OfferService.getAll();
+		let offers
+		const subAdminId = req.user.id
+		if(req.user.role === "admin"){
+			offers = await offerServices.getAll(subAdminId)
+					res.status(200).json({ success: true, data: offers });
+
+		}
+		const addedBy = req.user.subAdminId
+		 offers = await OfferService.getAll( new mongoose.Types.ObjectId( addedBy));
 		res.status(200).json({ success: true, data: offers });
 	} catch (error) {
 		res.status(500).json({ success: false, error: (error as Error).message });

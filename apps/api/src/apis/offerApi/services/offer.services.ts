@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Offer, { IOffer } from "../models/offer.model";
 
 class OfferService {
@@ -8,14 +9,14 @@ class OfferService {
     description?: string;
     gender: string;
     imageUrl: string;
-    addedBy: string;
+    addedBy: mongoose.Types.ObjectId;
   }): Promise<IOffer> {
     const newOffer = new Offer(data);
     return newOffer.save();
   }
 
-  async getAll(): Promise<IOffer[]> {
-    return Offer.find().sort({ createdAt: -1 });
+  async getAll(addedBy:mongoose.Types.ObjectId): Promise<IOffer[]> {
+    return Offer.find({addedBy }).sort({ createdAt: -1 });
   }
 
   async getById(id: string): Promise<IOffer | null> {

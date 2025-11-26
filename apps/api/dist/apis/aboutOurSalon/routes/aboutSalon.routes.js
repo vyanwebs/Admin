@@ -59,7 +59,7 @@ const upload = (0, multer_1.default)({ storage });
 // Routes
 router.post("/", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), upload.single("image"), aboutSalon_controller_1.createAboutSalon);
 router.put("/:id", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), upload.single("image"), aboutSalon_controller_1.updateAboutSalon);
-router.get("/", auth_middleware_1.protect, aboutSalon_controller_1.getAllAboutSalon);
+router.get("/", aboutSalon_controller_1.getAllAboutSalon);
 router.get("/:id", auth_middleware_1.protect, aboutSalon_controller_1.getAboutSalonById);
 router.delete("/:id", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), aboutSalon_controller_1.deleteAboutSalon);
 exports.default = router;

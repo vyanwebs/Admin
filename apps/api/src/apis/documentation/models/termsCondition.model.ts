@@ -1,20 +1,25 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface ITermsCondition extends Document {
   title: string;
   content: string;
   accepted: boolean;
-  createdAt: Date;
   updatedAt: Date;
+  addedBy: Types.ObjectId;
 }
 
-const termsConditionSchema = new Schema<ITermsCondition>(
+const TermsConditionSchema: Schema = new Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    accepted:{type:Boolean,default:false},
+    accepted: { type: Boolean, default: false },
+    updatedAt: { type: Date, default: Date.now },
+    addedBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
 
-export const TermsCondition = model<ITermsCondition>("TermsCondition", termsConditionSchema);
+export const TermsCondition = mongoose.model<ITermsCondition>(
+  "TermsCondition",
+  TermsConditionSchema
+);

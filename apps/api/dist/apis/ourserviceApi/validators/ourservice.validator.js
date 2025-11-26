@@ -7,4 +7,5 @@ exports.createOurServiceValidator = [
     (0, express_validator_1.body)("serviceName").notEmpty().withMessage("Service name is required"),
     (0, express_validator_1.body)("price").isNumeric().withMessage("Price must be a number"),
     (0, express_validator_1.body)("title").notEmpty().withMessage("Title is required"),
+    (0, express_validator_1.body)("category").notEmpty().withMessage("Category is required"), // 🆕 added
 ];

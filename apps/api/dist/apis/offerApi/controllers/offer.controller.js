@@ -21,7 +21,7 @@ const createOffer = async (req, res) => {
                 .json({ success: false, message: "Image is required!" });
         // ✅ UNIVERSAL IMAGE URL - Har platform pe work karega
         const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
-        const imageUrl = `${baseUrl}/uploads/images/${customReq.file.filename}`;
+        const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         const newOffer = await offer_services_1.default.create({
             title,
             discount,
@@ -31,15 +31,15 @@ const createOffer = async (req, res) => {
             imageUrl,
             addedBy,
         });
-        res
-            .status(201)
-            .json({ success: true, message: "Offer created successfully", data: newOffer });
+        res.status(201).json({
+            success: true,
+            message: "Offer created successfully",
+            data: newOffer,
+        });
     }
     catch (error) {
         console.error("Error creating offer:", error);
-        res
-            .status(500)
-            .json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.createOffer = createOffer;
@@ -49,9 +49,7 @@ const getAllOffers = async (req, res) => {
         res.status(200).json({ success: true, data: offers });
     }
     catch (error) {
-        res
-            .status(500)
-            .json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.getAllOffers = getAllOffers;
@@ -60,13 +58,13 @@ const getOfferById = async (req, res) => {
         const { id } = req.params;
         const offer = await offer_services_1.default.getById(id);
         if (!offer)
-            return res.status(404).json({ success: false, message: "Offer not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Offer not found" });
         res.status(200).json({ success: true, data: offer });
     }
     catch (error) {
-        res
-            .status(500)
-            .json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.getOfferById = getOfferById;
@@ -76,7 +74,9 @@ const updateOffer = async (req, res) => {
         const { id } = req.params;
         const existing = await offer_services_1.default.getById(id);
         if (!existing)
-            return res.status(404).json({ success: false, message: "Offer not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Offer not found" });
         let imageUrl = existing.imageUrl;
         if (customReq.file) {
             // Delete old image
@@ -87,7 +87,7 @@ const updateOffer = async (req, res) => {
             }
             // ✅ UNIVERSAL NEW IMAGE URL
             const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
-            imageUrl = `${baseUrl}/uploads/images/${customReq.file.filename}`;
+            imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         }
         const updated = await offer_services_1.default.updateById(id, {
             ...req.body,
@@ -100,9 +100,7 @@ const updateOffer = async (req, res) => {
         });
     }
     catch (error) {
-        res
-            .status(500)
-            .json({ success: false, error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.updateOffer = updateOffer;
@@ -113,14 +111,19 @@ const deleteOffer = async (req, res) => {
         const offer = await offer_services_1.default.getById(id);
         if (!offer) {
             console.log("❌ Offer not found with ID:", id);
-            return res.status(404).json({ success: false, message: "Offer not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Offer not found" });
         }
         console.log("✅ Offer found:", offer.title);
         // Delete from database
         const deletedOffer = await offer_services_1.default.deleteById(id);
         console.log("✅ Database delete result:", deletedOffer ? "Success" : "Failed");
         if (!deletedOffer) {
-            return res.status(500).json({ success: false, message: "Failed to delete offer from database" });
+            return res.status(500).json({
+                success: false,
+                message: "Failed to delete offer from database",
+            });
         }
         // Delete image file
         if (offer.imageUrl) {
@@ -134,14 +137,14 @@ const deleteOffer = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Offer deleted successfully",
-            deletedId: id
+            deletedId: id,
         });
     }
     catch (error) {
         console.error("❌ Delete Error:", error);
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
         });
     }
 };

@@ -1,36 +1,36 @@
 "use strict";
+// import { Request, Response } from "express";
+// import OurServiceService from "../services/ourservice.service";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOurService = exports.getAllOurServices = exports.createOurService = void 0;
+exports.deleteOurService = exports.updateOurService = exports.getOurServiceById = exports.getAllOurServices = exports.createOurService = void 0;
 const ourservice_service_1 = __importDefault(require("../services/ourservice.service"));
-// Create Our Service
+// CREATE
 const createOurService = async (req, res) => {
     var _a;
     const customReq = req;
     try {
-        const { serviceName, price, title, highlights, extra, estimatedTime, } = req.body;
-        const addedBy = (_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id;
-        if (!addedBy) {
+        const { serviceName, price, title, highlights, extra, estimatedTime, category, gender } = req.body;
+        if (!((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id)) {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
         if (!customReq.file) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Service image is required!" });
+            return res.status(400).json({ success: false, message: "Service image is required!" });
         }
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/images/${customReq.file.filename}`;
-        //const imageUrl = customReq.file.path;
+        const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         const newService = await ourservice_service_1.default.create({
             serviceName,
             price,
             title,
             highlights,
             extra,
+            estimatedTime,
+            category,
+            gender,
             imageUrl,
-            addedBy,
-            estimatedTime: Number(estimatedTime),
+            addedBy: customReq.user._id,
         });
         res.status(201).json({
             success: true,
@@ -39,42 +39,66 @@ const createOurService = async (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.createOurService = createOurService;
-//  Get All Services
+// GET ALL
 const getAllOurServices = async (req, res) => {
-    var _a;
     const customReq = req;
     try {
-        const userId = (_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id;
-        if (!userId) {
-            return res.status(401).json({ success: false, message: "Unauthorized" });
-        }
-        const services = await ourservice_service_1.default.getByUser(userId);
-        res.status(200).json({ success: true, data: services });
+        let services;
+        // Admin / Superadmin → sab services
+        // Normal user → sab services bhi access kar sakta hai
+        services = await ourservice_service_1.default.getAll();
+        return res.status(200).json({ success: true, data: services });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.getAllOurServices = getAllOurServices;
-// Delete Service
-const deleteOurService = async (req, res) => {
+// GET BY ID
+const getOurServiceById = async (req, res) => {
+    try {
+        const service = await ourservice_service_1.default.getById(req.params.id);
+        if (!service) {
+            return res.status(404).json({ success: false, message: "Service not found" });
+        }
+        return res.status(200).json({ success: true, data: service });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+exports.getOurServiceById = getOurServiceById;
+// UPDATE
+const updateOurService = async (req, res) => {
     const customReq = req;
     try {
-        const { id } = req.params;
-        const deleted = await ourservice_service_1.default.deleteById(id);
-        if (!deleted) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Service not found" });
+        const data = req.body;
+        if (customReq.file) {
+            data.imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         }
-        res
-            .status(200)
-            .json({ success: true, message: "Service deleted successfully" });
+        const updatedService = await ourservice_service_1.default.updateById(req.params.id, data);
+        if (!updatedService) {
+            return res.status(404).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, message: "Service updated successfully", data: updatedService });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+exports.updateOurService = updateOurService;
+// DELETE
+const deleteOurService = async (req, res) => {
+    try {
+        const deleted = await ourservice_service_1.default.deleteById(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: "Service not found" });
+        }
+        res.status(200).json({ success: true, message: "Service deleted successfully" });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });

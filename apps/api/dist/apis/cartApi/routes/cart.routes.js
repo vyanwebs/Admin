@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const cart_controller_1 = require("../controllers/cart.controller");
-const multerConfig_1 = require("../../mediaApi/services/multerConfig"); // adjust path as per your multer file
+const multerConfig_1 = require("../../mediaApi/services/multerConfig");
 const router = (0, express_1.Router)();
 router.post("/", multerConfig_1.upload.single("image"), cart_controller_1.createCart);
 router.get("/", cart_controller_1.getAllCartItems);

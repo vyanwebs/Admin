@@ -22,7 +22,7 @@ router.post(
 );
 
 // READ ALL
-router.get("/", getAllOffers);
+router.get("/", protect,authorizeRole("admin", "superadmin", "user"), getAllOffers);
 
 // READ SINGLE
 router.get("/:id", getOfferById);

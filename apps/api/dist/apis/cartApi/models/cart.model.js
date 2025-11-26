@@ -40,6 +40,6 @@ const cartSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
-    image: { type: String, required: true }, // stored as HTTP URL
+    image: { type: String, required: true },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("Cart", cartSchema);

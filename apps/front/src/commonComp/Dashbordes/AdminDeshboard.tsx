@@ -8,7 +8,6 @@ import {
 import { UserOutlined, TeamOutlined, CrownOutlined } from "@ant-design/icons";
 import SubscriptionTimer from "./SubscriptionTimer"; 
 // import dayjs from "dayjs";
-
 const AdminDashboard: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const { users, loading, error } = useAppSelector((state) => state.users);
@@ -16,7 +15,7 @@ const AdminDashboard: React.FC = () => {
 	// ✅ assuming logged-in subadmin info stored in localStorage or Redux
 	//const subAdmin = JSON.parse(localStorage.getItem("user") || "{}");
 	//const expiryDate = subAdmin?.expireDate;
-	const expiryDate = "2025-11-20T00:00:00.000Z"; 
+	const expiryDate = "2025-11-25T00:00:00.000Z"; 
 
 	useEffect(() => {
 		const req = dispatch(fetchUsers());
@@ -54,7 +53,7 @@ const AdminDashboard: React.FC = () => {
 						/>
 					</Card>
 				</Col>
-
+{/* 
 				<Col xs={24} sm={12} md={8}>
 					<Card bordered={false}>
 						<Statistic
@@ -74,7 +73,7 @@ const AdminDashboard: React.FC = () => {
 							loading={loading}
 						/>
 					</Card>
-				</Col>
+				</Col> */}
 			</Row>
 		</div>
 	);

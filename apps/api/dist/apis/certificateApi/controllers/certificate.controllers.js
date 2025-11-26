@@ -15,18 +15,18 @@ const uploadCertificate = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: "Certificate image is required!"
+                message: "Certificate image is required!",
             });
         }
         const filename = path_1.default.basename(req.file.path);
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/images/${filename}`;
+        const imageUrl = `${process.env.URL}/uploads/images/${filename}`;
         const certificate = await certificate_service_1.default.create(title, imageUrl, addedBy);
         res.status(201).json({ success: true, data: certificate });
     }
     catch (error) {
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
         });
     }
 };
@@ -40,7 +40,7 @@ const getAllCertificates = async (req, res) => {
     catch (error) {
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
         });
     }
 };
@@ -52,18 +52,18 @@ const deleteCertificate = async (req, res) => {
         if (!deleted) {
             return res.status(404).json({
                 success: false,
-                message: "Certificate not found"
+                message: "Certificate not found",
             });
         }
         res.status(200).json({
             success: true,
-            message: "Certificate deleted successfully"
+            message: "Certificate deleted successfully",
         });
     }
     catch (error) {
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
         });
     }
 };
@@ -77,7 +77,7 @@ const updateCertificate = async (req, res) => {
         if (req.body.title)
             certificate.title = req.body.title;
         if (req.file) {
-            certificate.imageUrl = `${req.protocol}://${req.get("host")}/uploads/images/${req.file.filename}`;
+            certificate.imageUrl = `${process.env.URL}/uploads/images/${req.file.filename}`;
         }
         await certificate.save();
         res.status(200).json({ success: true, data: certificate });

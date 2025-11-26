@@ -7,11 +7,87 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import User from "../../userApi/models/User.model";
 import { ChairsModel } from "../../salonCharisApi/model/chairs.model";
+import mongoose from "mongoose";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 class AppointmentService {
+	// async create(
+	// 	data: Partial<IAppointment>,
+	// 	userId: string,
+	// 	email: string
+	// ): Promise<IAppointment> {
+	// 	const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
+	// 	const user = await User.findById(userId);
+	// 	const servicesArray = data.services
+	// 		? Array.isArray(data.services)
+	// 			? data.services
+	// 			: JSON.parse(data.services)
+	// 		: [];
+	// 	const matchedServices = await ourserviceModel.find({
+	// 		serviceName: { $in: servicesArray },
+	// 	});
+	// 	const totalEstimatedTime = matchedServices.reduce(
+	// 		(sum, s) => sum + Number(s.estimatedTime || 0),
+	// 		10
+	// 	);
+
+	// 	// parse IST time properly
+	// 	const from = new Date(`${data.date}T${data.time}:00+05:30`);
+	// 	const to = new Date(from);
+	// 	to.setMinutes(to.getMinutes() + totalEstimatedTime);
+
+	// 	// format to ISO (stored in UTC internally)
+	// 	const formattedFromDateTime = from.toISOString();
+	// 	const formattedToDateTime = to.toISOString();
+
+	// 	const existingAppointment = await ChairsModel.findOne({
+	// 		chairNumber: data.chairNo,
+	// 		subAdminId: user?.subAdminId,
+	// 		isChairAvailable: false,
+	// 	});
+
+	// 	if (existingAppointment) {
+	// 		throw new Error("An appointment already exists during this time range.");
+	// 	}
+
+	// 	const appointment = new Appointment({
+	// 		...data,
+	// 		fromDateTime: formattedFromDateTime,
+	// 		toDateTime: formattedToDateTime,
+	// 		email,
+	// 		userId,
+	// 		appointmentCode,
+	// 		subAdminId: user?.subAdminId,
+	// 	});
+
+	// 	const status = await ChairsModel.findOneAndUpdate(
+	// 		{
+	// 			$and: [
+	// 				{ subAdminId: new mongoose.Types.ObjectId(appointment.subAdminId) },
+	// 				{ chairNumber: Number(data.chairNo) },
+	// 			],
+	// 		},
+	// 		{ isChairAvailable: false },
+	// 		{ new: true }
+	// 	);
+
+	// 	console.log("status", status);
+
+	// 	await InAppNotifications.create({
+	// 		message: `Your appointment has been booked for ${dayjs(
+	// 			formattedFromDateTime
+	// 		)
+	// 			.tz("Asia/Kolkata")
+	// 			.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
+	// 			.tz("Asia/Kolkata")
+	// 			.format("hh:mm A")}.`,
+	// 		userId,
+	// 	});
+	// 	return appointment.save();
+	// }
+
 	async create(
 		data: Partial<IAppointment>,
 		userId: string,
@@ -19,55 +95,56 @@ class AppointmentService {
 	): Promise<IAppointment> {
 		const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
 		const user = await User.findById(userId);
+
+		// 1️⃣ Parse services
 		const servicesArray = data.services
 			? Array.isArray(data.services)
 				? data.services
 				: JSON.parse(data.services)
 			: [];
+
 		const matchedServices = await ourserviceModel.find({
 			serviceName: { $in: servicesArray },
 		});
+
 		const totalEstimatedTime = matchedServices.reduce(
 			(sum, s) => sum + Number(s.estimatedTime || 0),
 			10
 		);
 
-		// parse IST time properly
+		// 2️⃣ Build from/to based on service duration
 		const from = new Date(`${data.date}T${data.time}:00+05:30`);
 		const to = new Date(from);
 		to.setMinutes(to.getMinutes() + totalEstimatedTime);
 
-		// format to ISO (stored in UTC internally)
 		const formattedFromDateTime = from.toISOString();
 		const formattedToDateTime = to.toISOString();
 
-		const existingAppointment = await ChairsModel.findOne({
-			chairNumber: data.chairNo,
+		// 3️⃣ Correct overlap logic (MUST MATCH GET API)
+		const overlappingAppointments = await Appointment.find({
 			subAdminId: user?.subAdminId,
-			isChairAvailable: false,
+			chairNo: data.chairNo,
+			fromDateTime: { $lt: formattedToDateTime },
+			toDateTime: { $gt: formattedFromDateTime },
 		});
 
-		if (existingAppointment) {
-			throw new Error("An appointment already exists during this time range.");
+		if (overlappingAppointments.length > 0) {
+			throw new Error("This chair is already booked in this time range.");
 		}
 
+		// 4️⃣ Create appointment
 		const appointment = new Appointment({
 			...data,
 			fromDateTime: formattedFromDateTime,
 			toDateTime: formattedToDateTime,
 			email,
 			userId,
+			chairNo: Number(data.chairNo),
 			appointmentCode,
 			subAdminId: user?.subAdminId,
 		});
-		await ChairsModel.findOneAndUpdate(
-			{
-				$and: [{ subAdminId: user?.subAdminId }, { chairNumber: data.chairNo }],
-			},
-			{ isChairAvailable: false },
-			{ new: true }
-		);
 
+		// 5️⃣ Notification
 		await InAppNotifications.create({
 			message: `Your appointment has been booked for ${dayjs(
 				formattedFromDateTime
@@ -78,6 +155,7 @@ class AppointmentService {
 				.format("hh:mm A")}.`,
 			userId,
 		});
+
 		return appointment.save();
 	}
 

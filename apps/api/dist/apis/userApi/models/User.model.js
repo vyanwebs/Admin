@@ -172,7 +172,7 @@ const userSchema = new mongoose_1.Schema({
     fullName: { type: String, required: true, trim: true, maxlength: 100 },
     noOfChairs: {
         type: Number,
-        default: 0
+        default: 0,
     },
     email: {
         type: String,
@@ -211,7 +211,7 @@ const userSchema = new mongoose_1.Schema({
     },
     subscriptionPeriod: {
         type: String,
-        enum: ["halfyearly", "yearly", "custom"],
+        enum: ["halfyearly", "yearly", "custom", "biannual"],
         default: "halfyearly",
     },
     subscriptionStartDate: Date,
@@ -222,6 +222,7 @@ const userSchema = new mongoose_1.Schema({
         default: user_types_1.SubscriptionStatus.PENDING,
     },
     paymentMethod: { type: String, enum: Object.values(user_types_1.PaymentMethod) },
+    address: { type: String },
     billingInfo: {
         address: String,
         city: String,

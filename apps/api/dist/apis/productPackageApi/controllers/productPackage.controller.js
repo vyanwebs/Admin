@@ -15,7 +15,7 @@ const createProductPackage = async (req, res) => {
         let imageUrl = "";
         if (file) {
             const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
-            imageUrl = `${baseUrl}/uploads/images/${file.filename}`;
+            imageUrl = `${process.env.URL}/uploads/images/${file.filename}`;
         }
         const newPackage = await productPackage_services_1.default.create({
             name,
@@ -56,7 +56,9 @@ const getProductPackageById = async (req, res) => {
     try {
         const pkg = await productPackage_services_1.default.getById(req.params.id);
         if (!pkg)
-            return res.status(404).json({ success: false, message: "Product package not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product package not found" });
         res.status(200).json({ success: true, data: pkg });
     }
     catch (error) {
@@ -71,7 +73,7 @@ const updateProductPackage = async (req, res) => {
         const updateData = { ...req.body };
         if (file) {
             const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
-            updateData.image = `${baseUrl}/uploads/images/${file.filename}`;
+            updateData.image = `${process.env.URL}/uploads/images/${file.filename}`;
         }
         if (req.body.items) {
             updateData.items =
@@ -79,7 +81,9 @@ const updateProductPackage = async (req, res) => {
         }
         const updated = await productPackage_services_1.default.updateById(id, updateData);
         if (!updated)
-            return res.status(404).json({ success: false, message: "Product package not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product package not found" });
         res.status(200).json({
             success: true,
             message: "Product package updated successfully",
@@ -96,8 +100,12 @@ const deleteProductPackage = async (req, res) => {
     try {
         const deleted = await productPackage_services_1.default.deleteById(req.params.id);
         if (!deleted)
-            return res.status(404).json({ success: false, message: "Product package not found" });
-        res.status(200).json({ success: true, message: "Product package deleted successfully" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product package not found" });
+        res
+            .status(200)
+            .json({ success: true, message: "Product package deleted successfully" });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });

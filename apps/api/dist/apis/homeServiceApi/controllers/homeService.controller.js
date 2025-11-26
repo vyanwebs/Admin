@@ -9,10 +9,12 @@ const createHomeService = async (req, res) => {
     try {
         const addedBy = req.user._id;
         if (!req.file) {
-            return res.status(400).json({ success: false, message: "Image is required!" });
+            return res
+                .status(400)
+                .json({ success: false, message: "Image is required!" });
         }
         // ✅ FIX: Save correct URL with /uploads/images/
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/images/${req.file.filename}`;
+        const imageUrl = `${process.env.URL}/uploads/images/${req.file.filename}`;
         const newService = await homeService_services_1.default.create({
             ...req.body,
             addedBy,
@@ -39,7 +41,9 @@ const getHomeServiceById = async (req, res) => {
     try {
         const service = await homeService_services_1.default.getById(req.params.id);
         if (!service) {
-            return res.status(404).json({ success: false, message: "Service not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Service not found" });
         }
         res.status(200).json({ success: true, data: service });
     }
@@ -53,11 +57,13 @@ const updateHomeService = async (req, res) => {
         const updateData = { ...req.body };
         // ✅ FIX: If a new image is uploaded, build correct URL
         if (req.file) {
-            updateData.image = `${req.protocol}://${req.get("host")}/uploads/images/${req.file.filename}`;
+            updateData.image = `${process.env.URL}/uploads/images/${req.file.filename}`;
         }
         const updated = await homeService_services_1.default.updateById(req.params.id, updateData);
         if (!updated) {
-            return res.status(404).json({ success: false, message: "Service not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Service not found" });
         }
         res.status(200).json({ success: true, data: updated });
     }
@@ -70,9 +76,13 @@ const deleteHomeService = async (req, res) => {
     try {
         const deleted = await homeService_services_1.default.deleteById(req.params.id);
         if (!deleted) {
-            return res.status(404).json({ success: false, message: "Service not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Service not found" });
         }
-        res.status(200).json({ success: true, message: "Service deleted successfully" });
+        res
+            .status(200)
+            .json({ success: true, message: "Service deleted successfully" });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });

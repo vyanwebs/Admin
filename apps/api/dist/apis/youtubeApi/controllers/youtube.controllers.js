@@ -12,9 +12,9 @@ const createYoutubeVideo = async (req, res) => {
         const addedBy = req.user._id;
         const { title, videoUrl } = req.body;
         // ✅ FIXED: Use absolute URL for video paths with HTTPS
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
         const videoPath = req.file
-            ? `${baseUrl}/uploads/videos/${req.file.filename}`
+            ? `${process.env.URL}/uploads/videos/${req.file.filename}`
             : undefined;
         if (!videoUrl && !req.file) {
             return res.status(400).json({
@@ -55,7 +55,9 @@ const getYoutubeVideoById = async (req, res) => {
     try {
         const video = await youtube_services_1.default.getById(req.params.id);
         if (!video) {
-            return res.status(404).json({ success: false, message: "Video not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Video not found" });
         }
         res.status(200).json({ success: true, data: video });
     }
@@ -85,25 +87,28 @@ const updateYoutubeVideo = async (req, res) => {
     try {
         const { title, videoUrl } = req.body;
         // ✅ FIXED: Use absolute URL for video paths with HTTPS
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
         const videoPath = req.file
-            ? `${baseUrl}/uploads/videos/${req.file.filename}`
+            ? `${process.env.URL}/uploads/videos/${req.file.filename}`
             : undefined;
         // Get the existing video to check current sources
         const existingVideo = await youtube_services_1.default.getById(req.params.id);
         if (!existingVideo) {
             return res.status(404).json({
                 success: false,
-                message: "Video not found"
+                message: "Video not found",
             });
         }
         // ✅ FIXED: More flexible validation
-        const hasNewYouTubeUrl = videoUrl !== undefined && videoUrl !== '';
+        const hasNewYouTubeUrl = videoUrl !== undefined && videoUrl !== "";
         const hasNewVideoFile = videoPath !== undefined;
         const hasExistingYouTubeUrl = existingVideo.videoUrl;
         const hasExistingVideoFile = existingVideo.videoPath;
         // If no new source provided AND no existing source exists, then it's invalid
-        if (!hasNewYouTubeUrl && !hasNewVideoFile && !hasExistingYouTubeUrl && !hasExistingVideoFile) {
+        if (!hasNewYouTubeUrl &&
+            !hasNewVideoFile &&
+            !hasExistingYouTubeUrl &&
+            !hasExistingVideoFile) {
             return res.status(400).json({
                 success: false,
                 error: "You must provide a video file or a YouTube URL.",
@@ -120,7 +125,7 @@ const updateYoutubeVideo = async (req, res) => {
                 // Delete the old file
                 if (existingVideo.videoPath) {
                     // Extract filename from the full URL path
-                    const filename = existingVideo.videoPath.split('/').pop();
+                    const filename = existingVideo.videoPath.split("/").pop();
                     if (filename) {
                         const filePath = path_1.default.join(__dirname, "../../../../uploads/videos/", filename);
                         fs_1.default.unlink(filePath, (err) => {
@@ -135,7 +140,7 @@ const updateYoutubeVideo = async (req, res) => {
                 }
             }
         }
-        else if (videoUrl === '') {
+        else if (videoUrl === "") {
             // If YouTube URL is explicitly set to empty string, clear it
             updateData.videoUrl = undefined;
         }
@@ -150,7 +155,7 @@ const updateYoutubeVideo = async (req, res) => {
             // Delete old file if replacing
             if (existingVideo.videoPath && existingVideo.videoPath !== videoPath) {
                 // Extract filename from the full URL path
-                const filename = existingVideo.videoPath.split('/').pop();
+                const filename = existingVideo.videoPath.split("/").pop();
                 if (filename) {
                     const oldFilePath = path_1.default.join(__dirname, "../../../../uploads/videos/", filename);
                     fs_1.default.unlink(oldFilePath, (err) => {
@@ -170,7 +175,7 @@ const updateYoutubeVideo = async (req, res) => {
         if (!updated) {
             return res.status(404).json({
                 success: false,
-                message: "Video not found"
+                message: "Video not found",
             });
         }
         res.status(200).json({ success: true, data: updated });
@@ -179,7 +184,7 @@ const updateYoutubeVideo = async (req, res) => {
         console.error("Update error:", error);
         res.status(500).json({
             success: false,
-            error: error.message
+            error: error.message,
         });
     }
 };
@@ -191,11 +196,13 @@ const deleteYoutubeVideo = async (req, res) => {
     try {
         const deleted = await youtube_services_1.default.deleteById(req.params.id);
         if (!deleted) {
-            return res.status(404).json({ success: false, message: "Video not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Video not found" });
         }
         if (deleted.videoPath) {
             // Extract filename from the full URL path
-            const filename = deleted.videoPath.split('/').pop();
+            const filename = deleted.videoPath.split("/").pop();
             if (filename) {
                 const filePath = path_1.default.join(__dirname, "../../../../uploads/videos/", filename);
                 fs_1.default.unlink(filePath, (err) => {
@@ -208,7 +215,9 @@ const deleteYoutubeVideo = async (req, res) => {
                 });
             }
         }
-        res.status(200).json({ success: true, message: "Video deleted successfully" });
+        res
+            .status(200)
+            .json({ success: true, message: "Video deleted successfully" });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });

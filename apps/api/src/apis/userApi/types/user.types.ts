@@ -116,9 +116,9 @@ export interface IUser extends Document {
 	appRegistrationCode: string;
 	subAdminEmail: string;
 	subAdminId: string | mongoose.Types.ObjectId;
+	addedBy?: mongoose.Types.ObjectId;
 
 	address?: string;
-
 	// Virtuals
 	fullName: string;
 	isSubscriptionActive: boolean;

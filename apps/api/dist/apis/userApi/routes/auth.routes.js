@@ -20,7 +20,7 @@ router.get("/logout", auth_middleware_1.protect, auth_controller_1.userLogout);
 router.put("/profile", auth_middleware_1.protect, multerConfig_1.default.single("avatar"), auth_controller_1.updateProfile);
 router.get("/profile", auth_middleware_1.protect, auth_controller_1.getUserProfile);
 router.get("/check-email", auth_controller_1.checkUserEmailExists);
-router.put("/profile-update", auth_middleware_1.protect, auth_controller_1.updateUserInfo);
+router.put("/profile-update", auth_middleware_1.protect, multerConfig_1.default.single("avatar"), auth_controller_1.updateUserInfo);
 router.put("/send-otp", auth_controller_1.generateOTP);
 // razorpay routes
 router.post("/generate-order-id", auth_middleware_1.protect, razorpay_controller_1.generateOrderId);

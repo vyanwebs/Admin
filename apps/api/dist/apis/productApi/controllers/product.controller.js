@@ -13,14 +13,18 @@ const createProduct = async (req, res) => {
     var _a, _b, _c, _d, _e;
     const customReq = req;
     try {
-        const { name, price, offer, rating, tag, description, reviews, gender } = req.body;
+        const { name, price, offer, rating, tag, description, reviews, gender, } = req.body;
         // ✅ Convert addedBy to ObjectId if user exists
-        const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id) ? new mongoose_1.default.Types.ObjectId(customReq.user._id) : undefined;
+        const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id)
+            ? new mongoose_1.default.Types.ObjectId(customReq.user._id)
+            : undefined;
         if (!((_c = (_b = customReq.files) === null || _b === void 0 ? void 0 : _b.image) === null || _c === void 0 ? void 0 : _c[0])) {
-            return res.status(400).json({ success: false, message: "Main image is required!" });
+            return res
+                .status(400)
+                .json({ success: false, message: "Main image is required!" });
         }
-        const image = `${req.protocol}://${req.get("host")}/uploads/images/${customReq.files.image[0].filename}`;
-        const icons = ((_e = (_d = customReq.files) === null || _d === void 0 ? void 0 : _d.icons) === null || _e === void 0 ? void 0 : _e.map((file) => `${req.protocol}://${req.get("host")}/uploads/icons/${file.filename}`)) || [];
+        const image = `${process.env.URL}/uploads/images/${customReq.files.image[0].filename}`;
+        const icons = ((_e = (_d = customReq.files) === null || _d === void 0 ? void 0 : _d.icons) === null || _e === void 0 ? void 0 : _e.map((file) => `${process.env.URL}/uploads/images/${file.filename}`)) || [];
         const product = await product_services_1.default.create({
             name,
             price,
@@ -62,7 +66,9 @@ const getProductById = async (req, res) => {
     try {
         const product = await product_services_1.default.getById(req.params.id);
         if (!product)
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product not found" });
         res.status(200).json({ success: true, data: product });
     }
     catch (error) {
@@ -77,13 +83,15 @@ const updateProduct = async (req, res) => {
         const { id } = req.params;
         const existing = await product_services_1.default.getById(id);
         if (!existing)
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product not found" });
         let image = existing.image;
         if (customReq.file) {
             const oldPath = path_1.default.join(__dirname, "../../../../uploads/images", path_1.default.basename(existing.image));
             if (fs_1.default.existsSync(oldPath))
                 fs_1.default.unlinkSync(oldPath);
-            image = `${req.protocol}://${req.get("host")}/uploads/images/${customReq.file.filename}`;
+            image = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         }
         // ✅ Destructure gender from body and keep existing if not provided
         const { gender, ...rest } = req.body;
@@ -109,13 +117,17 @@ const deleteProduct = async (req, res) => {
         const { id } = req.params;
         const product = await product_services_1.default.getById(id);
         if (!product)
-            return res.status(404).json({ success: false, message: "Product not found" });
+            return res
+                .status(404)
+                .json({ success: false, message: "Product not found" });
         // ✅ Delete main image file
         const imgPath = path_1.default.join(__dirname, "../../../../uploads/images", path_1.default.basename(product.image));
         if (fs_1.default.existsSync(imgPath))
             fs_1.default.unlinkSync(imgPath);
         await product_services_1.default.deleteById(id);
-        res.status(200).json({ success: true, message: "Product deleted successfully" });
+        res
+            .status(200)
+            .json({ success: true, message: "Product deleted successfully" });
     }
     catch (error) {
         res.status(500).json({ success: false, error: error.message });
