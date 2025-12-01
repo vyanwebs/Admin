@@ -116,12 +116,14 @@ export interface IUser extends Document {
 	appRegistrationCode: string;
 	subAdminEmail: string;
 	subAdminId: string | mongoose.Types.ObjectId;
+	referredBy?: mongoose.Types.ObjectId | null;
 
 	address?: string;
 	wallet?: number;
 
 	// Virtuals
 	fullName: string;
+	referralCode: string;
 	isSubscriptionActive: boolean;
 
 	// Methods
