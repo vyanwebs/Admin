@@ -65,4 +65,5 @@ export class CreateUserDto {
 	subscriptionEndDate?: Date;
 
 	subAdminId?: Types.ObjectId;
+	phoneNumber?: number;
 }

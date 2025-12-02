@@ -164,7 +164,7 @@ const userSchema: Schema<IUser> = new Schema(
 		firstName: { type: String, trim: true, maxlength: 50 },
 		lastName: { type: String, trim: true, maxlength: 50 },
 		// ✅ Keep fullName required but auto-generate it if missing
-		fullName: { type: String, required: true, trim: true, maxlength: 100 },
+		fullName: { type: String, trim: true, maxlength: 100 },
 
 		noOfChairs: {
 			type: Number,
@@ -283,6 +283,7 @@ const userSchema: Schema<IUser> = new Schema(
 			},
 		],
 		wallet: { type: Number, default: 0 },
+		phoneNumber: { type: Number, min: 1000000000, max: 9999999999 },
 	},
 	{ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

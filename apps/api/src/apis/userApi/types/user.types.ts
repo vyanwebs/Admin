@@ -117,6 +117,7 @@ export interface IUser extends Document {
 	subAdminEmail: string;
 	subAdminId: string | mongoose.Types.ObjectId;
 	referredBy?: mongoose.Types.ObjectId | null;
+	phoneNumber?: string;
 
 	address?: string;
 	wallet?: number;

@@ -109,7 +109,8 @@ export const register = async (req: Request, res: Response) => {
 		return res.status(201).json({
 			success: true,
 			user: {
-				...formatUserResponse(user),
+				// ...formatUserResponse(user),
+				user,
 				refLink: user.refLink,
 			},
 			//
