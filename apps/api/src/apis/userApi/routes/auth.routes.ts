@@ -19,6 +19,8 @@ import {
 	refundPayment,
 	verifyOrderId,
 } from "../../razorpay/controller/razorpay.controller";
+import { authorizeRole } from "../middlewares/authorizeRole";
+import { deleteUser, enableDisableUser } from "../controllers/user.controller";
 
 const router = express.Router();
 router.post("/", protect, updateToken);
@@ -36,6 +38,18 @@ router.get("/profile", protect, getUserProfile);
 router.get("/check-email", checkUserEmailExists);
 router.put("/profile-update", protect, upload.single("avatar"), updateUserInfo);
 router.put("/send-otp", generateOTP);
+router.delete(
+	"/delete-user-by-id/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	deleteUser
+);
+router.patch(
+	"/toggle-user-status-by-id/:id",
+	protect,
+	authorizeRole("admin", "superadmin"),
+	enableDisableUser
+);
 
 // razorpay routes
 router.post("/generate-order-id", protect, generateOrderId);

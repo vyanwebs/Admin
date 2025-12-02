@@ -6,7 +6,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import User from "../../userApi/models/User.model";
-import { ChairsModel } from "../../salonCharisApi/model/chairs.model";
+
+import { ChairsModel } from "../../salonChairsApi/model/chairs.model";
 import mongoose from "mongoose";
 
 dayjs.extend(utc);
@@ -112,6 +113,15 @@ class AppointmentService {
 			10
 		);
 
+		const totalServiceAmount = matchedServices.reduce(
+			(sum, s) => sum + Number(s.price || 0),
+			0
+		);
+
+		if ((user?.wallet ?? 0) < totalServiceAmount) {
+			throw new Error("You don't have enough money in your wallet!!");
+		}
+
 		// 2️⃣ Build from/to based on service duration
 		const from = new Date(`${data.date}T${data.time}:00+05:30`);
 		const to = new Date(from);
@@ -142,6 +152,7 @@ class AppointmentService {
 			chairNo: Number(data.chairNo),
 			appointmentCode,
 			subAdminId: user?.subAdminId,
+			appointmentAmount: totalServiceAmount,
 		});
 
 		// 5️⃣ Notification
@@ -156,6 +167,14 @@ class AppointmentService {
 			userId,
 		});
 
+		if (appointment) {
+			await User.findByIdAndUpdate(
+				userId,
+				{ $inc: { wallet: -totalServiceAmount } },
+				{ new: true }
+			);
+		}
+
 		return appointment.save();
 	}
 
@@ -169,9 +188,25 @@ class AppointmentService {
 
 	async updateById(
 		id: string,
-		data: Partial<IAppointment>
+		data: Partial<IAppointment>,
+		userId: string
 	): Promise<IAppointment | null> {
 		const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
+
+		const oldAppointment = await Appointment.findById(id);
+		if (!oldAppointment) throw new Error("Appointment not found");
+
+		const oldAmount = oldAppointment.appointmentAmount ?? 0;
+
+		// 2️⃣ Refund old amount
+		const userAmount = await User.findByIdAndUpdate(
+			userId,
+			{ $inc: { wallet: oldAmount } },
+			{ new: true }
+		);
+
+		const updatedUser = await User.findById(userId);
+		if (!updatedUser) throw new Error("User not found after refund");
 		const servicesArray = data.services
 			? Array.isArray(data.services)
 				? data.services
@@ -185,6 +220,15 @@ class AppointmentService {
 			10
 		);
 
+		const totalServiceAmount = matchedServices.reduce(
+			(sum, s) => sum + Number(s.price || 0),
+			0
+		);
+
+		if ((updatedUser?.wallet ?? 0) < totalServiceAmount) {
+			throw new Error("You don't have enough money in your wallet!!");
+		}
+
 		// parse IST time properly
 		const from = new Date(`${data.date}T${data.time}:00+05:30`);
 		const to = new Date(from);
@@ -193,7 +237,7 @@ class AppointmentService {
 		// format to ISO (stored in UTC internally)
 		const formattedFromDateTime = from.toISOString();
 		const formattedToDateTime = to.toISOString();
-		return Appointment.findByIdAndUpdate(
+		const appointment = await Appointment.findByIdAndUpdate(
 			id,
 			{
 				...data,
@@ -201,9 +245,18 @@ class AppointmentService {
 				toDateTime: formattedToDateTime,
 				appointmentStatus: "Pending",
 				appointmentCode: appointmentCode,
+				appointmentAmount: totalServiceAmount,
 			},
 			{ new: true }
 		);
+		if (appointment) {
+			const newAmount = await User.findByIdAndUpdate(
+				userId,
+				{ $inc: { wallet: -totalServiceAmount } },
+				{ new: true }
+			);
+		}
+		return appointment;
 	}
 
 	async deleteById(id: string): Promise<IAppointment | null> {

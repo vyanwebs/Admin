@@ -13,7 +13,7 @@ export const createCart = async (req: Request, res: Response) => {
 		const image = req.file
 			? `${process.env.URL}/uploads/images/${req.file.filename}`
 			: req.body.image;
-			
+
 		const cartData = { ...req.body, image };
 		const newCart = await createCartService(cartData);
 		res.status(201).json({
@@ -32,9 +32,11 @@ export const createCart = async (req: Request, res: Response) => {
 };
 
 // ✅ Get all cart items
-export const getAllCartItems = async (_req: Request, res: Response) => {
+export const getAllCartItems = async (req: Request, res: Response) => {
 	try {
-		const carts = await getAllCarts();
+		const userId = req.user.id;
+		console.log(userId);
+		const carts = await getAllCarts(userId);
 		res.status(200).json({ success: true, data: carts });
 	} catch (error) {
 		res.status(500).json({
@@ -92,7 +94,9 @@ export const updateCartItem = async (req: Request, res: Response) => {
 // ✅ Delete cart
 export const deleteCartItem = async (req: Request, res: Response) => {
 	try {
-		const deleted = await deleteCartById(req.params.id);
+		const userId = req.user.id;
+		console.log(userId);
+		const deleted = await deleteCartById(req.params.id, userId);
 		if (!deleted)
 			return res
 				.status(404)

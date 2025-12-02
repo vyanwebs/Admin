@@ -7,7 +7,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { InAppNotifications } from "../../inAppNotification/models/inAppNotification.model";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
-import { ChairsModel } from "../../salonCharisApi/model/chairs.model";
+
+import { ChairsModel } from "../../salonChairsApi/model/chairs.model";
 
 dayjs.extend(customParseFormat);
 
@@ -103,18 +104,25 @@ export const getAppointmentById = async (req: Request, res: Response) => {
 
 export const updateAppointment = async (req: Request, res: Response) => {
 	try {
-		const data = await appointmentService.updateById(req.params.id, req.body);
+		const userId = String(req.user.id);
+		console.log(userId);
+		const data = await appointmentService.updateById(
+			req.params.id,
+			req.body,
+			userId
+		);
 		if (!data)
 			return res
 				.status(404)
 				.json({ success: false, message: "Appointment not found" });
+
 		res.status(200).json({
 			success: true,
 			message: "Appointment updated successfully",
 			data,
 		});
 	} catch (error) {
-		res.status(500).json({ success: false, error });
+		res.status(500).json({ success: false, error: (error as Error).message });
 	}
 };
 

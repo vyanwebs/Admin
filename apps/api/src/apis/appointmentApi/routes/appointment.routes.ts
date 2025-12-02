@@ -21,7 +21,7 @@ router.get("/fetch-by-userId/:userId", protect, getAppointmentsByUserId);
 router.get("/get-chairs", protect, getChairsBySubAdminId);
 router.get("/chairs/:date/:time", protect, getChairsByDateTime);
 router.get("/:id", getAppointmentById);
-router.put("/:id", updateAppointment);
+router.put("/:id", protect, updateAppointment);
 router.delete("/:id", deleteAppointment);
 router.post(
 	"/verify-appointment",

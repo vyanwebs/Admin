@@ -15,7 +15,6 @@ import { nanoid } from "nanoid";
 import { parse } from "path";
 export const register = async (req: Request, res: Response) => {
 	try {
-		const { ref } = req.query;
 		const userData: CreateUserDto = req.body;
 
 		if (!userData.appRegistrationCode) {
@@ -40,12 +39,6 @@ export const register = async (req: Request, res: Response) => {
 		const existingUser = await User.findOne({ email: userData.email });
 		if (existingUser) {
 			res.status(409).json({ message: "Email already in use" });
-			return;
-		}
-
-		// Handle referral case
-		if (ref) {
-			handleReferralRegistration(req, res, userData, ref.toString());
 			return;
 		}
 
@@ -76,21 +69,34 @@ export const register = async (req: Request, res: Response) => {
 			subAdminEmail: userDetails.email,
 			subAdminId: userDetails._id,
 		});
-		console.log("🚀 ~ register ~ user:", user);
-
-		console.log(userDetails._id);
-		console.log(userDetails.email);
 
 		user.isActive = true;
-		await user.save();
 
 		await EmailOTP.findOneAndDelete({ email: userData.email });
 
-		let refCode: string;
-		do {
-			refCode = "NAU" + nanoid(7).toUpperCase(); //generates 8 character code
-		} while (await User.findOne({ refLink: refCode }));
-		user.refLink = refCode;
+		const referralCode = "NAU" + nanoid(7).toUpperCase(); //generates 8 character code
+
+		user.referralCode = referralCode;
+
+		// Handle referral case
+		if (userData.referredBy) {
+			const referredByUser = await User.findOne({
+				referralCode: userData.referredBy,
+			});
+
+			if (referredByUser?.appRegistrationCode === user.appRegistrationCode) {
+				user.wallet = (user?.wallet ?? 0) + 20;
+				referredByUser.wallet = (referredByUser?.wallet ?? 0) + 20;
+
+				user.referredBy = referredByUser._id as mongoose.Types.ObjectId;
+				await referredByUser.save();
+			} else {
+				return res.status(401).json({
+					success: false,
+					message: "Incorrect referral Code or SubAdmin mismatch",
+				});
+			}
+		}
 		await user.save();
 
 		const token = user.generateAuthToken();
@@ -103,7 +109,8 @@ export const register = async (req: Request, res: Response) => {
 		return res.status(201).json({
 			success: true,
 			user: {
-				...formatUserResponse(user),
+				// ...formatUserResponse(user),
+				user,
 				refLink: user.refLink,
 			},
 			//

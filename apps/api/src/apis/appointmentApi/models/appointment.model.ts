@@ -12,6 +12,7 @@ export interface IAppointment extends Document {
 	email?: string;
 	services?: string[];
 	subAdminId?: string | mongoose.Types.ObjectId;
+	appointmentAmount?: number;
 }
 
 const AppointmentSchema = new Schema<IAppointment>(
@@ -31,6 +32,7 @@ const AppointmentSchema = new Schema<IAppointment>(
 		email: { type: String },
 		services: [{ type: String }],
 		subAdminId: { type: mongoose.Schema.Types.ObjectId },
+		appointmentAmount: { type: Number },
 	},
 	{ timestamps: true }
 );
