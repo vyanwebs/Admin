@@ -105,7 +105,7 @@ const MaleSpecialOfferForm: React.FC<MaleSpecialOfferFormProps> = ({
       okText={initialData ? "Update Offer" : "Add Offer"}
       confirmLoading={loading}
       destroyOnClose
-      width={screens.xs ? "95%" : 600}  
+      width={screens.xs ? "95%" : 600}
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  message,
-  Space,
-} from "antd";
+import { Form, Input, InputNumber, Button, Upload, message, Space } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 export interface Package {
@@ -35,7 +27,6 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
   visible,
   onSubmit,
   initialData,
-  //loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -73,8 +64,6 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // ✅ Gender automatically set as "Male"
       formData.append("title", values.title);
       formData.append("price", values.price.toString());
       formData.append("services", values.services);
@@ -82,39 +71,25 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
       formData.append("discount", values.discount || "");
       formData.append("review", values.review?.toString() || "0");
       formData.append("rating", values.rating?.toString() || "0");
-      formData.append("gender", "male"); // ✅ Auto-set as Male
+      formData.append("gender", "male");
 
-      // Append image if exists
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append("image", fileList[0].originFileObj);
       }
 
       await onSubmit(formData, initialData?._id);
-    } catch (error) {
+    } catch {
       message.error("Something went wrong while saving the male package");
     }
   };
 
-  // const handleCancel = () => {
-  //   form.resetFields();
-  //   setFileList([]);
-  //   onCancel();
-  // };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="male-package-form"
     >
-      {/* Gender Indicator
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<ManOutlined />} color="blue" style={{ fontSize: '14px', padding: '8px 16px' }}>
-          Male Package
-        </Tag>
-      </div> */}
-
       <Form.Item
         label="Title"
         name="title"
@@ -128,9 +103,9 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
         name="price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber 
-          min={0} 
-          style={{ width: "100%" }} 
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
           placeholder="Enter package price"
         />
       </Form.Item>
@@ -140,8 +115,8 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
         name="services"
         rules={[{ required: true, message: "Please enter services" }]}
       >
-        <Input.TextArea 
-          rows={3} 
+        <Input.TextArea
+          rows={3}
           placeholder="Enter services specifically for male customers"
         />
       </Form.Item>
@@ -151,53 +126,46 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
         name="about"
         rules={[{ required: true, message: "Please enter about description" }]}
       >
-        <Input.TextArea 
-          rows={3} 
+        <Input.TextArea
+          rows={3}
           placeholder="Enter package description for male customers"
         />
       </Form.Item>
 
-      <Form.Item
-        label="Discount"
-        name="discount"
-      >
-        <InputNumber 
-          min={0} 
-          style={{ width: "100%" }} 
+      <Form.Item label="Discount" name="discount">
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
           placeholder="Enter discount amount"
         />
       </Form.Item>
 
-      <Space style={{ width: '100%' }}>
-        <Form.Item
-          label="Review"
-          name="review"
-          style={{ width: '48%' }}
-        >
-          <InputNumber 
-            min={0} 
-            style={{ width: "100%" }} 
+      <Space style={{ width: "100%" }}>
+        <Form.Item label="Review" name="review" style={{ width: "48%" }}>
+          <InputNumber
+            min={0}
+            style={{ width: "100%" }}
             placeholder="Review count"
           />
         </Form.Item>
 
-        <Form.Item
-          label="Rating"
-          name="rating"
-          style={{ width: '48%' }}
-        >
-          <InputNumber 
-            min={0} 
-            max={5} 
-            style={{ width: "100%" }} 
+        <Form.Item label="Rating" name="rating" style={{ width: "48%" }}>
+          <InputNumber
+            min={0}
+            max={5}
+            style={{ width: "100%" }}
             placeholder="Rating (0-5)"
           />
         </Form.Item>
       </Space>
 
-      <Form.Item 
+      <Form.Item
         label="Package Image"
-        rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
+        rules={
+          !initialData
+            ? [{ required: true, message: "Please upload an image" }]
+            : []
+        }
       >
         <Upload
           listType="picture"
@@ -212,16 +180,16 @@ const MalePackageForm: React.FC<MalePackageFormProps> = ({
           </Button>
         </Upload>
         {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+          <div style={{ color: "#999", fontSize: "12px", marginTop: "4px" }}>
             Image is required for new packages
           </div>
         )}
       </Form.Item>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      {/* Hidden submit button for modal */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="male-package-form-submit-button"
       />
     </Form>

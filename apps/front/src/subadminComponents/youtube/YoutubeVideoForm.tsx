@@ -19,29 +19,28 @@ interface YoutubeVideoFormProps {
   loading?: boolean;
 }
 
+//const { useBreakpoint } = Grid;
+
 const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
   visible,
-  //onCancel,
   onSubmit,
   initialData,
-  //loading = false,
 }) => {
+  // const screens = useBreakpoint();
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
-  const [inputType, setInputType] = useState<'youtube' | 'upload'>('youtube');
+  const [inputType, setInputType] = useState<"youtube" | "upload">("youtube");
 
   useEffect(() => {
     if (visible) {
       if (initialData) {
-        console.log("Editing video data:", initialData);
-        
         // Determine input type based on existing data
-        const type = initialData.videoUrl ? 'youtube' : 'upload';
+        const type = initialData.videoUrl ? "youtube" : "upload";
         setInputType(type);
-        
+
         form.setFieldsValue({
           title: initialData.title,
-          videoUrl: initialData.videoUrl || '',
+          videoUrl: initialData.videoUrl || "",
         });
 
         // Set existing video file for edit mode
@@ -61,70 +60,55 @@ const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
         // Reset form for new video
         form.resetFields();
         setFileList([]);
-        setInputType('youtube');
+        setInputType("youtube");
       }
     }
-  }, [initialData, form, visible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData, visible]);
 
   const handleFinish = async (values: any) => {
     try {
-      console.log("Form values:", values);
-      console.log("File list:", fileList);
-      console.log("Initial data:", initialData);
-
       const formData = new FormData();
       formData.append("title", values.title);
 
       const isEditing = !!initialData;
 
-      // Handle video source based on input type
-      if (inputType === 'youtube') {
-        // For YouTube URL
-        if (values.videoUrl && values.videoUrl.trim() !== '') {
+      if (inputType === "youtube") {
+        if (values.videoUrl && values.videoUrl.trim() !== "") {
           formData.append("videoUrl", values.videoUrl.trim());
-        } else if (isEditing && values.videoUrl === '') {
+        } else if (isEditing && values.videoUrl === "") {
           // If editing and URL is cleared, send empty string to clear it
-          formData.append("videoUrl", '');
+          formData.append("videoUrl", "");
         }
-        // If no URL provided during edit, backend will keep existing
-        
-        // Clear any uploaded files when using YouTube URL
+        // clear any uploaded files
         if (fileList.length > 0) {
           setFileList([]);
         }
-      } else if (inputType === 'upload') {
-        // Handle file upload
+      } else if (inputType === "upload") {
         if (fileList.length > 0 && fileList[0].originFileObj) {
           formData.append("video", fileList[0].originFileObj);
         }
-        // If editing and no new file selected, backend will keep existing file
       }
 
-      // ✅ FIXED: Validation for new videos
+      // Validation for new videos
       if (!isEditing) {
-        const hasYouTubeUrl = values.videoUrl && values.videoUrl.trim() !== '';
-        const hasVideoFile = fileList.length > 0 && fileList[0].originFileObj;
-        
+        const hasYouTubeUrl = values.videoUrl && values.videoUrl.trim() !== "";
+        const hasVideoFile = fileList.length > 0 && !!fileList[0].originFileObj;
+
         if (!hasYouTubeUrl && !hasVideoFile) {
-          message.error("Please provide either a YouTube link or upload a video file");
+          message.error(
+            "Please provide either a YouTube link or upload a video file"
+          );
           return;
         }
       }
 
-      console.log("Submitting form data...");
       await onSubmit(formData, initialData?._id);
     } catch (error) {
       console.error("Form submission error:", error);
       message.error("Something went wrong while saving the video");
     }
   };
-
-  // const handleCancel = () => {
-  //   form.resetFields();
-  //   setFileList([]);
-  //   setInputType('youtube');
-  //   onCancel();
-  // };
 
   const handleFileChange = ({ fileList }: any) => {
     setFileList(fileList);
@@ -133,21 +117,24 @@ const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
   const handleInputTypeChange = (e: any) => {
     const newType = e.target.value;
     setInputType(newType);
-    
+
     // Clear the other field when switching types
-    if (newType === 'youtube') {
+    if (newType === "youtube") {
       setFileList([]);
     } else {
-      form.setFieldsValue({ videoUrl: '' });
+      form.setFieldsValue({ videoUrl: "" });
     }
   };
 
   const isEditing = !!initialData;
 
+  // Small helper styles to make form look good on mobile
+  //const compactLabelCol = screens.xs ? undefined : { span: 24 };
+
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="youtube-video-form"
     >
@@ -159,14 +146,13 @@ const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
         <Input placeholder="Enter video title" />
       </Form.Item>
 
-      {/* Input Type Selection */}
       <Form.Item label="Video Source">
-        <Radio.Group 
-          value={inputType} 
+        <Radio.Group
+          value={inputType}
           onChange={handleInputTypeChange}
-          style={{ marginBottom: 16 }}
+          style={{ marginBottom: 12 }}
         >
-          <Space direction="vertical">
+          <Space direction="vertical" style={{ width: "100%" }}>
             <Radio value="youtube">
               <Space>
                 <PlayCircleOutlined />
@@ -183,26 +169,28 @@ const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
         </Radio.Group>
       </Form.Item>
 
-      {/* YouTube URL Input */}
-      {inputType === 'youtube' && (
+      {inputType === "youtube" && (
         <Form.Item
           label="YouTube URL"
           name="videoUrl"
-          help={isEditing ? "Leave empty to remove existing YouTube URL" : "Enter YouTube video URL"}
+          help={
+            isEditing
+              ? "Leave empty to remove existing YouTube URL"
+              : "Enter YouTube video URL"
+          }
         >
-          <Input 
-            placeholder="Paste YouTube video URL (e.g., https://youtube.com/watch?v=...)" 
+          <Input
+            placeholder="Paste YouTube video URL (e.g., https://youtube.com/watch?v=...)"
             allowClear
           />
         </Form.Item>
       )}
 
-      {/* Video File Upload */}
-      {inputType === 'upload' && (
+      {inputType === "upload" && (
         <Form.Item
           label="Upload Video File"
           help={
-            isEditing 
+            isEditing
               ? "Upload a new file to replace existing video"
               : "Upload a video file"
           }
@@ -223,16 +211,16 @@ const YoutubeVideoForm: React.FC<YoutubeVideoFormProps> = ({
               {isEditing ? "Replace Video File" : "Select Video File"}
             </Button>
           </Upload>
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+          <div style={{ color: "#999", fontSize: 12, marginTop: 6 }}>
             Supported formats: MP4, MOV, AVI, MKV
           </div>
         </Form.Item>
       )}
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      {/* Hidden submit button that modal triggers */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="youtube-video-form-submit-button"
       />
     </Form>

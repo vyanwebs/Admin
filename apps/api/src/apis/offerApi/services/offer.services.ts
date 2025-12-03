@@ -15,8 +15,8 @@ class OfferService {
     return newOffer.save();
   }
 
-  async getAll(addedBy:mongoose.Types.ObjectId): Promise<IOffer[]> {
-    return Offer.find({addedBy }).sort({ createdAt: -1 });
+  async getAll(addedBy: mongoose.Types.ObjectId): Promise<IOffer[]> {
+    return Offer.find({ addedBy }).sort({ createdAt: -1 });
   }
 
   async getById(id: string): Promise<IOffer | null> {

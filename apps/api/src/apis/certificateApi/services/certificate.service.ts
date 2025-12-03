@@ -24,6 +24,7 @@
 
 import Certificate from "../models/certificate.model";
 import { ICertificate } from "../types/certificate.types";
+import mongoose from "mongoose";
 
 class CertificateService {
   async create(title: string, imageUrl: string, addedBy: string): Promise<ICertificate> {
@@ -32,9 +33,14 @@ class CertificateService {
   }
 
   // OPTION 1 → All certificates
-  async getAll(): Promise<ICertificate[]> {
-    return Certificate.find().sort({ createdAt: -1 });
-  }
+  // async getAll(): Promise<ICertificate[]> {
+  //   return Certificate.find().sort({ createdAt: -1 });
+  // }
+
+  async getAll(addedBy:mongoose.Types.ObjectId): Promise<ICertificate[]> {
+      return Certificate.find({addedBy }).sort({ createdAt: -1 });
+    }
+  
 
   async deleteById(id: string): Promise<ICertificate | null> {
     return Certificate.findByIdAndDelete(id);

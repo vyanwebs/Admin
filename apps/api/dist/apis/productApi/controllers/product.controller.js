@@ -8,13 +8,13 @@ const product_services_1 = __importDefault(require("../services/product.services
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const mongoose_1 = __importDefault(require("mongoose"));
-// ✅ Create Product
+//  Create Product
 const createProduct = async (req, res) => {
     var _a, _b, _c, _d, _e;
     const customReq = req;
     try {
         const { name, price, offer, rating, tag, description, reviews, gender, } = req.body;
-        // ✅ Convert addedBy to ObjectId if user exists
+        //  Convert addedBy to ObjectId if user exists
         const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id)
             ? new mongoose_1.default.Types.ObjectId(customReq.user._id)
             : undefined;
@@ -36,7 +36,7 @@ const createProduct = async (req, res) => {
             icons,
             reviews,
             gender,
-            addedBy, // ✅ Properly typed
+            addedBy, //  Properly typed
         });
         res.status(201).json({
             success: true,
@@ -50,10 +50,25 @@ const createProduct = async (req, res) => {
     }
 };
 exports.createProduct = createProduct;
-// ✅ Get All Products
+//  Get All Products
+// export const getAllProducts = async (req: Request, res: Response) => {
+// 	try {
+// 		const products = await ProductService.getAll();
+// 		res.status(200).json({ success: true, data: products });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
 const getAllProducts = async (req, res) => {
     try {
-        const products = await product_services_1.default.getAll();
+        let products;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            products = await product_services_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: products });
+        }
+        const addedBy = req.user.subAdminId;
+        products = await product_services_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: products });
     }
     catch (error) {
@@ -61,14 +76,29 @@ const getAllProducts = async (req, res) => {
     }
 };
 exports.getAllProducts = getAllProducts;
-// ✅ Get Product by ID
+// Get Product by ID
+// export const getProductById = async (req: Request, res: Response) => {
+// 	try {
+// 		const product = await ProductService.getById(req.params.id);
+// 		if (!product)
+// 			return res
+// 				.status(404)
+// 				.json({ success: false, message: "Product not found" });
+// 		res.status(200).json({ success: true, data: product });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
 const getProductById = async (req, res) => {
     try {
-        const product = await product_services_1.default.getById(req.params.id);
-        if (!product)
-            return res
-                .status(404)
-                .json({ success: false, message: "Product not found" });
+        let product;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            product = await product_services_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: product });
+        }
+        const addedBy = req.user.subAdminId;
+        product = await product_services_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: product });
     }
     catch (error) {
@@ -76,7 +106,7 @@ const getProductById = async (req, res) => {
     }
 };
 exports.getProductById = getProductById;
-// ✅ Update Product
+//  Update Product
 const updateProduct = async (req, res) => {
     const customReq = req;
     try {
@@ -93,7 +123,7 @@ const updateProduct = async (req, res) => {
                 fs_1.default.unlinkSync(oldPath);
             image = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         }
-        // ✅ Destructure gender from body and keep existing if not provided
+        //  Destructure gender from body and keep existing if not provided
         const { gender, ...rest } = req.body;
         const updated = await product_services_1.default.updateById(id, {
             ...rest,
@@ -111,7 +141,7 @@ const updateProduct = async (req, res) => {
     }
 };
 exports.updateProduct = updateProduct;
-// ✅ Delete Product
+//  Delete Product
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -120,7 +150,7 @@ const deleteProduct = async (req, res) => {
             return res
                 .status(404)
                 .json({ success: false, message: "Product not found" });
-        // ✅ Delete main image file
+        //  Delete main image file
         const imgPath = path_1.default.join(__dirname, "../../../../uploads/images", path_1.default.basename(product.image));
         if (fs_1.default.existsSync(imgPath))
             fs_1.default.unlinkSync(imgPath);

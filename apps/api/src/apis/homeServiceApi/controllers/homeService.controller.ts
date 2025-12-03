@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import HomeServiceService from "../services/homeService.services";
-
+import mongoose from "mongoose";
 export const createHomeService = async (req: Request, res: Response) => {
 	try {
 		const addedBy = (req as any).user._id;
@@ -26,14 +26,34 @@ export const createHomeService = async (req: Request, res: Response) => {
 	}
 };
 
+// export const getHomeServices = async (req: Request, res: Response) => {
+// 	try {
+// 		const services = await HomeServiceService.getAll();
+// 		res.status(200).json({ success: true, data: services });
+// 	} catch (error: any) {
+// 		res.status(500).json({ success: false, error: error.message });
+// 	}
+// };
+
+
 export const getHomeServices = async (req: Request, res: Response) => {
-	try {
-		const services = await HomeServiceService.getAll();
-		res.status(200).json({ success: true, data: services });
-	} catch (error: any) {
-		res.status(500).json({ success: false, error: error.message });
+  try {
+	let services
+	const subAdminId = req.user.id
+	if(req.user.role === "admin"){
+	  services = await HomeServiceService.getAll(subAdminId)
+		  res.status(200).json({ success: true, data: services });
+
 	}
+	const addedBy = req.user.subAdminId
+	 services = await HomeServiceService.getAll( new mongoose.Types.ObjectId( addedBy));
+	res.status(200).json({ success: true, data: services });
+  } catch (error) {
+	res.status(500).json({ success: false, error: (error as Error).message });
+  }
 };
+
+
 
 export const getHomeServiceById = async (req: Request, res: Response) => {
 	try {

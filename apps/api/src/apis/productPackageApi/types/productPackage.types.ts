@@ -10,7 +10,7 @@ export interface IProductPackage extends Document {
   offers: string;
   usage: string;
   image: string;
-  gender: string; 
+  gender: string;
   addedBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

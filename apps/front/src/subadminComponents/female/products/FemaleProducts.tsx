@@ -9,6 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,27 +31,28 @@ import FemaleProductForm, { type Product } from "./FemaleProductForm";
 const { Search } = Input;
 
 const FemaleProducts: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  
-  const { products = [], loading = false, error = null } = useAppSelector((state: any) => state.products);
+  const {
+    products = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.products);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
-  // ✅ Filter only female products
-  const femaleProducts = products.filter((product: Product) => product.gender === "female");
+  const FemaleProducts = products.filter((p: Product) => p.gender === "female");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
@@ -73,24 +77,25 @@ const FemaleProducts: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await dispatch(deleteProduct(id)).unwrap();
-      message.success("🗑️ Female product deleted successfully");
+      message.success("🗑️ female product deleted successfully");
       dispatch(fetchProducts());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete product");
     }
   };
 
   const handleModalOk = () => {
-    const productForm = document.querySelector('.female-product-form-submit-button');
-    if (productForm) {
-      (productForm as HTMLButtonElement).click();
-    }
+    const productForm = document.querySelector(
+      ".female-product-form button[type='submit']"
+    );
+    if (productForm) (productForm as HTMLButtonElement).click();
   };
 
-  const filteredProducts = femaleProducts.filter((product: Product) =>
-    product.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchText.toLowerCase()) ||
-    product.tag?.toLowerCase().includes(searchText.toLowerCase())
+  const filteredProducts = FemaleProducts.filter(
+    (product: Product) =>
+      product.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.tag?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
@@ -111,40 +116,36 @@ const FemaleProducts: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Name", 
-      dataIndex: "name", 
-      key: "name" 
-    },
-    { 
-      title: "Price", 
-      dataIndex: "price", 
+    { title: "Name", dataIndex: "name", key: "name" },
+    {
+      title: "Price",
+      dataIndex: "price",
       key: "price",
-      render: (price: string) => `₹${price}`
+      render: (price: string) => `₹${price}`,
     },
-    { 
-      title: "Offer", 
-      dataIndex: "offer", 
+    {
+      title: "Offer",
+      dataIndex: "offer",
       key: "offer",
-      render: (offer: string) => offer || '-'
+      render: (offer: string) => offer || "-",
     },
-    { 
-      title: "Rating", 
-      dataIndex: "rating", 
+    {
+      title: "Rating",
+      dataIndex: "rating",
       key: "rating",
-      render: (rating: string) => rating || '-'
+      render: (rating: string) => rating || "-",
     },
-    { 
-      title: "Tag", 
-      dataIndex: "tag", 
+    {
+      title: "Tag",
+      dataIndex: "tag",
       key: "tag",
-      render: (tag: string) => tag ? <Tag color="blue">{tag}</Tag> : '-'
+      render: (tag: string) => (tag ? <Tag color="blue">{tag}</Tag> : "-"),
     },
-    { 
-      title: "Description", 
-      dataIndex: "description", 
+    {
+      title: "Description",
+      dataIndex: "description",
       key: "description",
-      ellipsis: true 
+      ellipsis: true,
     },
     {
       title: "Icon",
@@ -163,16 +164,6 @@ const FemaleProducts: React.FC = () => {
           <Tag>No Icon</Tag>
         ),
     },
-    // {
-    //   title: "Gender",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //     <Tag icon={<WomanOutlined />} color="pink">
-    //       {gender}
-    //     </Tag>
-    //   ),
-    // },
     {
       title: "Actions",
       key: "actions",
@@ -201,41 +192,70 @@ const FemaleProducts: React.FC = () => {
 
   return (
     <Card
-      title={
-        <span>
-          {/* <WomanOutlined style={{ marginRight: 8 }} /> */}
-          Female Products &nbsp; ({femaleProducts.length} products)
-        </span>
-      }
+      title={`Female Products (${FemaleProducts.length})`}
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchProducts())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingProduct(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Product
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchProducts())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingProduct(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Product
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search female products..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search female products..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchProducts())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingProduct(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Product
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -243,7 +263,8 @@ const FemaleProducts: React.FC = () => {
         dataSource={filteredProducts}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No female products found" }}
+        style={{ marginTop: 16 }}
+        scroll={{ x: 900 }} // ✅ horizontal scroll for mobile
       />
 
       <Modal
@@ -256,7 +277,7 @@ const FemaleProducts: React.FC = () => {
         onOk={handleModalOk}
         okText={editingProduct ? "Update" : "Create"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <FemaleProductForm

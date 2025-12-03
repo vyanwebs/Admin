@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, InputNumber, Button, Upload, Select, message } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Upload,
+  Select,
+  message,
+  Grid,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -28,8 +37,10 @@ interface Props {
 const FemaleOurServiceForm: React.FC<Props> = ({
   visible,
   onSubmit,
-  initialData, 
+  initialData,
+  loading = false,
 }) => {
+  const screens = Grid.useBreakpoint();
   const [form] = Form.useForm();
   const [imageFileList, setImageFileList] = useState<any[]>([]);
 
@@ -59,7 +70,7 @@ const FemaleOurServiceForm: React.FC<Props> = ({
       form.resetFields();
       setImageFileList([]);
     }
-  }, [initialData, visible]);
+  }, [initialData, visible, form]);
 
   const handleFinish = async (values: any) => {
     try {
@@ -78,8 +89,9 @@ const FemaleOurServiceForm: React.FC<Props> = ({
       }
 
       await onSubmit(formData, initialData?._id);
-    } catch {
-      message.error("Failed to save the service");
+    } catch (err) {
+      console.error(err);
+      message.error("Something went wrong while saving the service");
     }
   };
 
@@ -98,7 +110,11 @@ const FemaleOurServiceForm: React.FC<Props> = ({
         label="Price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber min={0} style={{ width: "100%" }} placeholder="Enter price" />
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
+          placeholder="Enter price"
+        />
       </Form.Item>
 
       <Form.Item
@@ -116,7 +132,7 @@ const FemaleOurServiceForm: React.FC<Props> = ({
       </Form.Item>
 
       <Form.Item name="extra" label="About">
-        <TextArea rows={3} placeholder="Short description" />
+        <TextArea rows={3} placeholder="Short description about the service" />
       </Form.Item>
 
       <Form.Item
@@ -136,16 +152,20 @@ const FemaleOurServiceForm: React.FC<Props> = ({
           beforeUpload={() => false}
           accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>
+          {/* Make upload button block on xs for better mobile touch target */}
+          <Button icon={<UploadOutlined />} block={!!screens.xs}>
             {initialData ? "Change Image" : "Upload Image"}
           </Button>
         </Upload>
       </Form.Item>
 
+      {/* Hidden submit button — parent Modal triggers it */}
       <button
         type="submit"
         style={{ display: "none" }}
         className="female-service-form-submit-button"
+        aria-hidden
+        disabled={loading}
       />
     </Form>
   );

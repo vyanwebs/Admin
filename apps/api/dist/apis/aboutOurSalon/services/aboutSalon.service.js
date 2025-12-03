@@ -9,8 +9,11 @@ class AboutSalonService {
         const salon = new aboutSalon_model_1.default(data);
         return salon.save();
     }
-    async getAll() {
-        return aboutSalon_model_1.default.find().sort({ createdAt: -1 });
+    // async getAll(): Promise<IAboutSalon[]> {
+    //   return AboutSalon.find().sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return aboutSalon_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async getById(id) {
         return aboutSalon_model_1.default.findById(id);

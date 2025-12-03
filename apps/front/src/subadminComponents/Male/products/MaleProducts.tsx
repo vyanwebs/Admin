@@ -9,13 +9,15 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   ReloadOutlined,
-  
 } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
@@ -29,27 +31,28 @@ import MaleProductForm, { type Product } from "./MaleProductForm";
 const { Search } = Input;
 
 const MaleProducts: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  
-  const { products = [], loading = false, error = null } = useAppSelector((state: any) => state.products);
+  const {
+    products = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.products);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
-  // ✅ Filter only male products
-  const maleProducts = products.filter((product: Product) => product.gender === "male");
+  const maleProducts = products.filter((p: Product) => p.gender === "male");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
@@ -76,22 +79,23 @@ const MaleProducts: React.FC = () => {
       await dispatch(deleteProduct(id)).unwrap();
       message.success("🗑️ Male product deleted successfully");
       dispatch(fetchProducts());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete product");
     }
   };
 
   const handleModalOk = () => {
-    const productForm = document.querySelector('.male-product-form-submit-button');
-    if (productForm) {
-      (productForm as HTMLButtonElement).click();
-    }
+    const productForm = document.querySelector(
+      ".male-product-form button[type='submit']"
+    );
+    if (productForm) (productForm as HTMLButtonElement).click();
   };
 
-  const filteredProducts = maleProducts.filter((product: Product) =>
-    product.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchText.toLowerCase()) ||
-    product.tag?.toLowerCase().includes(searchText.toLowerCase())
+  const filteredProducts = maleProducts.filter(
+    (product: Product) =>
+      product.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.tag?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
@@ -112,40 +116,36 @@ const MaleProducts: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Name", 
-      dataIndex: "name", 
-      key: "name" 
-    },
-    { 
-      title: "Price", 
-      dataIndex: "price", 
+    { title: "Name", dataIndex: "name", key: "name" },
+    {
+      title: "Price",
+      dataIndex: "price",
       key: "price",
-      render: (price: string) => `₹${price}`
+      render: (price: string) => `₹${price}`,
     },
-    { 
-      title: "Offer", 
-      dataIndex: "offer", 
+    {
+      title: "Offer",
+      dataIndex: "offer",
       key: "offer",
-      render: (offer: string) => offer || '-'
+      render: (offer: string) => offer || "-",
     },
-    { 
-      title: "Rating", 
-      dataIndex: "rating", 
+    {
+      title: "Rating",
+      dataIndex: "rating",
       key: "rating",
-      render: (rating: string) => rating || '-'
+      render: (rating: string) => rating || "-",
     },
-    { 
-      title: "Tag", 
-      dataIndex: "tag", 
+    {
+      title: "Tag",
+      dataIndex: "tag",
       key: "tag",
-      render: (tag: string) => tag ? <Tag color="blue">{tag}</Tag> : '-'
+      render: (tag: string) => (tag ? <Tag color="blue">{tag}</Tag> : "-"),
     },
-    { 
-      title: "Description", 
-      dataIndex: "description", 
+    {
+      title: "Description",
+      dataIndex: "description",
       key: "description",
-      ellipsis: true 
+      ellipsis: true,
     },
     {
       title: "Icon",
@@ -164,16 +164,6 @@ const MaleProducts: React.FC = () => {
           <Tag>No Icon</Tag>
         ),
     },
-    // {
-    //   title: "Gender",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //     <Tag icon={<ManOutlined />} color="blue">
-    //       {gender}
-    //     </Tag>
-    //   ),
-    // },
     {
       title: "Actions",
       key: "actions",
@@ -202,41 +192,70 @@ const MaleProducts: React.FC = () => {
 
   return (
     <Card
-      title={
-        <span>
-          {/* <ManOutlined style={{ marginRight: 8 }} /> */}
-          Male Products &nbsp; ({maleProducts.length} products)
-        </span>
-      }
+      title={`Male Products (${maleProducts.length})`}
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchProducts())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingProduct(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Product
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchProducts())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingProduct(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Product
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search male products..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search male products..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchProducts())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingProduct(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Product
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -244,7 +263,8 @@ const MaleProducts: React.FC = () => {
         dataSource={filteredProducts}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No male products found" }}
+        style={{ marginTop: 16 }}
+        scroll={{ x: 900 }} // ✅ horizontal scroll for mobile
       />
 
       <Modal
@@ -257,7 +277,7 @@ const MaleProducts: React.FC = () => {
         onOk={handleModalOk}
         okText={editingProduct ? "Update" : "Create"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <MaleProductForm

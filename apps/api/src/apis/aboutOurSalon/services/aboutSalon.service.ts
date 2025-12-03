@@ -1,4 +1,5 @@
 import AboutSalon, { IAboutSalon } from "../models/aboutSalon.model";
+import mongoose from "mongoose";
 
 class AboutSalonService {
   async create(data: Partial<IAboutSalon>): Promise<IAboutSalon> {
@@ -6,15 +7,21 @@ class AboutSalonService {
     return salon.save();
   }
 
-  async getAll(): Promise<IAboutSalon[]> {
-    return AboutSalon.find().sort({ createdAt: -1 });
+  // async getAll(): Promise<IAboutSalon[]> {
+  //   return AboutSalon.find().sort({ createdAt: -1 });
+  // }
+  async getAll(addedBy: mongoose.Types.ObjectId): Promise<IAboutSalon[]> {
+    return AboutSalon.find({ addedBy }).sort({ createdAt: -1 });
   }
 
   async getById(id: string): Promise<IAboutSalon | null> {
     return AboutSalon.findById(id);
   }
 
-  async updateById(id: string, data: Partial<IAboutSalon>): Promise<IAboutSalon | null> {
+  async updateById(
+    id: string,
+    data: Partial<IAboutSalon>
+  ): Promise<IAboutSalon | null> {
     return AboutSalon.findByIdAndUpdate(id, data, { new: true });
   }
 

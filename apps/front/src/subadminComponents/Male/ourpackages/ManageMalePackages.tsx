@@ -9,7 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
- 
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -29,27 +31,27 @@ import MalePackageForm, { type Package } from "./MalePackageForm";
 const { Search } = Input;
 
 const ManageMalePackages: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
- // const [form] = Form.useForm();
-  
-  const { packages = [], loading = false, error = null } = useAppSelector((state: any) => state.packages);
+  const {
+    packages = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.packages);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchPackages());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
-  // ✅ Only male packages filter
   const malePackages = packages.filter((pkg: Package) => pkg.gender === "male");
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
@@ -57,10 +59,10 @@ const ManageMalePackages: React.FC = () => {
       setSubmitLoading(true);
       if (id) {
         await dispatch(updatePackage({ id, formData })).unwrap();
-        message.success("✅ Male package updated successfully");
+        message.success(" Male package updated successfully");
       } else {
         await dispatch(addPackage(formData)).unwrap();
-        message.success("✅ Male package added successfully");
+        message.success(" Male package added successfully");
       }
       setModalVisible(false);
       setEditingPackage(null);
@@ -77,19 +79,18 @@ const ManageMalePackages: React.FC = () => {
       await dispatch(deletePackage(id)).unwrap();
       message.success("🗑️ Male package deleted successfully");
       dispatch(fetchPackages());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete male package");
     }
   };
 
   const handleModalOk = () => {
-    const packageForm = document.querySelector('.male-package-form-submit-button');
-    if (packageForm) {
-      (packageForm as HTMLButtonElement).click();
-    }
+    const packageForm = document.querySelector(
+      ".male-package-form button[type='submit']"
+    );
+    if (packageForm) (packageForm as HTMLButtonElement).click();
   };
 
-  // ✅ Search only in male packages
   const filteredPackages = malePackages.filter((pkg: Package) =>
     pkg.title.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -112,51 +113,32 @@ const ManageMalePackages: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
-    },
-    { 
-      title: "Price", 
-      dataIndex: "price", 
+    { title: "Title", dataIndex: "title", key: "title" },
+    {
+      title: "Price",
+      dataIndex: "price",
       key: "price",
-      render: (price: string) => `₹${price}`
+      render: (price: string) => `₹${price}`,
     },
-    { 
-      title: "Services", 
-      dataIndex: "services", 
+    {
+      title: "Services",
+      dataIndex: "services",
       key: "services",
-      ellipsis: true 
+      ellipsis: true,
     },
-    { 
-      title: "About", 
-      dataIndex: "about", 
-      key: "about",
-      ellipsis: true 
-    },
-    { 
-      title: "Discount", 
-      dataIndex: "discount", 
+    { title: "About", dataIndex: "about", key: "about", ellipsis: true },
+    {
+      title: "Discount",
+      dataIndex: "discount",
       key: "discount",
-      render: (discount: string) => discount ? `₹${discount}` : '-'
+      render: (discount: string) => (discount ? `₹${discount}` : "-"),
     },
-    { 
-      title: "Rating", 
-      dataIndex: "rating", 
+    {
+      title: "Rating",
+      dataIndex: "rating",
       key: "rating",
-      render: (rating: number) => rating ? `${rating}/5` : '-'
+      render: (rating: number) => (rating ? `${rating}/5` : "-"),
     },
-    // {
-    //   title: "Gender",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //     <Tag color={gender === "Male" ? "blue" : "pink"}>
-    //       {gender}
-    //     </Tag>
-    //   ),
-    // },
     {
       title: "Actions",
       key: "actions",
@@ -185,36 +167,70 @@ const ManageMalePackages: React.FC = () => {
 
   return (
     <Card
-      title={`Male Packages     (${malePackages.length} packages)`}
+      title={`Male Packages (${malePackages.length})`}
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchPackages())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingPackage(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Package
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchPackages())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingPackage(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Package
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search male packages by title..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search male packages..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchPackages())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingPackage(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Package
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -222,7 +238,8 @@ const ManageMalePackages: React.FC = () => {
         dataSource={filteredPackages}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No male packages found" }}
+        style={{ marginTop: 16 }}
+        scroll={{ x: 900 }}
       />
 
       <Modal
@@ -235,7 +252,7 @@ const ManageMalePackages: React.FC = () => {
         onOk={handleModalOk}
         okText={editingPackage ? "Update" : "Add Package"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <MalePackageForm

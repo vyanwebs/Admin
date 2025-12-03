@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  message,
-} from "antd";
+import { Form, Input, InputNumber, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -36,7 +29,7 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
   visible,
   onSubmit,
   initialData,
- // loading = false,
+  // loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -74,7 +67,7 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
+
       // Append all fields - gender fixed as "Male"
       formData.append("name", values.name);
       formData.append("price", values.price.toString());
@@ -85,7 +78,10 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
       formData.append("gender", "male"); // ✅ Fixed as Male
 
       // Convert items string to array
-      const itemsArray = values.items.split(",").map((item: string) => item.trim()).filter((item: string) => item);
+      const itemsArray = values.items
+        .split(",")
+        .map((item: string) => item.trim())
+        .filter((item: string) => item);
       itemsArray.forEach((item: string) => {
         formData.append("items", item);
       });
@@ -97,7 +93,9 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
 
       await onSubmit(formData, initialData?._id);
     } catch (error) {
-      message.error("Something went wrong while saving the male product package");
+      message.error(
+        "Something went wrong while saving the male product package"
+      );
     }
   };
 
@@ -108,9 +106,9 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
   // };
 
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="male-product-package-form"
     >
@@ -134,9 +132,9 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
         name="price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber 
-          min={0} 
-          style={{ width: "100%" }} 
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
           placeholder="Enter package price"
         />
       </Form.Item>
@@ -146,8 +144,8 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
         name="description"
         rules={[{ required: true, message: "Please enter description" }]}
       >
-        <TextArea 
-          rows={3} 
+        <TextArea
+          rows={3}
           placeholder="Enter package description for male customers"
         />
       </Form.Item>
@@ -158,42 +156,34 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
         rules={[{ required: true, message: "Please enter items" }]}
         extra="Separate items with commas"
       >
-        <TextArea 
-          rows={3} 
+        <TextArea
+          rows={3}
           placeholder="Enter items for male customers (e.g., Beard Oil, Hair Gel, Face Wash)"
         />
       </Form.Item>
 
-      <Form.Item
-        label="Review"
-        name="review"
-      >
-        <TextArea 
-          rows={2} 
-          placeholder="Enter review"
-        />
+      <Form.Item label="Review" name="review">
+        <TextArea rows={2} placeholder="Enter review" />
       </Form.Item>
 
-      <Form.Item
-        label="Offers"
-        name="offers"
-      >
+      <Form.Item label="Offers" name="offers">
         <Input placeholder="Enter offers (e.g., Save ₹200 on male grooming combo)" />
       </Form.Item>
 
-      <Form.Item
-        label="Usage Instructions"
-        name="usage"
-      >
-        <TextArea 
-          rows={2} 
+      <Form.Item label="Usage Instructions" name="usage">
+        <TextArea
+          rows={2}
           placeholder="Enter usage instructions for male customers"
         />
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         label="Package Image"
-        rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
+        rules={
+          !initialData
+            ? [{ required: true, message: "Please upload an image" }]
+            : []
+        }
       >
         <Upload
           listType="picture"
@@ -208,16 +198,16 @@ const MaleProductPackageForm: React.FC<MaleProductPackageFormProps> = ({
           </Button>
         </Upload>
         {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+          <div style={{ color: "#999", fontSize: "12px", marginTop: "4px" }}>
             Image is required for new packages
           </div>
         )}
       </Form.Item>
 
       {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="male-product-package-form-submit-button"
       />
     </Form>

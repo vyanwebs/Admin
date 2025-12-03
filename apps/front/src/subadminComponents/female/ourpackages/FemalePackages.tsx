@@ -9,6 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,27 +31,30 @@ import FemalePackageForm, { type Package } from "./FemalePackageForm";
 const { Search } = Input;
 
 const ManageFemalePackages: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  
-  const { packages = [], loading = false, error = null } = useAppSelector((state: any) => state.packages);
+  const {
+    packages = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.packages);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchPackages());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
-  // ✅ Only female packages filter
-  const femalePackages = packages.filter((pkg: Package) => pkg.gender === "female");
+  const femalePackages = packages.filter(
+    (pkg: Package) => pkg.gender === "female"
+  );
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
@@ -75,19 +81,18 @@ const ManageFemalePackages: React.FC = () => {
       await dispatch(deletePackage(id)).unwrap();
       message.success("🗑️ Female package deleted successfully");
       dispatch(fetchPackages());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete female package");
     }
   };
 
   const handleModalOk = () => {
-    const packageForm = document.querySelector('.female-package-form-submit-button');
-    if (packageForm) {
-      (packageForm as HTMLButtonElement).click();
-    }
+    const packageForm = document.querySelector(
+      ".female-package-form button[type='submit']"
+    );
+    if (packageForm) (packageForm as HTMLButtonElement).click();
   };
 
-  // ✅ Search only in female packages
   const filteredPackages = femalePackages.filter((pkg: Package) =>
     pkg.title.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -110,51 +115,32 @@ const ManageFemalePackages: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
-    },
-    { 
-      title: "Price", 
-      dataIndex: "price", 
+    { title: "Title", dataIndex: "title", key: "title" },
+    {
+      title: "Price",
+      dataIndex: "price",
       key: "price",
-      render: (price: string) => `₹${price}`
+      render: (price: string) => `₹${price}`,
     },
-    { 
-      title: "Services", 
-      dataIndex: "services", 
+    {
+      title: "Services",
+      dataIndex: "services",
       key: "services",
-      ellipsis: true 
+      ellipsis: true,
     },
-    { 
-      title: "About", 
-      dataIndex: "about", 
-      key: "about",
-      ellipsis: true 
-    },
-    { 
-      title: "Discount", 
-      dataIndex: "discount", 
+    { title: "About", dataIndex: "about", key: "about", ellipsis: true },
+    {
+      title: "Discount",
+      dataIndex: "discount",
       key: "discount",
-      render: (discount: string) => discount ? `₹${discount}` : '-'
+      render: (discount: string) => (discount ? `₹${discount}` : "-"),
     },
-    { 
-      title: "Rating", 
-      dataIndex: "rating", 
+    {
+      title: "Rating",
+      dataIndex: "rating",
       key: "rating",
-      render: (rating: number) => rating ? `${rating}/5` : '-'
+      render: (rating: number) => (rating ? `${rating}/5` : "-"),
     },
-    // {
-    //   title: "Gender",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //     <Tag color={gender === "Female" ? "pink" : "blue"}>
-    //       {gender}
-    //     </Tag>
-    //   ),
-    // },
     {
       title: "Actions",
       key: "actions",
@@ -183,36 +169,70 @@ const ManageFemalePackages: React.FC = () => {
 
   return (
     <Card
-      title={`Female Packages     (${femalePackages.length} packages)`}
+      title={`female Packages (${femalePackages.length})`}
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchPackages())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingPackage(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Package
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchPackages())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingPackage(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Package
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search female packages by title..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search female packages..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchPackages())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingPackage(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Package
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -220,7 +240,8 @@ const ManageFemalePackages: React.FC = () => {
         dataSource={filteredPackages}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No female packages found" }}
+        style={{ marginTop: 16 }}
+        scroll={{ x: 900 }}
       />
 
       <Modal
@@ -233,7 +254,7 @@ const ManageFemalePackages: React.FC = () => {
         onOk={handleModalOk}
         okText={editingPackage ? "Update" : "Add Package"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <FemalePackageForm

@@ -61,7 +61,8 @@ router.post(
 	uploadCertificate
 );
 
-router.get("/", getAllCertificates);
+// router.get("/", getAllCertificates);
+router.get("/", protect,authorizeRole("admin", "superadmin", "user"), getAllCertificates);
 
 router.put(
 	"/:id",

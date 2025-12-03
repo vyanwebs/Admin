@@ -8,7 +8,10 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
   message,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -30,10 +33,13 @@ import FemaleOurServiceForm from "./FemaleOurServiceForm";
 const { Search } = Input;
 
 const FemaleOurServices: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  const { services = [], loading = false, error = null } = useAppSelector(
-    (state: any) => state.commonService
-  );
+  const {
+    services = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.commonService);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -107,32 +113,31 @@ const FemaleOurServices: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-
     { title: "Title", dataIndex: "title", key: "title" },
-
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
       render: (p: number | string) => `₹${p}`,
     },
-
     {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      render: (c: string) => <Tag color="magenta">{c}</Tag>,
+      render: (c: string) => <Tag color="blue">{c}</Tag>,
     },
-
-    { title: "About", dataIndex: "extra", key: "extra", ellipsis: true },
-
+    {
+      title: "About",
+      dataIndex: "extra",
+      key: "extra",
+      ellipsis: true,
+    },
     {
       title: "Estimated Time",
       dataIndex: "estimatedTime",
       key: "estimatedTime",
       render: (t: number) => `${t} min`,
     },
-
     {
       title: "Actions",
       key: "actions",
@@ -149,6 +154,8 @@ const FemaleOurServices: React.FC = () => {
           <Popconfirm
             title="Are you sure?"
             onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
           >
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -158,37 +165,72 @@ const FemaleOurServices: React.FC = () => {
   ];
 
   return (
-    <Card
-      title={`Female Services (${femaleServices.length})`}
-      extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchServices("female"))}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingService(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Female Service
-          </Button>
-        </Space>
-      }
-    >
-      <Search
-        placeholder="Search female services..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+    <Card title={`female Services (${femaleServices.length})`}>
+      {/* Responsive Search + Buttons */}
+      <Row gutter={[12, 12]} align="middle" style={{ marginBottom: 12 }}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search female services..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {!screens.xs && (
+          <Col sm={12} style={{ textAlign: "right" }}>
+            <Space>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => dispatch(fetchServices("female"))}
+                loading={loading}
+              >
+                Refresh
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setEditingService(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Service
+              </Button>
+            </Space>
+          </Col>
+        )}
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => dispatch(fetchServices("female"))}
+                loading={loading}
+                block
+              >
+                Refresh
+              </Button>
+            </Col>
+
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setEditingService(null);
+                  setModalVisible(true);
+                }}
+                block
+              >
+                Add Service
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey={(r: any) => r._id}
@@ -196,10 +238,12 @@ const FemaleOurServices: React.FC = () => {
         dataSource={filteredServices}
         loading={loading}
         pagination={{ pageSize: 6 }}
+        locale={{ emptyText: "No female services found" }}
+        scroll={{ x: 800 }}
       />
 
       <Modal
-        title={editingService ? "Edit Female Service" : "Add Female Service"}
+        title={editingService ? "Edit female Service" : "Add Service"}
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
@@ -208,7 +252,7 @@ const FemaleOurServices: React.FC = () => {
         onOk={handleModalOk}
         okText={editingService ? "Update" : "Create"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <FemaleOurServiceForm

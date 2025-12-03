@@ -29,77 +29,71 @@ const { Search } = Input;
 
 const ManageCertificates: React.FC = () => {
   const dispatch = useAppDispatch();
-  
-  // ✅ Using Redux state
-  const { certificates = [], loading = false, error = null } = useAppSelector((state: any) => state.certificates);
+
+  const {
+    certificates = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.certificates);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
+  const [editingCertificate, setEditingCertificate] =
+    useState<Certificate | null>(null);
+
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
-  // ✅ Fetch all certificates on mount
+
   useEffect(() => {
     dispatch(fetchCertificates());
   }, [dispatch]);
 
-  // ✅ Handle errors
   useEffect(() => {
     if (error) {
       message.error(error);
     }
   }, [error]);
 
-  // ✅ Handle Add or Edit
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
       setSubmitLoading(true);
+
       if (id) {
-        // ✅ Edit existing certificate
         await dispatch(updateCertificate({ id, formData })).unwrap();
-        message.success("✅ Certificate updated successfully");
+        message.success("Certificate updated");
       } else {
-        // ✅ Add new certificate
         await dispatch(addCertificate(formData)).unwrap();
-        message.success("✅ Certificate added successfully");
+        message.success("Certificate added");
       }
+
       setModalVisible(false);
       setEditingCertificate(null);
-      dispatch(fetchCertificates()); // Refresh the list
+      dispatch(fetchCertificates());
     } catch (error: any) {
-      console.error("Operation error:", error);
       message.error(error?.message || "Operation failed");
     } finally {
       setSubmitLoading(false);
     }
   };
 
-  // ✅ Delete Certificate
   const handleDelete = async (id: string) => {
     try {
       await dispatch(deleteCertificate(id)).unwrap();
-      message.success("🗑️ Certificate deleted successfully");
+      message.success("Deleted successfully");
       dispatch(fetchCertificates());
-    } catch (error: any) {
-      message.error("Failed to delete certificate");
+    } catch {
+      message.error("Failed to delete");
     }
   };
 
-  // ✅ Handle Modal OK/Submit
   const handleModalOk = () => {
-    // Trigger form submission from CertificateForm
-    const certificateForm = document.querySelector('.certificate-form-submit-button');
-    if (certificateForm) {
-      (certificateForm as HTMLButtonElement).click();
-    }
+    const btn = document.querySelector(".certificate-form-submit-button");
+    if (btn) (btn as HTMLButtonElement).click();
   };
 
-  // ✅ Filter search results
   const filteredCertificates = certificates.filter((cert: Certificate) =>
     cert.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // ✅ Table Columns
   const columns = [
     {
       title: "Certificate Image",
@@ -109,25 +103,29 @@ const ManageCertificates: React.FC = () => {
         imageUrl ? (
           <img
             src={imageUrl}
-            alt="certificate"
-            width={80}
-            height={60}
-            style={{ borderRadius: 6, objectFit: "cover" }}
+            alt="Certificate"
+            style={{
+              width: 70,
+              height: 55,
+              borderRadius: 6,
+              objectFit: "cover",
+            }}
           />
         ) : (
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
     },
-    { 
-      title: "Uploaded Date", 
-      dataIndex: "createdAt", 
+    {
+      title: "Uploaded Date",
+      dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: string) => date ? new Date(date).toLocaleDateString() : '-'
+      render: (date: string) =>
+        date ? new Date(date).toLocaleDateString() : "-",
     },
     {
       title: "Actions",
@@ -142,11 +140,10 @@ const ManageCertificates: React.FC = () => {
               setModalVisible(true);
             }}
           />
+
           <Popconfirm
-            title="Are you sure to delete this certificate?"
+            title="Are you sure you want to delete?"
             onConfirm={() => handleDelete(record._id!)}
-            okText="Yes"
-            cancelText="No"
           >
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
@@ -157,49 +154,58 @@ const ManageCertificates: React.FC = () => {
 
   return (
     <Card
-      title={`Certificate Management &nbsp; (${certificates.length} certificates)`}
-      extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchCertificates())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingCertificate(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Certificate
-          </Button>
-        </Space>
+      title={
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <span>
+            Certificate Management &nbsp; ({certificates.length} certificates)
+          </span>
+
+          <div className="flex flex-col md:flex-row gap-2 md:gap-3 w-full md:w-auto">
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => dispatch(fetchCertificates())}
+              loading={loading}
+              className="w-full md:w-auto"
+            >
+              Refresh
+            </Button>
+
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingCertificate(null);
+                setModalVisible(true);
+              }}
+              className="w-full md:w-auto"
+            >
+              Add Certificate
+            </Button>
+          </div>
+        </div>
       }
     >
       <Search
-        placeholder="Search certificates by title..."
+        placeholder="Search certificates..."
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         allowClear
-        style={{ marginBottom: 16, width: "50%" }}
+        className="mb-4 w-full md:w-1/2"
       />
 
-      <Table
-        rowKey="_id"
-        columns={columns}
-        dataSource={filteredCertificates}
-        loading={loading}
-        pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No certificates found" }}
-      />
+      <div style={{ overflowX: "auto" }}>
+        <Table
+          rowKey="_id"
+          columns={columns}
+          dataSource={filteredCertificates}
+          loading={loading}
+          pagination={{ pageSize: 5 }}
+        />
+      </div>
 
       <Modal
-        title={editingCertificate ? "Edit Certificate" : "Add Certificate"}
         open={modalVisible}
+        title={editingCertificate ? "Edit Certificate" : "Add Certificate"}
         onCancel={() => {
           setModalVisible(false);
           setEditingCertificate(null);
@@ -207,8 +213,8 @@ const ManageCertificates: React.FC = () => {
         onOk={handleModalOk}
         okText={editingCertificate ? "Update" : "Create"}
         confirmLoading={submitLoading}
-        width={600}
         destroyOnClose
+        width={600}
       >
         <CertificateForm
           visible={modalVisible}

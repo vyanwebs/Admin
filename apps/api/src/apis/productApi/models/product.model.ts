@@ -11,7 +11,7 @@ export interface IProduct extends Document {
   addedBy?: mongoose.Types.ObjectId;
   icons?: string[];
   reviews?: string[];
-  gender?: string; 
+  gender?: string;
 }
 
 const productSchema = new Schema<IProduct>(
@@ -26,7 +26,7 @@ const productSchema = new Schema<IProduct>(
     addedBy: { type: Schema.Types.ObjectId, ref: "User" },
     icons: [{ type: String }],
     reviews: [{ type: String }],
-    gender: { type: String }, 
+    gender: { type: String },
   },
   { timestamps: true }
 );

@@ -9,6 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,28 +31,38 @@ import {
 import YoutubeVideoForm, { type YoutubeVideo } from "./YoutubeVideoForm";
 
 const { Search } = Input;
+const { useBreakpoint } = Grid;
 
 const UploadYoutube: React.FC = () => {
   const dispatch = useAppDispatch();
-  
-  const youtubeState = useAppSelector((state: any) => state.youtubeVideos || {
-    videos: [],
-    loading: false,
-    error: null
-  });
-  
+
+  const youtubeState = useAppSelector(
+    (state: any) =>
+      state.youtubeVideos || {
+        videos: [],
+        loading: false,
+        error: null,
+      }
+  );
+
   const { videos = [], loading = false, error = null } = youtubeState;
+
+  const screens = useBreakpoint();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingVideo, setEditingVideo] = useState<YoutubeVideo | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [previewVideo, setPreviewVideo] = useState<{visible: boolean; url?: string; title?: string}>({
+  const [previewVideo, setPreviewVideo] = useState<{
+    visible: boolean;
+    url?: string;
+    title?: string;
+  }>({
     visible: false,
     url: undefined,
-    title: undefined
+    title: undefined,
   });
-  
+
   useEffect(() => {
     dispatch(fetchYoutubeVideos());
   }, [dispatch]);
@@ -68,7 +81,7 @@ const UploadYoutube: React.FC = () => {
         message.success("Video updated successfully");
       } else {
         await dispatch(addYoutubeVideo(formData)).unwrap();
-        message.success(" Video added successfully");
+        message.success("Video added successfully");
       }
       setModalVisible(false);
       setEditingVideo(null);
@@ -92,9 +105,14 @@ const UploadYoutube: React.FC = () => {
   };
 
   const handleModalOk = () => {
-    const form = document.querySelector('.youtube-video-form') as HTMLFormElement;
+    // Trigger hidden submit button inside form
+    const form = document.querySelector(
+      ".youtube-video-form"
+    ) as HTMLFormElement;
     if (form) {
-      const submitButton = form.querySelector('.youtube-video-form-submit-button') as HTMLButtonElement;
+      const submitButton = form.querySelector(
+        ".youtube-video-form-submit-button"
+      ) as HTMLButtonElement;
       if (submitButton) {
         submitButton.click();
       }
@@ -102,46 +120,43 @@ const UploadYoutube: React.FC = () => {
   };
 
   const handleEdit = (video: YoutubeVideo) => {
-    console.log("Editing video:", video);
     setEditingVideo(video);
     setModalVisible(true);
   };
 
-  // ✅ FIXED: HTTPS-compatible video play function
   const handlePlayVideo = (video: YoutubeVideo) => {
     if (video.videoUrl) {
-      // Open YouTube link in new tab
-      window.open(video.videoUrl, '_blank');
+      // open YouTube link in new tab
+      window.open(video.videoUrl, "_blank");
     } else if (video.videoPath) {
-      // Ensure HTTPS for video URLs
+      // Ensure HTTPS or absolute URL
       let videoUrl = video.videoPath;
-      
-      // If it's a relative path, make it absolute with current origin
-      if (video.videoPath.startsWith('/')) {
+      if (video.videoPath.startsWith("/")) {
         videoUrl = `${window.location.origin}${video.videoPath}`;
       }
-      
-      // Force HTTPS if current protocol is HTTPS
-      if (window.location.protocol === 'https:' && videoUrl.startsWith('http:')) {
-        videoUrl = videoUrl.replace('http://', 'https://');
+      if (
+        window.location.protocol === "https:" &&
+        videoUrl.startsWith("http:")
+      ) {
+        videoUrl = videoUrl.replace("http://", "https://");
       }
-      
       setPreviewVideo({
         visible: true,
         url: videoUrl,
-        title: video.title
+        title: video.title,
       });
     }
   };
 
   const filteredVideos = videos.filter((video: YoutubeVideo) =>
-    video.title.toLowerCase().includes(searchText.toLowerCase())
+    (video.title || "").toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
     {
       title: "Type",
       key: "type",
+      width: 120,
       render: (_: any, record: YoutubeVideo) => (
         <Space>
           {record.videoUrl ? (
@@ -156,22 +171,23 @@ const UploadYoutube: React.FC = () => {
         </Space>
       ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      ellipsis: true,
     },
     {
       title: "Source",
       key: "source",
       render: (_: any, record: YoutubeVideo) => (
-        <div style={{ maxWidth: 200 }}>
+        <div style={{ maxWidth: 220 }}>
           {record.videoUrl ? (
-            <a 
-              href={record.videoUrl} 
-              target="_blank" 
+            <a
+              href={record.videoUrl}
+              target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: '12px', wordBreak: 'break-all' }}
+              style={{ fontSize: 13, wordBreak: "break-all" }}
               onClick={(e) => {
                 e.preventDefault();
                 handlePlayVideo(record);
@@ -180,10 +196,10 @@ const UploadYoutube: React.FC = () => {
               {record.videoUrl}
             </a>
           ) : record.videoPath ? (
-            <Button 
-              type="link" 
+            <Button
+              type="link"
               onClick={() => handlePlayVideo(record)}
-              style={{ fontSize: '12px', padding: 0, height: 'auto' }}
+              style={{ fontSize: 13, padding: 0, height: "auto" }}
             >
               Play Uploaded Video
             </Button>
@@ -193,15 +209,18 @@ const UploadYoutube: React.FC = () => {
         </div>
       ),
     },
-    { 
-      title: "Uploaded Date", 
-      dataIndex: "uploadedAt", 
+    {
+      title: "Uploaded Date",
+      dataIndex: "uploadedAt",
       key: "uploadedAt",
-      render: (date: string) => new Date(date).toLocaleDateString()
+      width: 140,
+      render: (date: string) =>
+        date ? new Date(date).toLocaleDateString() : "-",
     },
     {
       title: "Actions",
       key: "actions",
+      width: 140,
       render: (_: any, record: YoutubeVideo) => (
         <Space>
           <Button
@@ -227,34 +246,74 @@ const UploadYoutube: React.FC = () => {
       <Card
         title="YouTube Video Management"
         extra={
-          <Space>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={() => dispatch(fetchYoutubeVideos())}
-              loading={loading}
-            >
-              Refresh
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setEditingVideo(null);
-                setModalVisible(true);
-              }}
-            >
-              Add Video
-            </Button>
-          </Space>
+          // On xs (mobile) hide extra, we will show block buttons below
+          !screens.xs && (
+            <Space>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => dispatch(fetchYoutubeVideos())}
+                loading={loading}
+              >
+                Refresh
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setEditingVideo(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Video
+              </Button>
+            </Space>
+          )
         }
       >
-        <Search
-          placeholder="Search videos by title..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          allowClear
-          style={{ marginBottom: 16, width: "50%" }}
-        />
+        {/* Responsive Row for Search + Mobile Buttons */}
+        <Row gutter={[12, 12]} align="middle" style={{ marginBottom: 12 }}>
+          <Col xs={24} sm={12} md={10}>
+            <Search
+              placeholder="Search videos by title..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              allowClear
+              style={{ width: "100%" }}
+            />
+          </Col>
+
+          {/* On small screens show stacked buttons */}
+          {screens.xs && (
+            <>
+              <Col xs={24}>
+                <Button
+                  icon={<ReloadOutlined />}
+                  onClick={() => dispatch(fetchYoutubeVideos())}
+                  loading={loading}
+                  block
+                >
+                  Refresh
+                </Button>
+              </Col>
+              <Col xs={24}>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setEditingVideo(null);
+                    setModalVisible(true);
+                  }}
+                  block
+                >
+                  Add Video
+                </Button>
+              </Col>
+            </>
+          )}
+
+          {/* On larger screens we can keep space for additional filters later */}
+          {!screens.xs && <Col flex="auto" />}
+        </Row>
 
         <Table
           rowKey="_id"
@@ -263,8 +322,10 @@ const UploadYoutube: React.FC = () => {
           loading={loading}
           pagination={{ pageSize: 5 }}
           locale={{ emptyText: "No videos found" }}
+          scroll={{ x: 900 }}
         />
 
+        {/* Modal for Add / Edit */}
         <Modal
           title={editingVideo ? "Edit Video" : "Add Video"}
           open={modalVisible}
@@ -275,7 +336,7 @@ const UploadYoutube: React.FC = () => {
           onOk={handleModalOk}
           okText={editingVideo ? "Update" : "Create"}
           confirmLoading={submitLoading}
-          width={700}
+          width={screens.xs ? "95%" : 700}
           destroyOnClose
         >
           <YoutubeVideoForm
@@ -291,31 +352,37 @@ const UploadYoutube: React.FC = () => {
         </Modal>
       </Card>
 
-      {/* ✅ FIXED: Video Preview Modal with HTTPS support */}
+      {/* Video Preview Modal */}
       <Modal
         title={previewVideo.title || "Video Preview"}
         open={previewVideo.visible}
-        onCancel={() => setPreviewVideo({ visible: false, url: undefined, title: undefined })}
+        onCancel={() =>
+          setPreviewVideo({ visible: false, url: undefined, title: undefined })
+        }
         footer={null}
-        width={800}
+        width={screens.xs ? "95%" : 800}
         destroyOnClose
       >
         {previewVideo.url && (
-          <div style={{ textAlign: 'center' }}>
-            <video 
-              controls 
-              autoPlay 
-              style={{ width: '100%', maxHeight: '500px', borderRadius: '8px' }}
-              key={previewVideo.url} // Force re-render when URL changes
+          <div style={{ textAlign: "center" }}>
+            <video
+              controls
+              autoPlay
+              style={{
+                width: "100%",
+                maxHeight: screens.xs ? 300 : 500,
+                borderRadius: 8,
+              }}
+              key={previewVideo.url}
             >
-              <source 
-                src={previewVideo.url} 
-                type="video/mp4" 
-              />
+              <source src={previewVideo.url} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
-            <div style={{ marginTop: '16px', color: '#666' }}>
-              <small>If video doesn't play, ensure your server supports HTTPS video streaming</small>
+            <div style={{ marginTop: 12, color: "#666" }}>
+              <small>
+                If video doesn't play, ensure your server supports HTTPS video
+                streaming
+              </small>
             </div>
           </div>
         )}

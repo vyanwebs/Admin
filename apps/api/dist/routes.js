@@ -48,6 +48,6 @@ serverconfig_1.default.use("/api/notification", notification_routes_1.default);
 // app.use("/api/payments",paymentRoutes)
 // app.use("/api/subscription-plans",subscriptionPlansRoutes)
 // subscription-plans
-//best routes 
+//best routes
 //routes
 exports.default = serverconfig_1.default;

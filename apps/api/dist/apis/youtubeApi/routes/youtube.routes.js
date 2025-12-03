@@ -1,50 +1,8 @@
 "use strict";
-// import express from "express";
-// import {
-//   createYoutubeVideo,
-//   getAllYoutubeVideos,
-//   getYoutubeVideoById,
-//   getYoutubeVideosByDate,
-//   updateYoutubeVideo,
-//   deleteYoutubeVideo,
-// } from "../controllers/youtube.controllers";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import { protect } from "../../userApi/middlewares/auth.middleware";
-// import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
-// import upload from "../../mediaApi/services/multerConfig";
-// const router = express.Router();
-// router.post(
-//   "/",
-//   protect,
-//   authorizeRole("admin", "superadmin"),
-//   upload.single("video"),
-//   createYoutubeVideo
-// );
-// router.get(
-//   "/",
-//   protect,
-//   authorizeRole("admin", "superadmin"),
-//   getAllYoutubeVideos
-// );
-// router.get("/:id", getYoutubeVideoById);
-// router.get("/date/:date", getYoutubeVideosByDate);
-// router.patch(
-//   "/:id",
-//   protect,
-//   authorizeRole("admin", "superadmin"),
-//   upload.single("video"),
-//   updateYoutubeVideo
-// );
-// router.delete(
-//   "/:id",
-//   protect,
-//   authorizeRole("admin", "superadmin"),
-//   deleteYoutubeVideo
-// );
-// export default router;
 const express_1 = __importDefault(require("express"));
 const youtube_controllers_1 = require("../controllers/youtube.controllers");
 const auth_middleware_1 = require("../../userApi/middlewares/auth.middleware");
@@ -53,8 +11,9 @@ const multerConfig_1 = __importDefault(require("../../mediaApi/services/multerCo
 const router = express_1.default.Router();
 // CREATE (Admin Only)
 router.post("/", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), multerConfig_1.default.single("video"), youtube_controllers_1.createYoutubeVideo);
-// GET ALL — PUBLIC (FINAL OPTION 1)  
-router.get("/", youtube_controllers_1.getAllYoutubeVideos);
+// GET ALL — PUBLIC (FINAL OPTION 1)
+//router.get("/", getAllYoutubeVideos);
+router.get("/", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin", "user"), youtube_controllers_1.getAllYoutubeVideos);
 // GET BY ID — PUBLIC
 router.get("/:id", youtube_controllers_1.getYoutubeVideoById);
 // GET BY DATE — PUBLIC

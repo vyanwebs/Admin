@@ -14,14 +14,15 @@ const createOffer = async (req, res) => {
     const customReq = req;
     try {
         const { title, discount, date, description, gender } = req.body;
-        const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id) ? new mongoose_1.default.Types.ObjectId(customReq.user._id) : undefined;
+        const addedBy = ((_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id)
+            ? new mongoose_1.default.Types.ObjectId(customReq.user._id)
+            : undefined;
         if (!addedBy)
             return res.status(401).json({ success: false, message: "Unauthorized" });
         if (!customReq.file)
             return res
                 .status(400)
                 .json({ success: false, message: "Image is required!" });
-        // ✅ UNIVERSAL IMAGE URL - Har platform pe work karega
         const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
         const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         const newOffer = await offer_services_1.default.create({
@@ -94,7 +95,6 @@ const updateOffer = async (req, res) => {
                 if (fs_1.default.existsSync(oldFilePath))
                     fs_1.default.unlinkSync(oldFilePath);
             }
-            // ✅ UNIVERSAL NEW IMAGE URL
             const baseUrl = process.env.URL || `${req.protocol}://${req.get("host")}`;
             imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
         }
@@ -119,15 +119,15 @@ const deleteOffer = async (req, res) => {
         console.log("🔄 Deleting offer ID:", id);
         const offer = await offer_services_1.default.getById(id);
         if (!offer) {
-            console.log("❌ Offer not found with ID:", id);
+            console.log(" Offer not found with ID:", id);
             return res
                 .status(404)
                 .json({ success: false, message: "Offer not found" });
         }
-        console.log("✅ Offer found:", offer.title);
+        console.log(" Offer found:", offer.title);
         // Delete from database
         const deletedOffer = await offer_services_1.default.deleteById(id);
-        console.log("✅ Database delete result:", deletedOffer ? "Success" : "Failed");
+        console.log(" Database delete result:", deletedOffer ? "Success" : "Failed");
         if (!deletedOffer) {
             return res.status(500).json({
                 success: false,
@@ -139,10 +139,10 @@ const deleteOffer = async (req, res) => {
             const imagePath = path_1.default.join(__dirname, "../../../../uploads/images", path_1.default.basename(offer.imageUrl));
             if (fs_1.default.existsSync(imagePath)) {
                 fs_1.default.unlinkSync(imagePath);
-                console.log("✅ Image deleted:", imagePath);
+                console.log(" Image deleted:", imagePath);
             }
         }
-        console.log("✅ Offer deleted successfully");
+        console.log(" Offer deleted successfully");
         res.status(200).json({
             success: true,
             message: "Offer deleted successfully",
@@ -150,7 +150,7 @@ const deleteOffer = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("❌ Delete Error:", error);
+        console.error(" Delete Error:", error);
         res.status(500).json({
             success: false,
             error: error.message,

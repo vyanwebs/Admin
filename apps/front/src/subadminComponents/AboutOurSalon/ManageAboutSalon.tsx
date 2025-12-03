@@ -9,6 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Grid,
+  Row,
+  Col,
   Image,
 } from "antd";
 import {
@@ -30,23 +33,25 @@ import AboutSalonForm, { type AboutSalon } from "./AboutSalonForm";
 const { Search } = Input;
 
 const ManageAboutSalon: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  
-  const { aboutSalons = [], loading = false, error = null } = useAppSelector((state: any) => state.aboutSalons);
+  const {
+    aboutSalons = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.aboutSalons);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingSalon, setEditingSalon] = useState<AboutSalon | null>(null);
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchAboutSalons());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
@@ -74,21 +79,20 @@ const ManageAboutSalon: React.FC = () => {
       await dispatch(deleteAboutSalon(id)).unwrap();
       message.success("🗑️ Salon information deleted successfully");
       dispatch(fetchAboutSalons());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete salon information");
     }
   };
 
   const handleModalOk = () => {
-    const salonForm = document.querySelector('.about-salon-form-submit-button');
-    if (salonForm) {
-      (salonForm as HTMLButtonElement).click();
-    }
+    const salonForm = document.querySelector(".about-salon-form-submit-button");
+    if (salonForm) (salonForm as HTMLButtonElement).click();
   };
 
-  const filteredSalons = aboutSalons.filter((salon: AboutSalon) =>
-    salon.title.toLowerCase().includes(searchText.toLowerCase()) ||
-    salon.description.toLowerCase().includes(searchText.toLowerCase())
+  const filteredSalons = aboutSalons.filter(
+    (salon: AboutSalon) =>
+      salon.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      salon.description.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
@@ -104,40 +108,36 @@ const ManageAboutSalon: React.FC = () => {
             width={80}
             height={60}
             style={{ borderRadius: 6, objectFit: "cover" }}
-            preview={true}
+            preview
           />
         ) : (
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Title", 
-      dataIndex: "title", 
-      key: "title" 
-    },
-    { 
-      title: "Description", 
-      dataIndex: "description", 
+    { title: "Title", dataIndex: "title", key: "title" },
+    {
+      title: "Description",
+      dataIndex: "description",
       key: "description",
       ellipsis: true,
-      render: (description: string) => (
-        <div style={{ maxWidth: 300 }}>
-          {description.length > 100 ? `${description.substring(0, 100)}...` : description}
+      render: (desc: string) => (
+        <div style={{ maxWidth: screens.xs ? "100%" : 300 }}>
+          {desc.length > 100 ? `${desc.substring(0, 100)}...` : desc}
         </div>
-      )
+      ),
     },
     {
       title: "Created",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (date: string) =>
+        date ? new Date(date).toLocaleDateString() : "-",
     },
     {
       title: "Actions",
       key: "actions",
       render: (_: any, record: AboutSalon) => (
         <Space>
-          {/* Edit Button */}
           <Button
             type="primary"
             icon={<EditOutlined />}
@@ -146,8 +146,6 @@ const ManageAboutSalon: React.FC = () => {
               setModalVisible(true);
             }}
           />
-          
-          {/* Delete Button */}
           <Popconfirm
             title="Are you sure to delete this salon information?"
             onConfirm={() => handleDelete(record._id!)}
@@ -166,38 +164,72 @@ const ManageAboutSalon: React.FC = () => {
       title={
         <span>
           <InfoCircleOutlined style={{ marginRight: 8 }} />
-          About Our Salon Management ({aboutSalons.length} entries)
+          About Our Salon ({aboutSalons.length} entries)
         </span>
       }
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchAboutSalons())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingSalon(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Salon Info
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchAboutSalons())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingSalon(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Salon Info
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search salon information..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search salon information..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchAboutSalons())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingSalon(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Salon Info
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -205,12 +237,13 @@ const ManageAboutSalon: React.FC = () => {
         dataSource={filteredSalons}
         loading={loading}
         pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No salon information found" }}
+        scroll={{ x: 900 }}
       />
 
-      {/* Add/Edit Modal */}
       <Modal
-        title={editingSalon ? "Edit Salon Information" : "Add Salon Information"}
+        title={
+          editingSalon ? "Edit Salon Information" : "Add Salon Information"
+        }
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
@@ -219,7 +252,7 @@ const ManageAboutSalon: React.FC = () => {
         onOk={handleModalOk}
         okText={editingSalon ? "Update" : "Create"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <AboutSalonForm

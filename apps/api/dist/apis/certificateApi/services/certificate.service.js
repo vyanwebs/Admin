@@ -28,8 +28,11 @@ class CertificateService {
         return cert.save();
     }
     // OPTION 1 → All certificates
-    async getAll() {
-        return certificate_model_1.default.find().sort({ createdAt: -1 });
+    // async getAll(): Promise<ICertificate[]> {
+    //   return Certificate.find().sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return certificate_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async deleteById(id) {
         return certificate_model_1.default.findByIdAndDelete(id);

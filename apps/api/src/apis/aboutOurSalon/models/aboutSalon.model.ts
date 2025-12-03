@@ -3,7 +3,7 @@ import { Schema, model, Document, Types } from "mongoose";
 export interface IAboutSalon extends Document {
   title: string;
   description: string;
-  image: string;       // Multer uploaded image path
+  image: string; // Multer uploaded image path
   addedBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;

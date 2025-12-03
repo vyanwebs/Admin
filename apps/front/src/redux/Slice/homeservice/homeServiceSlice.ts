@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import API from "../../../api/axios"; 
+import API from "../../../api/axios";
 
 export interface HomeService {
   _id?: string;
@@ -93,7 +93,7 @@ const homeServiceSlice = createSlice({
       })
       .addCase(fetchHomeServices.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload; 
+        state.data = action.payload;
       })
 
       // ADD

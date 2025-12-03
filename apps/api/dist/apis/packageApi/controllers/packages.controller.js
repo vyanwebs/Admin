@@ -29,7 +29,7 @@ const createPackage = async (req, res) => {
             rating: req.body.rating,
             gender: req.body.gender,
             image: imageUrl,
-            addedBy, // ✅ SAVE ADDED BY
+            addedBy,
         });
         const saved = await newPackage.save();
         res.status(201).json({ success: true, data: saved });
@@ -39,9 +39,30 @@ const createPackage = async (req, res) => {
     }
 };
 exports.createPackage = createPackage;
+// export const getAllPackages = async (req: Request, res: Response) => {
+//   try {
+//     const packages = await Package.find().sort({ createdAt: -1 });
+//     res.status(200).json({ success: true, data: packages });
+//   } catch (err: any) {
+//     res.status(500).json({ success: false, error: err.message });
+//   }
+// };
 const getAllPackages = async (req, res) => {
     try {
-        const packages = await packages_model_1.default.find().sort({ createdAt: -1 });
+        let packages;
+        const subAdminId = req.user.id; // admin or the main user id
+        // If admin → get packages added by this admin
+        if (req.user.role === "admin") {
+            packages = await packages_model_1.default.find({ addedBy: subAdminId }).sort({
+                createdAt: -1,
+            });
+            return res.status(200).json({ success: true, data: packages });
+        }
+        // If subadmin → get packages using its mapped subAdminId
+        const addedBy = req.user.subAdminId;
+        packages = await packages_model_1.default.find({
+            addedBy: new mongoose_1.default.Types.ObjectId(addedBy),
+        }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, data: packages });
     }
     catch (err) {

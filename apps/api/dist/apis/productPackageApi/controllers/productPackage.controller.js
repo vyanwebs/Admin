@@ -1,12 +1,11 @@
 "use strict";
-// import { Request, Response } from "express";
-// import ProductPackageService from "../services/productPackage.services";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProductPackage = exports.updateProductPackage = exports.getProductPackageById = exports.getProductPackages = exports.createProductPackage = void 0;
 const productPackage_services_1 = __importDefault(require("../services/productPackage.services"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createProductPackage = async (req, res) => {
     try {
         const addedBy = req.user._id;
@@ -42,9 +41,24 @@ const createProductPackage = async (req, res) => {
 };
 exports.createProductPackage = createProductPackage;
 // ✅ Get all packages for everyone
+// export const getProductPackages = async (req: Request, res: Response) => {
+// 	try {
+// 		const packages = await ProductPackageService.getAll();
+// 		res.status(200).json({ success: true, data: packages });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
 const getProductPackages = async (req, res) => {
     try {
-        const packages = await productPackage_services_1.default.getAll();
+        let packages;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            packages = await productPackage_services_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: packages });
+        }
+        const addedBy = req.user.subAdminId;
+        packages = await productPackage_services_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: packages });
     }
     catch (error) {

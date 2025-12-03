@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCartItem = exports.updateCartItem = exports.getCartItemById = exports.getAllCartItems = exports.createCart = void 0;
 const cart_service_1 = require("../services/cart.service");
-// ✅ Create a cart item
+//  Create a cart item
 const createCart = async (req, res) => {
     try {
         // Get uploaded image URL or use from body (HTTP)
@@ -27,7 +27,7 @@ const createCart = async (req, res) => {
     }
 };
 exports.createCart = createCart;
-// ✅ Get all cart items
+// Get all cart items
 const getAllCartItems = async (_req, res) => {
     try {
         const carts = await (0, cart_service_1.getAllCarts)();
@@ -42,7 +42,7 @@ const getAllCartItems = async (_req, res) => {
     }
 };
 exports.getAllCartItems = getAllCartItems;
-// ✅ Get cart by ID
+//  Get cart by ID
 const getCartItemById = async (req, res) => {
     try {
         const cart = await (0, cart_service_1.getCartById)(req.params.id);
@@ -61,7 +61,7 @@ const getCartItemById = async (req, res) => {
     }
 };
 exports.getCartItemById = getCartItemById;
-// ✅ Update cart
+//  Update cart
 const updateCartItem = async (req, res) => {
     try {
         const image = req.file
@@ -87,7 +87,7 @@ const updateCartItem = async (req, res) => {
     }
 };
 exports.updateCartItem = updateCartItem;
-// ✅ Delete cart
+// Delete cart
 const deleteCartItem = async (req, res) => {
     try {
         const deleted = await (0, cart_service_1.deleteCartById)(req.params.id);

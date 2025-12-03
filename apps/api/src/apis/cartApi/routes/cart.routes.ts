@@ -6,7 +6,7 @@ import {
   updateCartItem,
   deleteCartItem,
 } from "../controllers/cart.controller";
-import { upload } from "../../mediaApi/services/multerConfig"; 
+import { upload } from "../../mediaApi/services/multerConfig";
 
 const router = Router();
 router.post("/", upload.single("image"), createCart);

@@ -20,12 +20,15 @@ const initialState: AboutUsState = {
   error: null,
 };
 
-// 🔹 Get about us
+// 🔹 Fetch About Us
 export const fetchAboutUs = createAsyncThunk(
   "aboutUs/fetch",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await API.get("/about-us");
+      console.log("AboutUs API response:", data);
+      // Handle array or object response
+      if (Array.isArray(data.data)) return data.data[0] || null;
       return data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -33,7 +36,7 @@ export const fetchAboutUs = createAsyncThunk(
   }
 );
 
-// 🔹 Create or update about us
+// 🔹 Create or update About Us
 export const createOrUpdateAboutUs = createAsyncThunk(
   "aboutUs/createOrUpdate",
   async (formData: FormData, { rejectWithValue }) => {
@@ -43,7 +46,9 @@ export const createOrUpdateAboutUs = createAsyncThunk(
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to save about us");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to save about us"
+      );
     }
   }
 );
@@ -61,7 +66,7 @@ const aboutUsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // 🔹 Fetch about us
+      // Fetch
       .addCase(fetchAboutUs.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -74,8 +79,7 @@ const aboutUsSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
-      // 🔹 Create or update about us
+      // Create/Update
       .addCase(createOrUpdateAboutUs.pending, (state) => {
         state.loading = true;
       })

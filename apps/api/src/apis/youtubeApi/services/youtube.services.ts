@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import YoutubeVideo from "../models/youtube.models";
 import { IYoutubeVideo } from "../types/youtube.types";
 
@@ -7,10 +8,13 @@ class YoutubeService {
     return video.save();
   }
 
-  async getAll(): Promise<IYoutubeVideo[]> {
-    return YoutubeVideo.find().sort({ createdAt: -1 });
-  }
+  // async getAll(): Promise<IYoutubeVideo[]> {
+  //   return YoutubeVideo.find().sort({ createdAt: -1 });
+  // }
 
+  async getAll(addedBy: mongoose.Types.ObjectId): Promise<IYoutubeVideo[]> {
+    return YoutubeVideo.find({ addedBy }).sort({ createdAt: -1 });
+  }
   async getById(id: string): Promise<IYoutubeVideo | null> {
     return YoutubeVideo.findById(id);
   }
@@ -32,8 +36,8 @@ class YoutubeService {
     data: Partial<IYoutubeVideo>
   ): Promise<IYoutubeVideo | null> {
     return YoutubeVideo.findByIdAndUpdate(
-      id, 
-      { $set: data }, 
+      id,
+      { $set: data },
       { new: true, runValidators: true }
     );
   }

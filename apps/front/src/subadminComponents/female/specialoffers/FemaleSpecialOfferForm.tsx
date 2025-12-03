@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, InputNumber, Upload, Button, DatePicker } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Upload,
+  Button,
+  DatePicker,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
@@ -112,10 +120,20 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
           name="discount"
           rules={[
             { required: true, message: "Please enter discount" },
-            { type: "number", min: 0, max: 100, message: "Discount must be between 0 and 100" },
+            {
+              type: "number",
+              min: 0,
+              max: 100,
+              message: "Discount must be between 0 and 100",
+            },
           ]}
         >
-          <InputNumber min={0} max={100} style={{ width: "100%" }} placeholder="Enter discount %" />
+          <InputNumber
+            min={0}
+            max={100}
+            style={{ width: "100%" }}
+            placeholder="Enter discount %"
+          />
         </Form.Item>
 
         <Form.Item
@@ -123,7 +141,11 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
           name="date"
           rules={[{ required: true, message: "Please select date" }]}
         >
-          <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" placeholder="Select date" />
+          <DatePicker
+            style={{ width: "100%" }}
+            format="YYYY-MM-DD"
+            placeholder="Select date"
+          />
         </Form.Item>
 
         <Form.Item
@@ -136,7 +158,11 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
 
         <Form.Item
           label="Offer Image"
-          rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
+          rules={
+            !initialData
+              ? [{ required: true, message: "Please upload an image" }]
+              : []
+          }
         >
           <Upload
             listType="picture"
@@ -146,7 +172,9 @@ const FemaleSpecialOfferForm: React.FC<FemaleSpecialOfferFormProps> = ({
             beforeUpload={() => false}
             accept="image/*"
           >
-            <Button icon={<UploadOutlined />}>{initialData ? "Change Image" : "Select Image"}</Button>
+            <Button icon={<UploadOutlined />}>
+              {initialData ? "Change Image" : "Select Image"}
+            </Button>
           </Upload>
         </Form.Item>
       </Form>

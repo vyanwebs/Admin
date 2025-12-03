@@ -46,7 +46,9 @@ export const addAboutSalon = createAsyncThunk(
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to add salon information");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add salon information"
+      );
     }
   }
 );
@@ -54,14 +56,19 @@ export const addAboutSalon = createAsyncThunk(
 // 🔹 Edit about salon entry
 export const updateAboutSalon = createAsyncThunk(
   "aboutSalons/update",
-  async ({ id, formData }: { id: string; formData: FormData }, { rejectWithValue }) => {
+  async (
+    { id, formData }: { id: string; formData: FormData },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await API.put(`/about-salon/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update salon information");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update salon information"
+      );
     }
   }
 );
@@ -74,7 +81,9 @@ export const deleteAboutSalon = createAsyncThunk(
       await API.delete(`/about-salon/${id}`);
       return id;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete salon information");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete salon information"
+      );
     }
   }
 );
@@ -102,7 +111,7 @@ const aboutSalonSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 🔹 Add about salon
       .addCase(addAboutSalon.pending, (state) => {
         state.loading = true;
@@ -122,7 +131,9 @@ const aboutSalonSlice = createSlice({
       })
       .addCase(updateAboutSalon.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.aboutSalons.findIndex((s) => s._id === action.payload._id);
+        const index = state.aboutSalons.findIndex(
+          (s) => s._id === action.payload._id
+        );
         if (index !== -1) {
           state.aboutSalons[index] = action.payload;
         }
@@ -138,7 +149,9 @@ const aboutSalonSlice = createSlice({
       })
       .addCase(deleteAboutSalon.fulfilled, (state, action) => {
         state.loading = false;
-        state.aboutSalons = state.aboutSalons.filter((s) => s._id !== action.payload);
+        state.aboutSalons = state.aboutSalons.filter(
+          (s) => s._id !== action.payload
+        );
       })
       .addCase(deleteAboutSalon.rejected, (state, action) => {
         state.loading = false;

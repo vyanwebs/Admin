@@ -14,7 +14,7 @@ app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 
 app.use(errorHandler);
 app.listen(PORT, () => {
-	cancelAppointmentAfter10Minutes();
-	delete7daysOldNotifications();
-	console.log(`Server running on http://localhost:${PORT}`);
+  cancelAppointmentAfter10Minutes();
+  delete7daysOldNotifications();
+  console.log(`Server running on http://localhost:${PORT}`);
 });

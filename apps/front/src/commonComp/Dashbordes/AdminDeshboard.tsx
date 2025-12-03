@@ -15,7 +15,7 @@ const AdminDashboard: React.FC = () => {
 	// ✅ assuming logged-in subadmin info stored in localStorage or Redux
 	//const subAdmin = JSON.parse(localStorage.getItem("user") || "{}");
 	//const expiryDate = subAdmin?.expireDate;
-	const expiryDate = "2025-11-25T00:00:00.000Z"; 
+	const expiryDate = "2025-12-25T00:00:00.000Z"; 
 
 	useEffect(() => {
 		const req = dispatch(fetchUsers());

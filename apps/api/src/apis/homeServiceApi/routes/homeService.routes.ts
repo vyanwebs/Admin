@@ -19,7 +19,11 @@ router.post("/upload", protect, upload.single("image"), createHomeService);
 router.put("/:id", protect, authorizeRole("admin", "superadmin"), upload.single("image"), updateHomeService);
 
 // Get all / Get by ID / Delete
-router.get("/", protect, getHomeServices);
+//router.get("/", protect, getHomeServices);
+router.get("/", protect,authorizeRole("admin", "superadmin", "user"), getHomeServices);
+
+
+
 router.get("/:id", protect, getHomeServiceById);
 router.delete("/:id", protect, authorizeRole("admin", "superadmin"), deleteHomeService);
 

@@ -1,6 +1,4 @@
 "use strict";
-// import { IOurService } from "../types/ourservice.type";
-// import OurService from "../models/ourservice.model";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -13,8 +11,11 @@ class OurServiceService {
         return newService.save();
     }
     // GET ALL → sabko accessible
-    async getAll() {
-        return ourservice_model_1.default.find().populate("addedBy", "name email").sort({ createdAt: -1 });
+    // async getAll(): Promise<IOurService[]> {
+    //   return OurService.find().populate("addedBy", "name email").sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return ourservice_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     // GET BY ID
     async getById(id) {

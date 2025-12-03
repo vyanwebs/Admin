@@ -1,4 +1,3 @@
-// FemaleHomeServiceForm.tsx
 import React, { useEffect, useState } from "react";
 import { Form, Input, InputNumber, Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -22,10 +21,8 @@ interface Props {
 
 const FemaleHomeServiceForm: React.FC<Props> = ({
   visible,
- // onCancel,
   onSubmit,
   initialData,
-  //loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -75,7 +72,7 @@ const FemaleHomeServiceForm: React.FC<Props> = ({
   };
 
   return (
-    <Form form={form} layout="vertical" onFinish={handleFinish} className="female-home-service-form">
+    <Form form={form} layout="vertical" onFinish={handleFinish}>
       <Form.Item
         label="Service Name"
         name="name"
@@ -89,7 +86,11 @@ const FemaleHomeServiceForm: React.FC<Props> = ({
         name="price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber min={0} style={{ width: "100%" }} placeholder="Enter price" />
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
+          placeholder="Enter price"
+        />
       </Form.Item>
 
       <Form.Item
@@ -115,7 +116,7 @@ const FemaleHomeServiceForm: React.FC<Props> = ({
         </Upload>
       </Form.Item>
 
-      {/* Hidden submit button for modal OK */}
+      {/* Hidden submit button */}
       <button
         type="submit"
         style={{ display: "none" }}

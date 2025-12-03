@@ -9,8 +9,11 @@ class HomeServiceService {
         const service = new homeService_model_1.default(data);
         return service.save();
     }
-    async getAll() {
-        return homeService_model_1.default.find().sort({ createdAt: -1 });
+    // async getAll(): Promise<IHomeService[]> {
+    //   return HomeService.find().sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return homeService_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async getById(id) {
         return homeService_model_1.default.findById(id);

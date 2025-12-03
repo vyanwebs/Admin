@@ -21,10 +21,8 @@ interface CertificateFormProps {
 
 const CertificateForm: React.FC<CertificateFormProps> = ({
   visible,
-  //onCancel,
   onSubmit,
   initialData,
-  //loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -35,7 +33,6 @@ const CertificateForm: React.FC<CertificateFormProps> = ({
         title: initialData.title,
       });
 
-      // Set existing image for edit mode
       setFileList(
         initialData.imageUrl
           ? [
@@ -57,15 +54,11 @@ const CertificateForm: React.FC<CertificateFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append title field
       formData.append("title", values.title);
 
-      //  Append certificate image - use correct field name "certificateImage"
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append("certificateImage", fileList[0].originFileObj);
       } else if (!initialData && fileList.length === 0) {
-        // For new certificates, image is required
         message.error("Please upload a certificate image");
         return;
       }
@@ -73,22 +66,21 @@ const CertificateForm: React.FC<CertificateFormProps> = ({
       await onSubmit(formData, initialData?._id);
     } catch (error) {
       console.error("Form submission error:", error);
-      message.error("Something went wrong while saving the certificate");
+      message.error("Something went wrong");
     }
   };
 
-  // const handleCancel = () => {
-  //   form.resetFields();
-  //   setFileList([]);
-  //   onCancel();
-  // };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="certificate-form"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "12px",
+      }}
     >
       <Form.Item
         label="Certificate Title"
@@ -98,10 +90,14 @@ const CertificateForm: React.FC<CertificateFormProps> = ({
         <Input placeholder="Enter certificate title" />
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         label="Certificate Image"
         required={!initialData}
-        rules={!initialData ? [{ required: true, message: "Please upload certificate image" }] : []}
+        rules={
+          !initialData
+            ? [{ required: true, message: "Please upload certificate image" }]
+            : []
+        }
       >
         <Upload
           listType="picture"
@@ -110,27 +106,31 @@ const CertificateForm: React.FC<CertificateFormProps> = ({
           onChange={({ fileList }) => setFileList(fileList)}
           beforeUpload={() => false}
           accept="image/*"
+          style={{ width: "100%" }}
         >
-          <Button icon={<UploadOutlined />}>
-            {initialData ? "Change Certificate Image" : "Upload Certificate Image"}
+          <Button icon={<UploadOutlined />} style={{ width: "100%" }}>
+            {initialData
+              ? "Change Certificate Image"
+              : "Upload Certificate Image"}
           </Button>
         </Upload>
-        {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-            Certificate image is required for new certificates
-          </div>
-        )}
-        {initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-            Leave empty to keep existing image
-          </div>
-        )}
+
+        <div
+          style={{
+            color: "#999",
+            fontSize: "12px",
+            marginTop: "4px",
+          }}
+        >
+          {initialData
+            ? "Leave empty to keep existing image"
+            : "Certificate image is required"}
+        </div>
       </Form.Item>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="certificate-form-submit-button"
       />
     </Form>

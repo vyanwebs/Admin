@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Upload,
-  message,
-  Tag,
-} from "antd";
+import { Form, Input, Button, Upload, message, Tag, Row, Col } from "antd";
 import { UploadOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -31,10 +24,8 @@ interface AboutSalonFormProps {
 
 const AboutSalonForm: React.FC<AboutSalonFormProps> = ({
   visible,
- // onCancel,
   onSubmit,
   initialData,
-  //loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -67,12 +58,9 @@ const AboutSalonForm: React.FC<AboutSalonFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
       formData.append("title", values.title);
       formData.append("description", values.description);
 
-      // Append image if exists
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append("image", fileList[0].originFileObj);
       } else if (!initialData) {
@@ -81,80 +69,92 @@ const AboutSalonForm: React.FC<AboutSalonFormProps> = ({
       }
 
       await onSubmit(formData, initialData?._id);
-    } catch (error) {
+    } catch {
       message.error("Something went wrong while saving salon information");
     }
   };
 
-//   const handleCancel = () => {
-//     form.resetFields();
-//     setFileList([]);
-//     onCancel();
-//   };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="about-salon-form"
     >
-      {/* Info Indicator */}
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<InfoCircleOutlined />} color="blue" style={{ fontSize: '14px', padding: '8px 16px' }}>
-          About Our Salon Information
+      {/* Info Tag */}
+      <div style={{ marginBottom: 16, textAlign: "center" }}>
+        <Tag
+          icon={<InfoCircleOutlined />}
+          color="blue"
+          style={{ fontSize: "14px", padding: "8px 16px" }}
+        >
+          About Our Salon
         </Tag>
       </div>
 
-      <Form.Item
-        label="Title"
-        name="title"
-        rules={[{ required: true, message: "Please enter title" }]}
-      >
-        <Input placeholder="Enter title (e.g., Our Story, About Us, Welcome to Our Salon)" />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col xs={24}>
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: "Please enter title" }]}
+          >
+            <Input placeholder="Enter title (e.g., Our Story, About Us)" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item
-        label="Description"
-        name="description"
-        rules={[{ required: true, message: "Please enter description" }]}
-      >
-        <TextArea 
-          rows={6} 
-          placeholder="Enter detailed description about your salon, services, history, team, etc."
-          showCount
-          maxLength={2000}
-        />
-      </Form.Item>
+        <Col xs={24}>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[{ required: true, message: "Please enter description" }]}
+          >
+            <TextArea
+              rows={6}
+              placeholder="Enter detailed description about your salon"
+              showCount
+              maxLength={2000}
+            />
+          </Form.Item>
+        </Col>
 
-      <Form.Item 
-        label="Salon Image"
-        rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
-        extra="Upload a high-quality image that represents your salon"
-      >
-        <Upload
-          listType="picture"
-          maxCount={1}
-          fileList={fileList}
-          onChange={({ fileList }) => setFileList(fileList)}
-          beforeUpload={() => false}
-          accept="image/*"
-        >
-          <Button icon={<UploadOutlined />}>
-            {initialData ? "Change Image" : "Select Image"}
-          </Button>
-        </Upload>
-        {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-            Image is required for new salon information
-          </div>
-        )}
-      </Form.Item>
+        <Col xs={24}>
+          <Form.Item
+            label="Salon Image"
+            rules={
+              !initialData
+                ? [{ required: true, message: "Please upload an image" }]
+                : []
+            }
+            extra="Upload a high-quality image representing your salon"
+          >
+            <Upload
+              listType="picture"
+              maxCount={1}
+              fileList={fileList}
+              onChange={({ fileList }) => setFileList(fileList)}
+              beforeUpload={() => false}
+              accept="image/*"
+            >
+              <Button icon={<UploadOutlined />}>
+                {initialData ? "Change Image" : "Select Image"}
+              </Button>
+            </Upload>
+            {!initialData && (
+              <div
+                style={{ color: "#999", fontSize: "12px", marginTop: "4px" }}
+              >
+                Image is required for new salon information
+              </div>
+            )}
+          </Form.Item>
+        </Col>
+      </Row>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      {/* Hidden submit button for modal */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="about-salon-form-submit-button"
       />
     </Form>

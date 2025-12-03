@@ -1,11 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Form,
-  Input,
- // Button,
-  message,
-  Tag,
-} from "antd";
+import { Form, Input, message, Tag } from "antd";
 import { FileTextOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -28,10 +22,8 @@ interface TermsConditionFormProps {
 
 const TermsConditionForm: React.FC<TermsConditionFormProps> = ({
   visible,
- // onCancel,
   onSubmit,
   initialData,
- // loading = false,
 }) => {
   const [form] = Form.useForm();
 
@@ -49,32 +41,27 @@ const TermsConditionForm: React.FC<TermsConditionFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
       formData.append("title", values.title);
       formData.append("content", values.content);
-
       await onSubmit(formData);
-    } catch (error) {
+    } catch {
       message.error("Something went wrong while saving terms and conditions");
     }
   };
 
-//   const handleCancel = () => {
-//     form.resetFields();
-//     onCancel();
-//   };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="terms-condition-form"
     >
-      {/* Info Indicator */}
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<FileTextOutlined />} color="orange" style={{ fontSize: '14px', padding: '8px 16px' }}>
+      <div style={{ marginBottom: 16, textAlign: "center" }}>
+        <Tag
+          icon={<FileTextOutlined />}
+          color="orange"
+          style={{ fontSize: "14px", padding: "8px 16px" }}
+        >
           Terms & Conditions Information
         </Tag>
       </div>
@@ -92,18 +79,18 @@ const TermsConditionForm: React.FC<TermsConditionFormProps> = ({
         name="content"
         rules={[{ required: true, message: "Please enter content" }]}
       >
-        <TextArea 
-          rows={12} 
+        <TextArea
+          rows={12}
           placeholder="Enter detailed terms and conditions content including user responsibilities, prohibited activities, liability limitations, intellectual property, termination clauses, governing law, etc."
           showCount
           maxLength={10000}
         />
       </Form.Item>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      {/* Hidden submit button for modal */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="terms-condition-form-submit-button"
       />
     </Form>

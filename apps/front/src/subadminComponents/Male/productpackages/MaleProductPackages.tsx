@@ -9,6 +9,9 @@ import {
   Space,
   Tag,
   Popconfirm,
+  Row,
+  Col,
+  Grid,
 } from "antd";
 import {
   PlusOutlined,
@@ -24,32 +27,39 @@ import {
   updateProductPackage,
   deleteProductPackage,
 } from "../../../redux/Slice/productPackage/productPackageSlice";
-import MaleProductPackageForm, { type ProductPackage } from "./MaleProductPackageForm";
+import MaleProductPackageForm, {
+  type ProductPackage,
+} from "./MaleProductPackageForm";
 
 const { Search } = Input;
 
 const MaleProductPackages: React.FC = () => {
+  const screens = Grid.useBreakpoint();
   const dispatch = useAppDispatch();
-  
-  const { packages = [], loading = false, error = null } = useAppSelector((state: any) => state.productPackages);
+  const {
+    packages = [],
+    loading = false,
+    error = null,
+  } = useAppSelector((state: any) => state.productPackages);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingPackage, setEditingPackage] = useState<ProductPackage | null>(null);
+  const [editingPackage, setEditingPackage] = useState<ProductPackage | null>(
+    null
+  );
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   useEffect(() => {
     dispatch(fetchProductPackages());
   }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
+    if (error) message.error(error);
   }, [error]);
 
-  // ✅ Filter only male product packages
-  const malePackages = packages.filter((pkg: ProductPackage) => pkg.gender === "male");
+  const malePackages = packages.filter(
+    (pkg: ProductPackage) => pkg.gender === "male"
+  );
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
@@ -76,22 +86,23 @@ const MaleProductPackages: React.FC = () => {
       await dispatch(deleteProductPackage(id)).unwrap();
       message.success("🗑️ Male product package deleted successfully");
       dispatch(fetchProductPackages());
-    } catch (error: any) {
+    } catch {
       message.error("Failed to delete product package");
     }
   };
 
   const handleModalOk = () => {
-    const packageForm = document.querySelector('.male-product-package-form-submit-button');
-    if (packageForm) {
-      (packageForm as HTMLButtonElement).click();
-    }
+    const packageForm = document.querySelector(
+      ".male-product-package-form-submit-button"
+    );
+    if (packageForm) (packageForm as HTMLButtonElement).click();
   };
 
-  const filteredPackages = malePackages.filter((pkg: ProductPackage) =>
-    pkg.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    pkg.description?.toLowerCase().includes(searchText.toLowerCase()) ||
-    pkg.offers?.toLowerCase().includes(searchText.toLowerCase())
+  const filteredPackages = malePackages.filter(
+    (pkg: ProductPackage) =>
+      pkg.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      pkg.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+      pkg.offers?.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const columns = [
@@ -103,7 +114,7 @@ const MaleProductPackages: React.FC = () => {
         img ? (
           <img
             src={img}
-            alt="product package"
+            alt="package"
             width={60}
             height={60}
             style={{ borderRadius: 6, objectFit: "cover" }}
@@ -112,22 +123,18 @@ const MaleProductPackages: React.FC = () => {
           <Tag color="red">No Image</Tag>
         ),
     },
-    { 
-      title: "Name", 
-      dataIndex: "name", 
-      key: "name" 
-    },
-    { 
-      title: "Price", 
-      dataIndex: "price", 
+    { title: "Name", dataIndex: "name", key: "name" },
+    {
+      title: "Price",
+      dataIndex: "price",
       key: "price",
-      render: (price: number) => `₹${price}`
+      render: (price: number) => `₹${price}`,
     },
-    { 
-      title: "Description", 
-      dataIndex: "description", 
+    {
+      title: "Description",
+      dataIndex: "description",
       key: "description",
-      ellipsis: true 
+      ellipsis: true,
     },
     {
       title: "Items",
@@ -135,30 +142,26 @@ const MaleProductPackages: React.FC = () => {
       key: "items",
       render: (items: string[]) => (
         <div style={{ maxWidth: 200 }}>
-          {items?.slice(0, 2).map((item, index) => (
-            <div key={index} style={{ fontSize: '12px' }}>• {item}</div>
+          {items?.slice(0, 2).map((item, idx) => (
+            <div key={idx} style={{ fontSize: 12 }}>
+              • {item}
+            </div>
           ))}
-          {items?.length > 2 && <div style={{ fontSize: '12px', color: '#999' }}>+{items.length - 2} more</div>}
+          {items?.length > 2 && (
+            <div style={{ fontSize: 12, color: "#999" }}>
+              +{items.length - 2} more
+            </div>
+          )}
         </div>
       ),
     },
-    { 
-      title: "Offers", 
-      dataIndex: "offers", 
+    {
+      title: "Offers",
+      dataIndex: "offers",
       key: "offers",
       ellipsis: true,
-      render: (offers: string) => offers || '-'
+      render: (offers: string) => offers || "-",
     },
-    // {
-    //   title: "Gender",
-    //   dataIndex: "gender",
-    //   key: "gender",
-    //   render: (gender: string) => (
-    //     <Tag icon={<ManOutlined />} color="blue">
-    //       {gender}
-    //     </Tag>
-    //   ),
-    // },
     {
       title: "Actions",
       key: "actions",
@@ -190,38 +193,71 @@ const MaleProductPackages: React.FC = () => {
       title={
         <span>
           <ManOutlined style={{ marginRight: 8 }} />
-          Male Product Package ({malePackages.length} packages)
+          Male Product Packages ({malePackages.length})
         </span>
       }
       extra={
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => dispatch(fetchProductPackages())}
-            loading={loading}
-          >
-            Refresh
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingPackage(null);
-              setModalVisible(true);
-            }}
-          >
-            Add Package
-          </Button>
-        </Space>
+        !screens.xs && (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              loading={loading}
+              onClick={() => dispatch(fetchProductPackages())}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingPackage(null);
+                setModalVisible(true);
+              }}
+            >
+              Add Package
+            </Button>
+          </Space>
+        )
       }
     >
-      <Search
-        placeholder="Search male product packages..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        allowClear
-        style={{ marginBottom: 16, width: "50%" }}
-      />
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12}>
+          <Search
+            placeholder="Search male product packages..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: "100%" }}
+          />
+        </Col>
+        {screens.xs && (
+          <>
+            <Col xs={24}>
+              <Button
+                icon={<ReloadOutlined />}
+                block
+                loading={loading}
+                onClick={() => dispatch(fetchProductPackages())}
+              >
+                Refresh
+              </Button>
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                block
+                onClick={() => {
+                  setEditingPackage(null);
+                  setModalVisible(true);
+                }}
+              >
+                Add Package
+              </Button>
+            </Col>
+          </>
+        )}
+      </Row>
 
       <Table
         rowKey="_id"
@@ -229,20 +265,26 @@ const MaleProductPackages: React.FC = () => {
         dataSource={filteredPackages}
         loading={loading}
         pagination={{ pageSize: 5 }}
+        style={{ marginTop: 16 }}
+        scroll={{ x: 900 }} // horizontal scroll for mobile
         locale={{ emptyText: "No male product packages found" }}
       />
 
       <Modal
-        title={editingPackage ? "Edit Male Product Package" : "Add Product Package"}
+        title={
+          editingPackage
+            ? "Edit Male Product Package"
+            : "Add Male Product Package"
+        }
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
           setEditingPackage(null);
         }}
         onOk={handleModalOk}
-        okText={editingPackage ? "Update" : "Add Product Package"}
+        okText={editingPackage ? "Update" : "Add Package"}
         confirmLoading={submitLoading}
-        width={700}
+        width={screens.xs ? "95%" : 700}
         destroyOnClose
       >
         <MaleProductPackageForm

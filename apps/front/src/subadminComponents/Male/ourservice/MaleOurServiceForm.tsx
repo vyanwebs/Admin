@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, InputNumber, Button, Upload, Select, message } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Upload,
+  Select,
+  message,
+  Grid,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -29,7 +38,9 @@ const MaleOurServiceForm: React.FC<Props> = ({
   visible,
   onSubmit,
   initialData,
+  loading = false,
 }) => {
+  const screens = Grid.useBreakpoint();
   const [form] = Form.useForm();
   const [imageFileList, setImageFileList] = useState<any[]>([]);
 
@@ -59,7 +70,7 @@ const MaleOurServiceForm: React.FC<Props> = ({
       form.resetFields();
       setImageFileList([]);
     }
-  }, [initialData, visible]);
+  }, [initialData, visible, form]);
 
   const handleFinish = async (values: any) => {
     try {
@@ -73,15 +84,13 @@ const MaleOurServiceForm: React.FC<Props> = ({
       formData.append("gender", "male");
       formData.append("estimatedTime", values.estimatedTime?.toString());
 
-      if (
-        imageFileList.length > 0 &&
-        imageFileList[0].originFileObj
-      ) {
+      if (imageFileList.length > 0 && imageFileList[0].originFileObj) {
         formData.append("imageUrl", imageFileList[0].originFileObj);
       }
 
       await onSubmit(formData, initialData?._id);
-    } catch {
+    } catch (err) {
+      console.error(err);
       message.error("Something went wrong while saving the service");
     }
   };
@@ -131,11 +140,7 @@ const MaleOurServiceForm: React.FC<Props> = ({
         label="Estimated Time (minutes)"
         rules={[{ required: true, message: "Please enter estimated time" }]}
       >
-        <InputNumber
-          min={1}
-          style={{ width: "100%" }}
-          placeholder="e.g., 30"
-        />
+        <InputNumber min={1} style={{ width: "100%" }} placeholder="e.g., 30" />
       </Form.Item>
 
       <Form.Item label="Service Image">
@@ -147,16 +152,20 @@ const MaleOurServiceForm: React.FC<Props> = ({
           beforeUpload={() => false}
           accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>
+          {/* Make upload button block on xs for better mobile touch target */}
+          <Button icon={<UploadOutlined />} block={!!screens.xs}>
             {initialData ? "Change Image" : "Upload Image"}
           </Button>
         </Upload>
       </Form.Item>
 
+      {/* Hidden submit button — parent Modal triggers it */}
       <button
         type="submit"
         style={{ display: "none" }}
         className="male-service-form-submit-button"
+        aria-hidden
+        disabled={loading}
       />
     </Form>
   );

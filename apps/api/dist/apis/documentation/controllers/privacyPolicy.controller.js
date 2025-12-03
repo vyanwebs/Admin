@@ -2,49 +2,55 @@
 // import { Request, Response } from "express";
 // import { PrivacyPolicy } from "../models/privacyPolicy.model";
 // import { privacyPolicySchema } from "../validators/privacyPolicy.validator";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPrivacy = exports.createOrUpdatePrivacy = void 0;
-const privacyPolicy_model_1 = require("../models/privacyPolicy.model");
-const privacyPolicy_validator_1 = require("../validators/privacyPolicy.validator");
-const createOrUpdatePrivacy = async (req, res) => {
-    var _a;
-    try {
-        const addedBy = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
-        const validated = privacyPolicy_validator_1.privacyPolicySchema.parse({
-            title: req.body.title,
-            content: req.body.content,
-        });
-        let doc = await privacyPolicy_model_1.PrivacyPolicy.findOne();
-        if (doc) {
-            doc.title = validated.title;
-            doc.content = validated.content;
-            doc.updatedAt = new Date();
-            doc.addedBy = addedBy;
-            await doc.save();
+exports.getPrivacy = exports.createOrUpdatePrivacyMiddleware = void 0;
+const privacyPolicy_service_1 = __importDefault(require("../services/privacyPolicy.service"));
+const multer_1 = __importDefault(require("multer"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
+// ✅ Create / Update Privacy Policy
+exports.createOrUpdatePrivacyMiddleware = [
+    upload.none(),
+    async (req, res) => {
+        var _a;
+        try {
+            const customReq = req;
+            const addedBy = (_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id;
+            if (!addedBy) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+            const { title, content } = req.body;
+            const saved = await privacyPolicy_service_1.default.createOrUpdate({
+                title,
+                content,
+                addedBy: new mongoose_1.default.Types.ObjectId(addedBy),
+            });
             return res.status(200).json({
-                message: "Privacy Policy updated",
-                data: doc,
+                message: "Privacy Policy saved",
+                data: saved,
             });
         }
-        doc = await privacyPolicy_model_1.PrivacyPolicy.create({
-            ...validated,
-            addedBy,
-        });
-        return res.status(201).json({
-            message: "Privacy Policy created",
-            data: doc,
-        });
-    }
-    catch (error) {
-        return res.status(400).json({ message: error.errors || error.message });
-    }
-};
-exports.createOrUpdatePrivacy = createOrUpdatePrivacy;
-const getPrivacy = async (_req, res) => {
+        catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    },
+];
+// ✅ Get Privacy Policy
+const getPrivacy = async (req, res) => {
+    var _a;
     try {
-        const doc = await privacyPolicy_model_1.PrivacyPolicy.findOne();
-        if (!doc)
+        const customReq = req;
+        const addedBy = (_a = customReq.user) === null || _a === void 0 ? void 0 : _a._id;
+        if (!addedBy) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const doc = await privacyPolicy_service_1.default.getOne(new mongoose_1.default.Types.ObjectId(addedBy));
+        if (!doc) {
             return res.status(404).json({ message: "No Privacy Policy found" });
+        }
         return res.status(200).json({ data: doc });
     }
     catch (error) {

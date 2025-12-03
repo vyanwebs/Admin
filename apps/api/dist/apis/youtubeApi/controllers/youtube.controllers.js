@@ -7,11 +7,12 @@ exports.deleteYoutubeVideo = exports.updateYoutubeVideo = exports.getYoutubeVide
 const youtube_services_1 = __importDefault(require("../services/youtube.services"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createYoutubeVideo = async (req, res) => {
     try {
         const addedBy = req.user._id;
         const { title, videoUrl } = req.body;
-        // ✅ FIXED: Use absolute URL for video paths with HTTPS
+        // FIXED: Use absolute URL for video paths with HTTPS
         const baseUrl = `${req.protocol}://${req.get("host")}`;
         const videoPath = req.file
             ? `${process.env.URL}/uploads/videos/${req.file.filename}`
@@ -38,9 +39,24 @@ exports.createYoutubeVideo = createYoutubeVideo;
 /**
  * Get all YouTube videos
  */
-const getAllYoutubeVideos = async (_req, res) => {
+// export const getAllYoutubeVideos = async (_req: Request, res: Response) => {
+// 	try {
+// 		const videos = await YoutubeService.getAll();
+// 		res.status(200).json({ success: true, data: videos });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
+const getAllYoutubeVideos = async (req, res) => {
     try {
-        const videos = await youtube_services_1.default.getAll();
+        let videos;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            videos = await youtube_services_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: videos });
+        }
+        const addedBy = req.user.subAdminId;
+        videos = await youtube_services_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: videos });
     }
     catch (error) {
@@ -86,7 +102,7 @@ exports.getYoutubeVideosByDate = getYoutubeVideosByDate;
 const updateYoutubeVideo = async (req, res) => {
     try {
         const { title, videoUrl } = req.body;
-        // ✅ FIXED: Use absolute URL for video paths with HTTPS
+        // FIXED: Use absolute URL for video paths with HTTPS
         const baseUrl = `${req.protocol}://${req.get("host")}`;
         const videoPath = req.file
             ? `${process.env.URL}/uploads/videos/${req.file.filename}`
@@ -99,7 +115,7 @@ const updateYoutubeVideo = async (req, res) => {
                 message: "Video not found",
             });
         }
-        // ✅ FIXED: More flexible validation
+        // FIXED: More flexible validation
         const hasNewYouTubeUrl = videoUrl !== undefined && videoUrl !== "";
         const hasNewVideoFile = videoPath !== undefined;
         const hasExistingYouTubeUrl = existingVideo.videoUrl;

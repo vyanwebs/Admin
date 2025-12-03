@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  message,
-} from "antd";
+import { Form, Input, InputNumber, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -36,7 +29,7 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
   visible,
   onSubmit,
   initialData,
- // loading = false,
+  // loading = false,
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
@@ -74,7 +67,7 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
+
       // Append all fields - gender fixed as "Female"
       formData.append("name", values.name);
       formData.append("price", values.price.toString());
@@ -82,10 +75,13 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
       formData.append("description", values.description || "");
       formData.append("offers", values.offers || "");
       formData.append("usage", values.usage || "");
-      formData.append("gender", "female"); // ✅ Fixed as Female
+      formData.append("gender", "female");
 
       // Convert items string to array
-      const itemsArray = values.items.split(",").map((item: string) => item.trim()).filter((item: string) => item);
+      const itemsArray = values.items
+        .split(",")
+        .map((item: string) => item.trim())
+        .filter((item: string) => item);
       itemsArray.forEach((item: string) => {
         formData.append("items", item);
       });
@@ -97,7 +93,9 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
 
       await onSubmit(formData, initialData?._id);
     } catch (error) {
-      message.error("Something went wrong while saving the female product package");
+      message.error(
+        "Something went wrong while saving the female product package"
+      );
     }
   };
 
@@ -108,15 +106,15 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
   // };
 
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="female-product-package-form"
     >
       {/* Gender Indicator
       <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<WomanOutlined />} color="pink" style={{ fontSize: '14px', padding: '8px 16px' }}>
+        <Tag icon={<ManOutlined />} color="blue" style={{ fontSize: '14px', padding: '8px 16px' }}>
           Female Product Package
         </Tag>
       </div> */}
@@ -134,9 +132,9 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
         name="price"
         rules={[{ required: true, message: "Please enter price" }]}
       >
-        <InputNumber 
-          min={0} 
-          style={{ width: "100%" }} 
+        <InputNumber
+          min={0}
+          style={{ width: "100%" }}
           placeholder="Enter package price"
         />
       </Form.Item>
@@ -146,8 +144,8 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
         name="description"
         rules={[{ required: true, message: "Please enter description" }]}
       >
-        <TextArea 
-          rows={3} 
+        <TextArea
+          rows={3}
           placeholder="Enter package description for female customers"
         />
       </Form.Item>
@@ -158,42 +156,34 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
         rules={[{ required: true, message: "Please enter items" }]}
         extra="Separate items with commas"
       >
-        <TextArea 
-          rows={3} 
-          placeholder="Enter items for female customers (e.g., Face Cream, Lipstick, Perfume)"
+        <TextArea
+          rows={3}
+          placeholder="Enter items for female customers (e.g., Beard Oil, Hair Gel, Face Wash)"
         />
       </Form.Item>
 
-      <Form.Item
-        label="Review"
-        name="review"
-      >
-        <TextArea 
-          rows={2} 
-          placeholder="Enter review"
-        />
+      <Form.Item label="Review" name="review">
+        <TextArea rows={2} placeholder="Enter review" />
       </Form.Item>
 
-      <Form.Item
-        label="Offers"
-        name="offers"
-      >
-        <Input placeholder="Enter offers (e.g., Save ₹200 on female beauty combo)" />
+      <Form.Item label="Offers" name="offers">
+        <Input placeholder="Enter offers (e.g., Save ₹200 on female grooming combo)" />
       </Form.Item>
 
-      <Form.Item
-        label="Usage Instructions"
-        name="usage"
-      >
-        <TextArea 
-          rows={2} 
+      <Form.Item label="Usage Instructions" name="usage">
+        <TextArea
+          rows={2}
           placeholder="Enter usage instructions for female customers"
         />
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         label="Package Image"
-        rules={!initialData ? [{ required: true, message: "Please upload an image" }] : []}
+        rules={
+          !initialData
+            ? [{ required: true, message: "Please upload an image" }]
+            : []
+        }
       >
         <Upload
           listType="picture"
@@ -208,16 +198,16 @@ const FemaleProductPackageForm: React.FC<FemaleProductPackageFormProps> = ({
           </Button>
         </Upload>
         {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
+          <div style={{ color: "#999", fontSize: "12px", marginTop: "4px" }}>
             Image is required for new packages
           </div>
         )}
       </Form.Item>
 
       {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="female-product-package-form-submit-button"
       />
     </Form>

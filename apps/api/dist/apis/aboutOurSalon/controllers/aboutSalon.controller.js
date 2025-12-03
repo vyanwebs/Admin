@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAboutSalon = exports.updateAboutSalon = exports.getAboutSalonById = exports.getAllAboutSalon = exports.createAboutSalon = void 0;
 const aboutSalon_service_1 = __importDefault(require("../services/aboutSalon.service"));
 const dotenv_1 = require("dotenv");
+const mongoose_1 = __importDefault(require("mongoose"));
 (0, dotenv_1.config)();
 const createAboutSalon = async (req, res) => {
     try {
@@ -27,9 +28,24 @@ const createAboutSalon = async (req, res) => {
     }
 };
 exports.createAboutSalon = createAboutSalon;
+// export const getAllAboutSalon = async (req: Request, res: Response) => {
+// 	try {
+// 		const salons = await AboutSalonService.getAll();
+// 		res.status(200).json({ success: true, data: salons });
+// 	} catch (error: any) {
+// 		res.status(500).json({ success: false, error: error.message });
+// 	}
+// };
 const getAllAboutSalon = async (req, res) => {
     try {
-        const salons = await aboutSalon_service_1.default.getAll();
+        let salons;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            salons = await aboutSalon_service_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: salons });
+        }
+        const addedBy = req.user.subAdminId;
+        salons = await aboutSalon_service_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: salons });
     }
     catch (error) {

@@ -23,7 +23,7 @@ const productPackageSchema = new Schema<IProductPackage>(
     items: [{ type: String, required: true }],
     usage: { type: String },
     image: { type: String },
-    gender: { type: String }, 
+    gender: { type: String },
     addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }

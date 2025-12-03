@@ -11,7 +11,7 @@ const multerConfig_1 = __importDefault(require("../../mediaApi/services/multerCo
 const razorpay_controller_1 = require("../../razorpay/controller/razorpay.controller");
 const router = express_1.default.Router();
 router.post("/", auth_middleware_1.protect, auth_controller_1.updateToken);
-router.post("/register", multerConfig_1.default.single("avatar"), // ✅ handle avatar upload
+router.post("/register", multerConfig_1.default.single("avatar"), //  handle avatar upload
 // validate(createUserSchema),
 auth_controller_1.register);
 //router.post('/register', validate(createUserSchema), register);

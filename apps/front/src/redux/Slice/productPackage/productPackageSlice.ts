@@ -49,7 +49,9 @@ export const addProductPackage = createAsyncThunk(
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to add product package");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add product package"
+      );
     }
   }
 );
@@ -57,14 +59,19 @@ export const addProductPackage = createAsyncThunk(
 // 🔹 Edit product package
 export const updateProductPackage = createAsyncThunk(
   "productPackages/update",
-  async ({ id, formData }: { id: string; formData: FormData }, { rejectWithValue }) => {
+  async (
+    { id, formData }: { id: string; formData: FormData },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await API.put(`/product-packages/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update product package");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update product package"
+      );
     }
   }
 );
@@ -77,7 +84,9 @@ export const deleteProductPackage = createAsyncThunk(
       await API.delete(`/product-packages/${id}`);
       return id;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete product package");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete product package"
+      );
     }
   }
 );
@@ -105,7 +114,7 @@ const productPackageSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 🔹 Add product package
       .addCase(addProductPackage.pending, (state) => {
         state.loading = true;
@@ -125,7 +134,9 @@ const productPackageSlice = createSlice({
       })
       .addCase(updateProductPackage.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.packages.findIndex((p) => p._id === action.payload._id);
+        const index = state.packages.findIndex(
+          (p) => p._id === action.payload._id
+        );
         if (index !== -1) {
           state.packages[index] = action.payload;
         }

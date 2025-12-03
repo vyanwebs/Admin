@@ -1,31 +1,81 @@
+// // import { Router } from "express";
+// // import { createOrUpdateAboutUs, getAboutUs } from "../controllers/aboutUs.controller";
+// // import { upload } from "../../mediaApi/services/multerConfig"; // existing multer
+
+// // const router = Router();
+
+// // // POST route (form-data text-only)
+// // router.post("/", upload.none(), createOrUpdateAboutUs);
+
+// // // GET route
+// // router.get("/", getAboutUs);
+
+// // export default router;
+
+
+// // import { Router } from "express";
+// // import { createOrUpdateAboutUs, getAboutUs } from "../controllers/aboutUs.controller";
+// // import { protect } from "../../userApi/middlewares/auth.middleware";
+// // import { upload } from "../../mediaApi/services/multerConfig";
+
+// // const router = Router();
+
+// // router.post(
+// //   "/",
+// //   protect,           
+// //   upload.none(),     
+// //   createOrUpdateAboutUs
+// // );
+// // router.get("/", getAboutUs);
+
+// // export default router;
+
+
+
+// // routes/aboutUs.routes.ts
 // import { Router } from "express";
-// import { createOrUpdateAboutUs, getAboutUs } from "../controllers/aboutUs.controller";
-// import { upload } from "../../mediaApi/services/multerConfig"; // existing multer
+// import { getAboutUs } from "../controllers/aboutUs.controller";
+// import { createOrUpdateAboutUsMiddleware } from "../controllers/aboutUs.controller";
+// import { protect } from "../../userApi/middlewares/auth.middleware";
+// import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
 
 // const router = Router();
 
-// // POST route (form-data text-only)
-// router.post("/", upload.none(), createOrUpdateAboutUs);
+// router.post(
+//   "/",
+//   protect,
+//   authorizeRole("admin", "superadmin", "user"),
+//   createOrUpdateAboutUsMiddleware
+// );
 
-// // GET route
-// router.get("/", getAboutUs);
+// router.get(
+//   "/",
+//   protect,
+//   authorizeRole("admin", "superadmin", "user"),
+//   getAboutUs
+// );
 
 // export default router;
 
-
 import { Router } from "express";
-import { createOrUpdateAboutUs, getAboutUs } from "../controllers/aboutUs.controller";
+import { getAboutUs, createOrUpdateAboutUsMiddleware } from "../controllers/aboutUs.controller";
 import { protect } from "../../userApi/middlewares/auth.middleware";
-import { upload } from "../../mediaApi/services/multerConfig";
+import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
 
 const router = Router();
 
 router.post(
   "/",
-  protect,           
-  upload.none(),     
-  createOrUpdateAboutUs
+  protect,
+  authorizeRole("admin", "superadmin"),
+  createOrUpdateAboutUsMiddleware
 );
-router.get("/", getAboutUs);
+
+router.get(
+  "/",
+  protect,
+  authorizeRole("admin", "superadmin","user"),
+  getAboutUs
+);
 
 export default router;

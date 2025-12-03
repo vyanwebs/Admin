@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, InputNumber, Button, Upload, message} from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Button,
+  Upload,
+  message,
+  Row,
+  Col,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
 export interface Product {
@@ -28,7 +37,6 @@ const FemaleProductForm: React.FC<FemaleProductFormProps> = ({
   visible,
   onSubmit,
   initialData,
- // loading = false,
 }) => {
   const [form] = Form.useForm();
   const [imageFileList, setImageFileList] = useState<any[]>([]);
@@ -81,8 +89,6 @@ const FemaleProductForm: React.FC<FemaleProductFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields - gender fixed as "Female"
       formData.append("name", values.name);
       formData.append("price", values.price.toString());
       formData.append("offer", values.offer || "");
@@ -90,129 +96,128 @@ const FemaleProductForm: React.FC<FemaleProductFormProps> = ({
       formData.append("tag", values.tag || "");
       formData.append("description", values.description || "");
       formData.append("reviews", values.reviews || "");
-      formData.append("gender", "female"); 
+      formData.append("gender", "female");
 
-      // Append main image if exists
       if (imageFileList.length > 0 && imageFileList[0].originFileObj) {
         formData.append("image", imageFileList[0].originFileObj);
       }
 
-      // Append icon if exists
       if (iconsFileList.length > 0 && iconsFileList[0].originFileObj) {
         formData.append("icons", iconsFileList[0].originFileObj);
       }
 
       await onSubmit(formData, initialData?._id);
-    } catch (error) {
-      message.error("Something went wrong while saving the female product");
+    } catch {
+      message.error("Failed to save product");
     }
   };
 
-  // const handleCancel = () => {
-  //   form.resetFields();
-  //   setImageFileList([]);
-  //   setIconsFileList([]);
-  //   onCancel();
-  // };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="female-product-form"
     >
-      {/* Gender Indicator
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<WomanOutlined />} color="pink" style={{ fontSize: '14px', padding: '8px 16px' }}>
-          Female Product
-        </Tag>
-      </div> */}
+      <Row gutter={16}>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="name"
+            label="Product Name"
+            rules={[{ required: true, message: "Please enter product name" }]}
+          >
+            <Input placeholder="Enter product name" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item
-        name="name"
-        label="Product Name"
-        rules={[{ required: true, message: "Please enter product name" }]}
-      >
-        <Input placeholder="Enter female product name" />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="price"
+            label="Price"
+            rules={[{ required: true, message: "Please enter price" }]}
+          >
+            <InputNumber
+              min={0}
+              style={{ width: "100%" }}
+              placeholder="Enter product price"
+            />
+          </Form.Item>
+        </Col>
 
-      <Form.Item
-        name="price"
-        label="Price"
-        rules={[{ required: true, message: "Please enter price" }]}
-      >
-        <InputNumber 
-          min={0} 
-          style={{ width: "100%" }} 
-          placeholder="Enter product price" 
-        />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item name="offer" label="Offer">
+            <Input placeholder="Enter offer details" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item name="offer" label="Offer">
-        <Input placeholder="Enter offer details" />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item name="rating" label="Rating">
+            <Input placeholder="Enter rating (e.g. 4.5)" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item name="rating" label="Rating">
-        <Input placeholder="Enter rating (e.g. 4.5)" />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item name="tag" label="Tag">
+            <Input placeholder="Product tag (e.g. new, hot)" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item name="tag" label="Tag">
-        <Input placeholder="Product tag (e.g. new, hot, etc.)" />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item name="reviews" label="Reviews">
+            <Input placeholder="Enter review info" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item name="description" label="Description">
-        <Input.TextArea rows={3} placeholder="Enter product description for female customers" />
-      </Form.Item>
+        <Col xs={24}>
+          <Form.Item name="description" label="Description">
+            <Input.TextArea rows={3} placeholder="Enter product description" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item name="reviews" label="Reviews">
-        <Input placeholder="Enter review info" />
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            label="Main Image"
+            rules={
+              !initialData
+                ? [{ required: true, message: "Please upload product image" }]
+                : []
+            }
+          >
+            <Upload
+              listType="picture"
+              maxCount={1}
+              fileList={imageFileList}
+              onChange={({ fileList }) => setImageFileList(fileList)}
+              beforeUpload={() => false}
+              accept="image/*"
+            >
+              <Button icon={<UploadOutlined />}>
+                {initialData ? "Change Main Image" : "Upload Main Image"}
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
 
-      <Form.Item 
-        label="Main Image"
-        rules={!initialData ? [{ required: true, message: "Please upload product image" }] : []}
-      >
-        <Upload
-          listType="picture"
-          maxCount={1}
-          fileList={imageFileList}
-          onChange={({ fileList }) => setImageFileList(fileList)}
-          beforeUpload={() => false}
-          accept="image/*"
-        >
-          <Button icon={<UploadOutlined />}>
-            {initialData ? "Change Main Image" : "Upload Main Image"}
-          </Button>
-        </Upload>
-        {!initialData && (
-          <div style={{ color: '#999', fontSize: '12px', marginTop: '4px' }}>
-            Main image is required for new products
-          </div>
-        )}
-      </Form.Item>
+        <Col xs={24} sm={12}>
+          <Form.Item label="Icon">
+            <Upload
+              listType="picture"
+              maxCount={1}
+              fileList={iconsFileList}
+              onChange={({ fileList }) => setIconsFileList(fileList)}
+              beforeUpload={() => false}
+              accept="image/*"
+            >
+              <Button icon={<UploadOutlined />}>
+                {initialData ? "Change Icon" : "Upload Icon"}
+              </Button>
+            </Upload>
+          </Form.Item>
+        </Col>
+      </Row>
 
-      <Form.Item label="Icon">
-        <Upload
-          listType="picture"
-          maxCount={1}
-          fileList={iconsFileList}
-          onChange={({ fileList }) => setIconsFileList(fileList)}
-          beforeUpload={() => false}
-          accept="image/*"
-        >
-          <Button icon={<UploadOutlined />}>
-            {initialData ? "Change Icon" : "Upload Icon"}
-          </Button>
-        </Upload>
-      </Form.Item>
-
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
-        className="female-product-form-submit-button"
-      />
+      {/* Hidden submit button triggered by parent modal */}
+      <button type="submit" style={{ display: "none" }} />
     </Form>
   );
 };

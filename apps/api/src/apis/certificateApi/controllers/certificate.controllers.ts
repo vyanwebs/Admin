@@ -120,6 +120,8 @@
 import { Request, Response } from "express";
 import CertificateService from "../services/certificate.service";
 import path from "path";
+import mongoose from "mongoose";
+
 
 export const uploadCertificate = async (req: Request, res: Response) => {
 	try {
@@ -151,19 +153,41 @@ export const uploadCertificate = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllCertificates = async (req: Request, res: Response) => {
-	try {
-		// OPTION 1 → Return ALL certificates for both Admin & User
-		const certificates = await CertificateService.getAll();
+// export const getAllCertificates = async (req: Request, res: Response) => {
+// 	try {
+// 		// OPTION 1 → Return ALL certificates for both Admin & User
+// 		const certificates = await CertificateService.getAll();
 
-		res.status(200).json({ success: true, data: certificates });
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			error: (error as Error).message,
-		});
+// 		res.status(200).json({ success: true, data: certificates });
+// 	} catch (error) {
+// 		res.status(500).json({
+// 			success: false,
+// 			error: (error as Error).message,
+// 		});
+// 	}
+// };
+
+export const getAllCertificates = async (req: Request, res: Response) => {
+  try {
+	let certificates
+	const subAdminId = req.user.id
+	if(req.user.role === "admin"){
+	  certificates = await CertificateService.getAll(subAdminId)
+		  res.status(200).json({ success: true, data: certificates });
+
 	}
+	const addedBy = req.user.subAdminId
+	 certificates = await CertificateService.getAll( new mongoose.Types.ObjectId( addedBy));
+	res.status(200).json({ success: true, data: certificates });
+  } catch (error) {
+	res.status(500).json({ success: false, error: (error as Error).message });
+  }
 };
+
+
+
+
+
 
 export const deleteCertificate = async (req: Request, res: Response) => {
 	try {

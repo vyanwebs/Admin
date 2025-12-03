@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
-import {
-  Form,
-  Input,
-//   Button,
-  message,
-  Tag,
-} from "antd";
-import { SafetyCertificateOutlined } from "@ant-design/icons"; // ✅ Fixed icon
+import { Form, Input, message, Tag } from "antd";
+import { SafetyCertificateOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 
@@ -28,10 +22,8 @@ interface PrivacyPolicyFormProps {
 
 const PrivacyPolicyForm: React.FC<PrivacyPolicyFormProps> = ({
   visible,
-  //onCancel,
   onSubmit,
   initialData,
-//   loading = false,
 }) => {
   const [form] = Form.useForm();
 
@@ -49,32 +41,27 @@ const PrivacyPolicyForm: React.FC<PrivacyPolicyFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
       formData.append("title", values.title);
       formData.append("content", values.content);
-
       await onSubmit(formData);
-    } catch (error) {
+    } catch {
       message.error("Something went wrong while saving privacy policy");
     }
   };
 
-//   const handleCancel = () => {
-//     form.resetFields();
-//     onCancel();
-//   };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="privacy-policy-form"
     >
-      {/* Info Indicator */}
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<SafetyCertificateOutlined />} color="green" style={{ fontSize: '14px', padding: '8px 16px' }}> {/* ✅ Fixed icon */}
+      <div style={{ marginBottom: 16, textAlign: "center" }}>
+        <Tag
+          icon={<SafetyCertificateOutlined />}
+          color="green"
+          style={{ fontSize: "14px", padding: "8px 16px" }}
+        >
           Privacy Policy Information
         </Tag>
       </div>
@@ -92,18 +79,17 @@ const PrivacyPolicyForm: React.FC<PrivacyPolicyFormProps> = ({
         name="content"
         rules={[{ required: true, message: "Please enter content" }]}
       >
-        <TextArea 
-          rows={12} 
+        <TextArea
+          rows={12}
           placeholder="Enter detailed privacy policy content including data collection, usage, storage, sharing, user rights, cookies, security measures, etc."
           showCount
           maxLength={10000}
         />
       </Form.Item>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="privacy-policy-form-submit-button"
       />
     </Form>

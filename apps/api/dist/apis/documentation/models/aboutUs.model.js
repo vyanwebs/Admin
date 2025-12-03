@@ -47,10 +47,26 @@ exports.AboutUs = void 0;
 //   addedBy: {type:Schema.Types.ObjectId, ref: "User", required: true},
 // });
 // export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
+// import mongoose, { Document, Schema, Types } from "mongoose";
+// export interface IAboutUs extends Document {
+//   title: string;
+//   content: string;
+//   addedBy: Types.ObjectId;
+// }
+// const AboutUsSchema: Schema = new Schema(
+//   {
+//     title: { type: String, required: true },
+//     content: { type: String, required: true },
+//     addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // ⭐ SAME AS OFFER
+//   },
+//   { timestamps: true }
+// );
+// export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
 const mongoose_1 = __importStar(require("mongoose"));
 const AboutUsSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
-    addedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true }, // ⭐ SAME AS OFFER
+    addedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
 }, { timestamps: true });
 exports.AboutUs = mongoose_1.default.model("AboutUs", AboutUsSchema);
+exports.default = exports.AboutUs;

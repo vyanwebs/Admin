@@ -8,7 +8,10 @@ export const verifyAppointment = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const { data } = await API.post("/appointments/verify-appointment", payload);
+      const { data } = await API.post(
+        "/appointments/verify-appointment",
+        payload
+      );
       return data;
     } catch (error: any) {
       console.error(" Verify appointment error:", error);
@@ -56,7 +59,8 @@ const appointmentSlice = createSlice({
       .addCase(verifyAppointment.fulfilled, (state, action) => {
         state.loading = false;
         state.success = action.payload?.success || false;
-        state.message = action.payload?.message || "Appointment verified successfully";
+        state.message =
+          action.payload?.message || "Appointment verified successfully";
       })
       .addCase(verifyAppointment.rejected, (state, action) => {
         state.loading = false;

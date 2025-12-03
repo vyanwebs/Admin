@@ -4,7 +4,7 @@ import { login } from '../../redux/Slice/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import type{ LoginPayload } from '../../redux/types/auth.types';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
- 
+
 const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

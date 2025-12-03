@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 import mongoose from "mongoose";
 
-// ✅ Create Product
+//  Create Product
 export const createProduct = async (req: Request, res: Response) => {
 	const customReq = req as unknown as {
 		files?: {
@@ -27,7 +27,7 @@ export const createProduct = async (req: Request, res: Response) => {
 			gender,
 		}: CreateProductDto = req.body;
 
-		// ✅ Convert addedBy to ObjectId if user exists
+		//  Convert addedBy to ObjectId if user exists
 		const addedBy = customReq.user?._id
 			? new mongoose.Types.ObjectId(customReq.user._id)
 			: undefined;
@@ -37,7 +37,7 @@ export const createProduct = async (req: Request, res: Response) => {
 				.status(400)
 				.json({ success: false, message: "Main image is required!" });
 		}
-
+		
 		const image = `${process.env.URL}/uploads/images/${customReq.files.image[0].filename}`;
 		const icons =
 			customReq.files?.icons?.map(
@@ -55,7 +55,7 @@ export const createProduct = async (req: Request, res: Response) => {
 			icons,
 			reviews,
 			gender,
-			addedBy, // ✅ Properly typed
+			addedBy, //  Properly typed
 		});
 
 		res.status(201).json({
@@ -69,32 +69,75 @@ export const createProduct = async (req: Request, res: Response) => {
 	}
 };
 
-// ✅ Get All Products
+//  Get All Products
+// export const getAllProducts = async (req: Request, res: Response) => {
+// 	try {
+// 		const products = await ProductService.getAll();
+// 		res.status(200).json({ success: true, data: products });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
+
+
 export const getAllProducts = async (req: Request, res: Response) => {
-	try {
-		const products = await ProductService.getAll();
-		res.status(200).json({ success: true, data: products });
-	} catch (error) {
-		res.status(500).json({ success: false, error: (error as Error).message });
+  try {
+	let products
+	const subAdminId = req.user.id
+	if(req.user.role === "admin"){
+	  products = await ProductService.getAll(subAdminId)
+		  res.status(200).json({ success: true, data: products });
+
 	}
+	const addedBy = req.user.subAdminId
+	 products = await ProductService.getAll( new mongoose.Types.ObjectId( addedBy));
+	res.status(200).json({ success: true, data: products });
+  } catch (error) {
+	res.status(500).json({ success: false, error: (error as Error).message });
+  }
 };
 
-// ✅ Get Product by ID
+
+
+
+
+
+// Get Product by ID
+// export const getProductById = async (req: Request, res: Response) => {
+// 	try {
+// 		const product = await ProductService.getById(req.params.id);
+// 		if (!product)
+// 			return res
+// 				.status(404)
+// 				.json({ success: false, message: "Product not found" });
+
+// 		res.status(200).json({ success: true, data: product });
+// 	} catch (error) {
+// 		res.status(500).json({ success: false, error: (error as Error).message });
+// 	}
+// };
+
 export const getProductById = async (req: Request, res: Response) => {
-	try {
-		const product = await ProductService.getById(req.params.id);
-		if (!product)
-			return res
-				.status(404)
-				.json({ success: false, message: "Product not found" });
+  try {
+	let product
+	const subAdminId = req.user.id
+	if(req.user.role === "admin"){
+	  product = await ProductService.getAll(subAdminId)
+		  res.status(200).json({ success: true, data: product });
 
-		res.status(200).json({ success: true, data: product });
-	} catch (error) {
-		res.status(500).json({ success: false, error: (error as Error).message });
 	}
+	const addedBy = req.user.subAdminId
+	 product = await ProductService.getAll( new mongoose.Types.ObjectId( addedBy));
+	res.status(200).json({ success: true, data: product });
+  } catch (error) {
+	res.status(500).json({ success: false, error: (error as Error).message });
+  }
 };
 
-// ✅ Update Product
+
+
+
+//  Update Product
 export const updateProduct = async (req: Request, res: Response) => {
 	const customReq = req as unknown as { file?: Express.Multer.File };
 
@@ -119,7 +162,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 			image = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
 		}
 
-		// ✅ Destructure gender from body and keep existing if not provided
+		//  Destructure gender from body and keep existing if not provided
 		const { gender, ...rest } = req.body;
 
 		const updated = await ProductService.updateById(id, {
@@ -138,7 +181,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 	}
 };
 
-// ✅ Delete Product
+//  Delete Product
 export const deleteProduct = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
@@ -148,7 +191,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
 				.status(404)
 				.json({ success: false, message: "Product not found" });
 
-		// ✅ Delete main image file
+		//  Delete main image file
 		const imgPath = path.join(
 			__dirname,
 			"../../../../uploads/images",

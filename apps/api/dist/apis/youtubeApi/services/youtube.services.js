@@ -9,8 +9,11 @@ class YoutubeService {
         const video = new youtube_models_1.default(data);
         return video.save();
     }
-    async getAll() {
-        return youtube_models_1.default.find().sort({ createdAt: -1 });
+    // async getAll(): Promise<IYoutubeVideo[]> {
+    //   return YoutubeVideo.find().sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return youtube_models_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async getById(id) {
         return youtube_models_1.default.findById(id);

@@ -1,7 +1,21 @@
-// FemaleHomeService.tsx
 import React, { useEffect, useState } from "react";
-import { Card, Table, Button, Space, Tag, Popconfirm, Input, Modal } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  Card,
+  Table,
+  Button,
+  Space,
+  Tag,
+  Popconfirm,
+  Input,
+  Modal,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ReloadOutlined,
+  ManOutlined,
+} from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   fetchHomeServices,
@@ -9,16 +23,22 @@ import {
   updateHomeService,
   deleteHomeService,
 } from "../../../redux/Slice/homeservice/homeServiceSlice";
-import FemaleHomeServiceForm, { type HomeService } from "./FemaleHomeServiceForm";
+import FemaleHomeServiceForm, {
+  type HomeService,
+} from "./FemaleHomeServiceForm";
 
 const { Search } = Input;
 
 const FemaleHomeService: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { data = [], loading = false } = useAppSelector((state) => state.homeServices);
+  const { data = [], loading = false } = useAppSelector(
+    (state) => state.homeServices
+  );
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingService, setEditingService] = useState<HomeService | null>(null);
+  const [editingService, setEditingService] = useState<HomeService | null>(
+    null
+  );
   const [searchText, setSearchText] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -37,7 +57,7 @@ const FemaleHomeService: React.FC = () => {
       setModalVisible(false);
       setEditingService(null);
       dispatch(fetchHomeServices("female"));
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
     } finally {
       setSubmitLoading(false);
@@ -54,26 +74,52 @@ const FemaleHomeService: React.FC = () => {
   };
 
   const handleModalOk = () => {
-    const formButton = document.querySelector(".female-home-service-form-submit-button");
+    const formButton = document.querySelector(
+      ".female-home-service-form-submit-button"
+    );
     if (formButton) (formButton as HTMLButtonElement).click();
   };
 
   const filteredServices = data
     .filter((s) => s.gender === "female")
-    .filter((s) => s.name?.toLowerCase().includes(searchText.toLowerCase()));
+    .filter(
+      (s) =>
+        s.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        s.description?.toLowerCase().includes(searchText.toLowerCase())
+    );
 
   const columns = [
     {
       title: "Image",
       dataIndex: "image",
+      width: 80,
       render: (img: string) =>
-        img ? <img src={img} width={60} height={60} style={{ borderRadius: 6, objectFit: "cover" }} /> : <Tag color="red">No Image</Tag>,
+        img ? (
+          <img
+            src={img}
+            className="w-[55px] h-[55px] rounded-lg object-cover shadow-sm"
+          />
+        ) : (
+          <Tag color="red">No Image</Tag>
+        ),
     },
     { title: "Name", dataIndex: "name" },
-    { title: "Price", dataIndex: "price", render: (p: number) => `₹${p}` },
-    { title: "Description", dataIndex: "description", ellipsis: true, width: "35%" },
+    {
+      title: "Price",
+      dataIndex: "price",
+      render: (p: number) => (
+        <span className="text-green-600 font-semibold">₹{p}</span>
+      ),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      ellipsis: true,
+      width: "35%",
+    },
     {
       title: "Actions",
+      width: 140,
       render: (_: any, record: HomeService) => (
         <Space>
           <Button
@@ -84,7 +130,10 @@ const FemaleHomeService: React.FC = () => {
               setModalVisible(true);
             }}
           />
-          <Popconfirm title="Delete?" onConfirm={() => handleDelete(record._id!)}>
+          <Popconfirm
+            title="Delete?"
+            onConfirm={() => handleDelete(record._id!)}
+          >
             <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -94,10 +143,19 @@ const FemaleHomeService: React.FC = () => {
 
   return (
     <Card
-      title={`Female Home Services (${filteredServices.length})`}
+      title={
+        <span className="font-semibold text-lg flex items-center gap-2">
+          <ManOutlined />
+          Female Home Services ({filteredServices.length})
+        </span>
+      }
       extra={
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={() => dispatch(fetchHomeServices("female"))} loading={loading}>
+        <Space className="hidden sm:flex">
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => dispatch(fetchHomeServices("female"))}
+            loading={loading}
+          >
             Refresh
           </Button>
           <Button
@@ -112,26 +170,55 @@ const FemaleHomeService: React.FC = () => {
           </Button>
         </Space>
       }
+      className="shadow-lg rounded-xl p-2 sm:p-4"
     >
+      {/* MOBILE BUTTONS */}
+      <div className="flex sm:hidden flex-col gap-2 mb-3">
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => dispatch(fetchHomeServices("female"))}
+          loading={loading}
+          className="w-full"
+        >
+          Refresh
+        </Button>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          className="w-full"
+          onClick={() => {
+            setEditingService(null);
+            setModalVisible(true);
+          }}
+        >
+          Add New
+        </Button>
+      </div>
+
+      {/* SEARCH BAR */}
       <Search
         placeholder="Search services..."
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         allowClear
-        style={{ marginBottom: 16, width: "50%" }}
+        size="large"
+        className="mb-4 w-full"
       />
 
+      {/* TABLE */}
       <Table
         rowKey="_id"
         columns={columns}
         dataSource={filteredServices}
         loading={loading || submitLoading}
         pagination={{ pageSize: 5 }}
-        scroll={{ x: 800 }}
+        scroll={{ x: 600 }}
+        className="rounded-lg shadow-sm"
       />
 
+      {/* MODAL */}
       <Modal
-        title={editingService ? "Edit Female Home Service" : "Add Female Home Service"}
+        title={editingService ? "Edit Service" : "Add New Service"}
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);

@@ -14,7 +14,8 @@ router.post("/upload", auth_middleware_1.protect, multerConfig_1.upload.single("
 // Update home service (image optional)
 router.put("/:id", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), multerConfig_1.upload.single("image"), homeService_controller_1.updateHomeService);
 // Get all / Get by ID / Delete
-router.get("/", auth_middleware_1.protect, homeService_controller_1.getHomeServices);
+//router.get("/", protect, getHomeServices);
+router.get("/", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin", "user"), homeService_controller_1.getHomeServices);
 router.get("/:id", auth_middleware_1.protect, homeService_controller_1.getHomeServiceById);
 router.delete("/:id", auth_middleware_1.protect, (0, authorizeRole_1.authorizeRole)("admin", "superadmin"), homeService_controller_1.deleteHomeService);
 exports.default = router;

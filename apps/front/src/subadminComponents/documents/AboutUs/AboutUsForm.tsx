@@ -1,11 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Form,
-  Input,
-//   Button,
-  message,
-  Tag,
-} from "antd";
+import { Form, Input, message, Tag, Row, Col } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -19,7 +13,6 @@ export interface AboutUs {
 
 interface AboutUsFormProps {
   visible: boolean;
-  onCancel: () => void;
   onSubmit: (formData: FormData) => void;
   initialData?: AboutUs | null;
   loading?: boolean;
@@ -27,10 +20,8 @@ interface AboutUsFormProps {
 
 const AboutUsForm: React.FC<AboutUsFormProps> = ({
   visible,
- // onCancel,
   onSubmit,
   initialData,
- // loading = false,
 }) => {
   const [form] = Form.useForm();
 
@@ -48,61 +39,62 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({
   const handleFinish = async (values: any) => {
     try {
       const formData = new FormData();
-      
-      // Append all fields
       formData.append("title", values.title);
-      formData.append("content", values.content);
-
+      formData.append("content", values.content || "");
       await onSubmit(formData);
-    } catch (error) {
-      message.error("Something went wrong while saving about us information");
+    } catch {
+      message.error("Something went wrong while saving About Us");
     }
   };
 
-//   const handleCancel = () => {
-//     form.resetFields();
-//     onCancel();
-//   };
-
   return (
-    <Form 
-      form={form} 
-      layout="vertical" 
+    <Form
+      form={form}
+      layout="vertical"
       onFinish={handleFinish}
       className="about-us-form"
     >
-      {/* Info Indicator */}
-      <div style={{ marginBottom: 16, textAlign: 'center' }}>
-        <Tag icon={<InfoCircleOutlined />} color="blue" style={{ fontSize: '14px', padding: '8px 16px' }}>
+      <div style={{ marginBottom: 16, textAlign: "center" }}>
+        <Tag
+          icon={<InfoCircleOutlined />}
+          color="blue"
+          style={{ fontSize: "14px", padding: "8px 16px" }}
+        >
           About Us Information
         </Tag>
       </div>
 
-      <Form.Item
-        label="Title"
-        name="title"
-        rules={[{ required: true, message: "Please enter title" }]}
-      >
-        <Input placeholder="Enter title (e.g., About Our Company, Our Story, Who We Are)" />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col xs={24}>
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: "Please enter title" }]}
+          >
+            <Input placeholder="Enter title" />
+          </Form.Item>
+        </Col>
 
-      <Form.Item
-        label="Content"
-        name="content"
-        rules={[{ required: true, message: "Please enter content" }]}
-      >
-        <TextArea 
-          rows={10} 
-          placeholder="Enter detailed content about your company, mission, vision, values, history, team, etc."
-          showCount
-          maxLength={5000}
-        />
-      </Form.Item>
+        <Col xs={24}>
+          <Form.Item
+            label="Content"
+            name="content"
+            rules={[{ required: true, message: "Please enter content" }]}
+          >
+            <TextArea
+              rows={10}
+              placeholder="Enter content"
+              showCount
+              maxLength={5000}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
 
-      {/* Hidden submit button for modal to trigger */}
-      <button 
-        type="submit" 
-        style={{ display: 'none' }}
+      {/* Hidden submit button for modal */}
+      <button
+        type="submit"
+        style={{ display: "none" }}
         className="about-us-form-submit-button"
       />
     </Form>

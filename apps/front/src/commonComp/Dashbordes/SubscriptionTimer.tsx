@@ -5,7 +5,7 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
 interface Props {
-  expiryDate: string; // e.g. "2025-12-31T00:00:00Z"
+  expiryDate: string; // e.g. "2025-01-31T00:00:00Z"
 }
 
 const SubscriptionTimer: React.FC<Props> = ({ expiryDate }) => {
@@ -26,7 +26,7 @@ const SubscriptionTimer: React.FC<Props> = ({ expiryDate }) => {
       const diff = expiry.diff(now);
 
       if (diff <= 0) {
-        setTimeLeft("❌ Subscription expired");
+        setTimeLeft(" Subscription expired");
         clearInterval(interval);
       } else {
         const dur = dayjs.duration(diff);

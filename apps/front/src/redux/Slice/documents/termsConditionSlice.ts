@@ -44,7 +44,9 @@ export const createOrUpdateTermsCondition = createAsyncThunk(
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to save terms and conditions");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to save terms and conditions"
+      );
     }
   }
 );
@@ -75,7 +77,7 @@ const termsConditionSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 🔹 Create or update terms and conditions
       .addCase(createOrUpdateTermsCondition.pending, (state) => {
         state.loading = true;

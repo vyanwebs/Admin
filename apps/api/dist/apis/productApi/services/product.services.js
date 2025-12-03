@@ -8,8 +8,11 @@ class ProductService {
     async create(data) {
         return await product_model_1.default.create(data);
     }
-    async getAll() {
-        return await product_model_1.default.find().sort({ createdAt: -1 });
+    // async getAll(): Promise<IProduct[]> {
+    //   return await Product.find().sort({ createdAt: -1 });
+    // }
+    async getAll(addedBy) {
+        return product_model_1.default.find({ addedBy }).sort({ createdAt: -1 });
     }
     async getById(id) {
         return await product_model_1.default.findById(id);

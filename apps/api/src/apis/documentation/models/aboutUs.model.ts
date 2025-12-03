@@ -15,6 +15,24 @@
 
 // export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
 
+// import mongoose, { Document, Schema, Types } from "mongoose";
+
+// export interface IAboutUs extends Document {
+//   title: string;
+//   content: string;
+//   addedBy: Types.ObjectId;
+// }
+
+// const AboutUsSchema: Schema = new Schema(
+//   {
+//     title: { type: String, required: true },
+//     content: { type: String, required: true },
+//     addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // ⭐ SAME AS OFFER
+//   },
+//   { timestamps: true }
+// );
+
+// export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IAboutUs extends Document {
@@ -27,9 +45,11 @@ const AboutUsSchema: Schema = new Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, // ⭐ SAME AS OFFER
+    addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );
 
 export const AboutUs = mongoose.model<IAboutUs>("AboutUs", AboutUsSchema);
+
+export default AboutUs;

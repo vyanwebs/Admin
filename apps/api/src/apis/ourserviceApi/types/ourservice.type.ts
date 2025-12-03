@@ -1,4 +1,3 @@
-// src/apis/ourserviceApi/types/ourservice.types.ts
 import { Document, Types } from "mongoose";
 
 export interface IOurService extends Document {

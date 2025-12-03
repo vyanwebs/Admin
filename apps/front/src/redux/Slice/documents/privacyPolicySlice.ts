@@ -44,7 +44,9 @@ export const createOrUpdatePrivacyPolicy = createAsyncThunk(
       });
       return data.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to save privacy policy");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to save privacy policy"
+      );
     }
   }
 );
@@ -75,7 +77,7 @@ const privacyPolicySlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 🔹 Create or update privacy policy
       .addCase(createOrUpdatePrivacyPolicy.pending, (state) => {
         state.loading = true;

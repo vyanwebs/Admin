@@ -25,7 +25,9 @@ import {
   updateOffer,
   deleteOffer,
 } from "../../../redux/Slice/specialOffer/offerSlice";
-import MaleSpecialOfferForm, { type SpecialOffer } from "./MaleSpecialOfferForm";
+import MaleSpecialOfferForm, {
+  type SpecialOffer,
+} from "./MaleSpecialOfferForm";
 
 const { Search } = Input;
 
@@ -42,7 +44,9 @@ const MaleSpecialOffers: React.FC = () => {
     dispatch(fetchOffers());
   }, [dispatch]);
 
-  const maleOffers = offers.filter((offer: SpecialOffer) => offer.gender === "male");
+  const maleOffers = offers.filter(
+    (offer: SpecialOffer) => offer.gender === "male"
+  );
 
   const handleAddOrUpdate = async (formData: FormData, id?: string) => {
     try {
@@ -84,7 +88,12 @@ const MaleSpecialOffers: React.FC = () => {
           <img
             src={url}
             alt="offer"
-            style={{ width: 60, height: 60, borderRadius: 6, objectFit: "cover" }}
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 6,
+              objectFit: "cover",
+            }}
           />
         ) : (
           <Tag color="red">No Image</Tag>
@@ -203,7 +212,7 @@ const MaleSpecialOffers: React.FC = () => {
         scroll={{ x: 800 }}
         style={{ marginTop: 16 }}
       />
-      
+
       <MaleSpecialOfferForm
         visible={modalVisible}
         onCancel={() => {

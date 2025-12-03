@@ -27,7 +27,7 @@ const initialState: ProductState = {
   error: null,
 };
 
-// ✅ Fetch All Products
+// Fetch All Products
 export const fetchProducts = createAsyncThunk(
   "products/fetchAll",
   async (_, { rejectWithValue }) => {
@@ -40,7 +40,7 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
-// ✅ Add Product
+// Add Product
 export const addProduct = createAsyncThunk(
   "products/addProduct",
   async (formData: FormData, { rejectWithValue }) => {
@@ -48,7 +48,7 @@ export const addProduct = createAsyncThunk(
       const { data } = await API.post("/products/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return data.data; // ✅ Fixed: should be data.data instead of data.product
+      return data.data; // Fixed: should be data.data instead of data.product
     } catch (error: any) {
       console.error("❌ Product upload error:", error.response?.data);
       return rejectWithValue(
@@ -58,7 +58,7 @@ export const addProduct = createAsyncThunk(
   }
 );
 
-// ✅ Update Product
+// Update Product
 export const updateProduct = createAsyncThunk(
   "products/update",
   async ({ id, formData }: { id: string; formData: FormData }, { rejectWithValue }) => {
@@ -73,7 +73,7 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
-// ✅ Delete Product
+// Delete Product
 export const deleteProduct = createAsyncThunk(
   "products/delete",
   async (id: string, { rejectWithValue }) => {

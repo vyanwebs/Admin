@@ -8,6 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateCertificate = exports.deleteCertificate = exports.getAllCertificates = exports.uploadCertificate = void 0;
 const certificate_service_1 = __importDefault(require("../services/certificate.service"));
 const path_1 = __importDefault(require("path"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const uploadCertificate = async (req, res) => {
     try {
         const { title } = req.body;
@@ -31,17 +32,32 @@ const uploadCertificate = async (req, res) => {
     }
 };
 exports.uploadCertificate = uploadCertificate;
+// export const getAllCertificates = async (req: Request, res: Response) => {
+// 	try {
+// 		// OPTION 1 → Return ALL certificates for both Admin & User
+// 		const certificates = await CertificateService.getAll();
+// 		res.status(200).json({ success: true, data: certificates });
+// 	} catch (error) {
+// 		res.status(500).json({
+// 			success: false,
+// 			error: (error as Error).message,
+// 		});
+// 	}
+// };
 const getAllCertificates = async (req, res) => {
     try {
-        // OPTION 1 → Return ALL certificates for both Admin & User
-        const certificates = await certificate_service_1.default.getAll();
+        let certificates;
+        const subAdminId = req.user.id;
+        if (req.user.role === "admin") {
+            certificates = await certificate_service_1.default.getAll(subAdminId);
+            res.status(200).json({ success: true, data: certificates });
+        }
+        const addedBy = req.user.subAdminId;
+        certificates = await certificate_service_1.default.getAll(new mongoose_1.default.Types.ObjectId(addedBy));
         res.status(200).json({ success: true, data: certificates });
     }
     catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message,
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 exports.getAllCertificates = getAllCertificates;

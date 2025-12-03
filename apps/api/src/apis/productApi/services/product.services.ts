@@ -1,19 +1,26 @@
 import Product, { IProduct } from "../models/product.model";
-
+import mongoose from "mongoose";
 class ProductService {
   async create(data: Partial<IProduct>): Promise<IProduct> {
     return await Product.create(data);
   }
 
-  async getAll(): Promise<IProduct[]> {
-    return await Product.find().sort({ createdAt: -1 });
+  // async getAll(): Promise<IProduct[]> {
+  //   return await Product.find().sort({ createdAt: -1 });
+  // }
+
+  async getAll(addedBy: mongoose.Types.ObjectId): Promise<IProduct[]> {
+    return Product.find({ addedBy }).sort({ createdAt: -1 });
   }
 
   async getById(id: string): Promise<IProduct | null> {
     return await Product.findById(id);
   }
 
-  async updateById(id: string, data: Partial<IProduct>): Promise<IProduct | null> {
+  async updateById(
+    id: string,
+    data: Partial<IProduct>
+  ): Promise<IProduct | null> {
     return await Product.findByIdAndUpdate(id, data, { new: true });
   }
 

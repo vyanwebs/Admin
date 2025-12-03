@@ -1,29 +1,4 @@
 "use strict";
-// // import { Request, Response } from "express";
-// // import UserService from "../services/user.service";
-// // import { CreateUserDto } from "../dtos/create-user.dto";
-// // import { IUser, UserRole } from "../types/user.types";
-// // import { Types } from "mongoose";
-// // import User from "../models/User.model";
-// // import { saveUploadedFile } from "../../mediaApi/services/saveFile";
-// // import { nanoid } from "nanoid";
-// // import uploadedFile from "../../mediaApi/models/uploadedFile";
-// // import { updateUploadedFile } from "../../mediaApi/services/updateUploadedFile";
-// // import dayjs from "dayjs";
-// // // create subAdmin
-// // export const createUser = async (req: Request, res: Response) => {
-// // 	try {
-// // 		const {
-// // 			fullName,
-// // 			password,
-// // 			phone,
-// // 			address,
-// // 			status,
-// // 			subscriptionPeriod,
-// // 			customDate,
-// // 			noOfChairs,
-// // 			email,
-// // 		} = req.body;
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
