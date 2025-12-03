@@ -2,7 +2,6 @@ import cron from "node-cron";
 import dayjs from "dayjs";
 import appointmentModel from "../appointmentApi/models/appointment.model";
 import { InAppNotifications } from "../inAppNotification/models/inAppNotification.model";
-import { ChairsModel } from "../salonCharisApi/model/chairs.model";
 
 // export const cancelAppointmentAfter10Minutes = () => {
 // 	cron.schedule("* * * * *", async () => {

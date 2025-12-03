@@ -77,6 +77,7 @@ export interface IPreferences {
 }
 
 export interface IUser extends Document {
+<<<<<<< HEAD
   otp?: number | null;
   refLink?: string | null;
   admin?: Types.ObjectId;
@@ -122,6 +123,59 @@ export interface IUser extends Document {
   // Virtuals
   fullName: string;
   isSubscriptionActive: boolean;
+=======
+	otp?: number | null;
+	refLink?: string | null;
+	admin?: Types.ObjectId;
+	firstName: string;
+	lastName: string;
+	email: string;
+	phone?: string;
+	password: string;
+	passwordChangedAt?: Date;
+	passwordResetToken?: string;
+	passwordResetExpires?: Date;
+	role: UserRole;
+	permissions: string[];
+	isVerified: boolean;
+	isActive: boolean;
+	subscription?: Types.ObjectId;
+	subscriptionType: SubscriptionType;
+	subscriptionPeriod?: "biannual" | "halfyearly" | "yearly" | "custom";
+	subscriptionStartDate?: Date;
+	subscriptionEndDate?: Date;
+	subscriptionStatus: SubscriptionStatus;
+	paymentMethod?: PaymentMethod;
+	billingInfo?: IBillingInfo;
+	avatar?: Types.ObjectId | IUploadedFile;
+	bio?: string;
+	dateOfBirth?: Date;
+	gender?: Gender;
+	socialMedia?: ISocialMedia;
+	preferences: IPreferences;
+	loginCount: number;
+	lastLogin?: Date;
+	devices: IDeviceInfo[];
+	noOfChairs?: number;
+	createdAt: Date;
+	updatedAt: Date;
+	appName: string;
+	appRegistrationCode: string;
+	subAdminEmail: string;
+	subAdminId: string | mongoose.Types.ObjectId;
+	referredBy?: mongoose.Types.ObjectId | null;
+	phoneNumber?: string;
+
+	address?: string;
+	wallet?: number;
+
+	addedBy?: mongoose.Types.ObjectId;
+
+	// Virtuals
+	fullName: string;
+	referralCode: string;
+	isSubscriptionActive: boolean;
+>>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 
   // Methods
   comparePassword(candidatePassword: string): Promise<boolean>;

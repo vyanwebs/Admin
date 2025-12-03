@@ -17,6 +17,8 @@ import appointmentRoutes from "./apis/appointmentApi/routes/appointment.routes";
 import razorpayRoutes from "./apis/razorpay/routes/razorpay.routes";
 import cartRoutes from "./apis/cartApi/routes/cart.routes";
 import notificationRoutes from "./apis/inAppNotification/routes/notification.routes";
+import walletRoutes from "./apis/walletApi/routes/wallet.routes";
+import orderRoutes from "./apis/ordersApi/routes/order.routes";
 //import  {login}  from "./apis/userApi/controllers/auth.controller";
 //app.use("/api/login",login)
 app.use("/api/auth", authRoutes);
@@ -37,6 +39,7 @@ app.use("/api/appointments", appointmentRoutes);
 // razorpay routes
 app.use("/api/razorpay", razorpayRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/wallet", walletRoutes);
 
 // notifications
 app.use("/api/notification", notificationRoutes);
@@ -48,4 +51,10 @@ app.use("/api/notification", notificationRoutes);
 //best routes
 //routes
 
+<<<<<<< HEAD
+=======
+// order routeds
+app.use("/api/order", orderRoutes);
+
+>>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 export default app;
