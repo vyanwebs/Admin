@@ -7,10 +7,7 @@ import {
 	deleteCartItem,
 } from "../controllers/cart.controller";
 import { upload } from "../../mediaApi/services/multerConfig";
-<<<<<<< HEAD
-=======
 import { protect } from "../../userApi/middlewares/auth.middleware";
->>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 
 const router = Router();
 router.post("/", upload.single("image"), createCart);

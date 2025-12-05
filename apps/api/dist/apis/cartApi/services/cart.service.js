@@ -11,9 +11,9 @@ const createCart = async (data) => {
     return await cartItem.save();
 };
 exports.createCart = createCart;
-// Get all cart items
-const getAllCarts = async () => {
-    return await cart_model_1.default.find().sort({ createdAt: -1 });
+// ✅ Get all cart items
+const getAllCarts = async (userId) => {
+    return await cart_model_1.default.find({ userId }).sort({ createdAt: -1 });
 };
 exports.getAllCarts = getAllCarts;
 // Get a cart item by ID
@@ -26,8 +26,8 @@ const updateCartById = async (id, data) => {
     return await cart_model_1.default.findByIdAndUpdate(id, data, { new: true });
 };
 exports.updateCartById = updateCartById;
-// Delete a cart item
-const deleteCartById = async (id) => {
-    return await cart_model_1.default.findByIdAndDelete(id);
+// ✅ Delete a cart item
+const deleteCartById = async (_id, userId) => {
+    return await cart_model_1.default.findOneAndDelete({ _id, userId });
 };
 exports.deleteCartById = deleteCartById;

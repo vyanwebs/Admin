@@ -164,3 +164,25 @@ const deleteProduct = async (req, res) => {
     }
 };
 exports.deleteProduct = deleteProduct;
+// buy product
+// export const buyProduct = async (req: Request, res: Response) => {
+// 	try {
+// 		const userId = req.user.id;
+// 		const user = await User.findById(userId);
+// 		const { productName, amount, productDescription, quantity } = req.body;
+// 		if (!productDescription || !productName || !amount || !quantity) {
+// 			return res
+// 				.status(400)
+// 				.json({ success: false, message: "Required Fields are missing" });
+// 		}
+// 		if (amount > (user?.wallet ?? 0)) {
+// 			return res
+// 				.status(403)
+// 				.json({ success: false, message: "insufficient amount" });
+// 		}
+// 	} catch (error) {
+// 		return res
+// 			.status(500)
+// 			.json({ success: false, error: (error as Error).message });
+// 	}
+// };

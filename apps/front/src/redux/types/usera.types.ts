@@ -56,11 +56,11 @@ export interface IUser {
   lastName: string;
   email: string;
   phone?: string;
-  role: UserRole;
+  role: UserRole;   
   permissions: string[];
   isVerified: boolean;
   isActive: boolean;
-  subscription?: string;
+  subscription?: string;     
   subscriptionType: SubscriptionType;
   subscriptionStartDate?: Date;
   subscriptionEndDate?: Date;

@@ -46,12 +46,14 @@ const jwt_1 = require("../../../config/jwt");
 const nanoid_1 = require("nanoid");
 const userSchema = new mongoose_1.Schema({
     refLink: { type: String, unique: true, default: null },
+    referralCode: { type: String, unique: true, default: null },
     admin: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
-    //  Make firstName & lastName optional (they’ll be auto-filled from fullName)
+    referredBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
+    // ✅ Make firstName & lastName optional (they’ll be auto-filled from fullName)
     firstName: { type: String, trim: true, maxlength: 50 },
     lastName: { type: String, trim: true, maxlength: 50 },
-    //  Keep fullName required but auto-generate it if missing
-    fullName: { type: String, required: true, trim: true, maxlength: 100 },
+    // ✅ Keep fullName required but auto-generate it if missing
+    fullName: { type: String, trim: true, maxlength: 100 },
     noOfChairs: {
         type: Number,
         default: 0,
@@ -158,6 +160,8 @@ const userSchema = new mongoose_1.Schema({
             lastAccess: Date,
         },
     ],
+    wallet: { type: Number, default: 0 },
+    phoneNumber: { type: Number, min: 1000000000, max: 9999999999 },
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 // Auto-generate missing name fields
 // userSchema.pre<IUser>("save", function (next) {

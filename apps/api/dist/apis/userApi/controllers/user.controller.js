@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUser = exports.demoteUser = exports.promoteUser = exports.deleteUser = exports.updateUser = exports.getUserByEmail = exports.getUserById = exports.createUser = void 0;
+exports.getAllUser = exports.demoteUser = exports.promoteUser = exports.enableDisableUser = exports.deleteUser = exports.updateUser = exports.getUserByEmail = exports.getUserById = exports.createUser = void 0;
 const user_service_1 = __importDefault(require("../services/user.service"));
 const user_types_1 = require("../types/user.types");
 const User_model_1 = __importDefault(require("../models/User.model"));
@@ -157,6 +157,30 @@ const deleteUser = async (req, res) => {
     }
 };
 exports.deleteUser = deleteUser;
+// =======================================================
+// ENABLE / DISABLE USER
+// =======================================================
+const enableDisableUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User_model_1.default.findById(userId);
+        if (!user)
+            return res.status(404).json({ error: "User not found" });
+        const updatedUser = await User_model_1.default.findByIdAndUpdate(userId, { $set: { isActive: !user.isActive } }, // ✔ only update this field
+        { new: true, runValidators: false } // ✔ no full validation
+        );
+        res.status(200).json({
+            success: true,
+            message: "User status updated successfully",
+            data: updatedUser,
+        });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.enableDisableUser = enableDisableUser;
 // =======================================================
 // PROMOTE USER
 // =======================================================

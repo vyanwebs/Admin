@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const User_model_1 = __importDefault(require("../models/User.model"));
-const chairs_model_1 = require("../../salonCharisApi/model/chairs.model");
+const chairs_model_1 = require("../../salonChairsApi/model/chairs.model");
 const deleteUploadedFile_1 = require("../../mediaApi/services/deleteUploadedFile");
 const saveFile_1 = require("../../mediaApi/services/saveFile");
 const updateUploadedFile_1 = require("../../mediaApi/services/updateUploadedFile");

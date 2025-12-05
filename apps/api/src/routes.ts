@@ -51,10 +51,7 @@ app.use("/api/notification", notificationRoutes);
 //best routes
 //routes
 
-<<<<<<< HEAD
-=======
 // order routeds
 app.use("/api/order", orderRoutes);
 
->>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 export default app;

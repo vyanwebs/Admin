@@ -16,18 +16,9 @@ import { jwtConfig } from "../../../config/jwt";
 import { nanoid } from "nanoid";
 
 const userSchema: Schema<IUser> = new Schema(
-<<<<<<< HEAD
-  {
-    refLink: { type: String, unique: true, default: null },
-    admin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-
-    //  Make firstName & lastName optional (they’ll be auto-filled from fullName)
-    firstName: { type: String, trim: true, maxlength: 50 },
-    lastName: { type: String, trim: true, maxlength: 50 },
-    //  Keep fullName required but auto-generate it if missing
-    fullName: { type: String, required: true, trim: true, maxlength: 100 },
-=======
 	{
+    refLink: { type: String, unique: true, default: null },
+
 		referralCode: { type: String, unique: true, default: null },
 		admin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -37,13 +28,12 @@ const userSchema: Schema<IUser> = new Schema(
 		lastName: { type: String, trim: true, maxlength: 50 },
 		// ✅ Keep fullName required but auto-generate it if missing
 		fullName: { type: String, trim: true, maxlength: 100 },
->>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 
     noOfChairs: {
       type: Number,
       default: 0,
     },
-
+    
     email: {
       type: String,
       required: true,
@@ -144,21 +134,6 @@ const userSchema: Schema<IUser> = new Schema(
       },
     },
 
-<<<<<<< HEAD
-    loginCount: { type: Number, default: 0 },
-    lastLogin: Date,
-    devices: [
-      {
-        deviceType: String,
-        os: String,
-        browser: String,
-        ipAddress: String,
-        lastAccess: Date,
-      },
-    ],
-  },
-  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
-=======
 		loginCount: { type: Number, default: 0 },
 		lastLogin: Date,
 		devices: [
@@ -174,7 +149,6 @@ const userSchema: Schema<IUser> = new Schema(
 		phoneNumber: { type: Number, min: 1000000000, max: 9999999999 },
 	},
 	{ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
->>>>>>> b42ad895a5e21b8837a06bc225a4e6d8cd0ca969
 );
 
 // Auto-generate missing name fields

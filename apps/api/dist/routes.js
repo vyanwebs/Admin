@@ -22,6 +22,8 @@ const appointment_routes_1 = __importDefault(require("./apis/appointmentApi/rout
 const razorpay_routes_1 = __importDefault(require("./apis/razorpay/routes/razorpay.routes"));
 const cart_routes_1 = __importDefault(require("./apis/cartApi/routes/cart.routes"));
 const notification_routes_1 = __importDefault(require("./apis/inAppNotification/routes/notification.routes"));
+const wallet_routes_1 = __importDefault(require("./apis/walletApi/routes/wallet.routes"));
+const order_routes_1 = __importDefault(require("./apis/ordersApi/routes/order.routes"));
 //import  {login}  from "./apis/userApi/controllers/auth.controller";
 //app.use("/api/login",login)
 serverconfig_1.default.use("/api/auth", auth_routes_1.default);
@@ -42,6 +44,7 @@ serverconfig_1.default.use("/api/appointments", appointment_routes_1.default);
 // razorpay routes
 serverconfig_1.default.use("/api/razorpay", razorpay_routes_1.default);
 serverconfig_1.default.use("/api/cart", cart_routes_1.default);
+serverconfig_1.default.use("/api/wallet", wallet_routes_1.default);
 // notifications
 serverconfig_1.default.use("/api/notification", notification_routes_1.default);
 // app.use("/api/subscription",subscriptionRoute)
@@ -50,4 +53,6 @@ serverconfig_1.default.use("/api/notification", notification_routes_1.default);
 // subscription-plans
 //best routes
 //routes
+// order routeds
+serverconfig_1.default.use("/api/order", order_routes_1.default);
 exports.default = serverconfig_1.default;

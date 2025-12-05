@@ -194,9 +194,9 @@ export default function AdminLayout() {
 			<Header
 				logo={
 					<img
-						src="/src/assets/logo.png"
+						src="/src/assets/naushadlog.png"
 						alt="Logo"
-						style={{ height: "40px" }}
+						style={{ height: "60px" }}
 					/>
 				}
 				onSearch={onSearch}

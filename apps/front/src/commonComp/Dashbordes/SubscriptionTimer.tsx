@@ -1,3 +1,67 @@
+// // ====================== SubscriptionTimer.tsx ======================
+
+// import React, { useEffect, useState } from "react";
+// import dayjs from "dayjs";
+// import duration from "dayjs/plugin/duration";
+
+// dayjs.extend(duration);
+
+// interface Props {
+//   expiryDate: string | null;
+// }
+
+// const SubscriptionTimer: React.FC<Props> = ({ expiryDate }) => {
+//   const [timeLeft, setTimeLeft] = useState<string>("");
+
+//   useEffect(() => {
+//     if (!expiryDate) return;
+
+//     const updateTimer = () => {
+//       const now = dayjs();
+//       const expiry = dayjs(expiryDate);
+
+//       const diff = expiry.diff(now);
+
+//       if (diff <= 0) {
+//         setTimeLeft("Subscription Expired");
+//         return;
+//       }
+
+//       const dur = dayjs.duration(diff);
+
+//       const days = Math.floor(dur.asDays());
+//       const hours = dur.hours();
+//       const minutes = dur.minutes();
+//       const seconds = dur.seconds();
+
+//       setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+//     };
+
+//     updateTimer(); // Run immediately
+//     const interval = setInterval(updateTimer, 1000); // update every second
+
+//     return () => clearInterval(interval);
+//   }, [expiryDate]);
+
+//   return (
+//     <div
+//       style={{
+//         background: "#fff1f0",
+//         border: "1px solid #ffa39e",
+//         padding: "15px",
+//         borderRadius: "12px",
+//         marginBottom: "20px",
+//       }}
+//     >
+//       <h3 style={{ margin: 0, color: "#cf1322" }}>⏳ Subscription Expires In:</h3>
+//       <h2 style={{ margin: 0, color: "#cf1322" }}>{timeLeft}</h2>
+//     </div>
+//   );
+// };
+
+// export default SubscriptionTimer;
+
+
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -5,54 +69,56 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
 interface Props {
-  expiryDate: string; // e.g. "2025-01-31T00:00:00Z"
+  expiryDate: string | null;
 }
 
 const SubscriptionTimer: React.FC<Props> = ({ expiryDate }) => {
   const [timeLeft, setTimeLeft] = useState<string>("");
 
   useEffect(() => {
-    const expiry = dayjs(expiryDate);
-    const startCountdown = expiry.subtract(1, "month");
+    if (!expiryDate) return;
 
-    const interval = setInterval(() => {
+    const updateTimer = () => {
       const now = dayjs();
-
-      if (now.isBefore(startCountdown)) {
-        setTimeLeft(""); // timer not visible yet
-        return;
-      }
+      const expiry = dayjs(expiryDate);
 
       const diff = expiry.diff(now);
 
       if (diff <= 0) {
-        setTimeLeft(" Subscription expired");
-        clearInterval(interval);
-      } else {
-        const dur = dayjs.duration(diff);
-        setTimeLeft(
-          `${dur.days()}d ${dur.hours()}h ${dur.minutes()}m ${dur.seconds()}s`
-        );
+        setTimeLeft("Subscription Expired");
+        return;
       }
-    }, 1000);
+
+      const dur = dayjs.duration(diff);
+
+      const days = Math.floor(dur.asDays());
+      const hours = dur.hours();
+      const minutes = dur.minutes();
+      const seconds = dur.seconds();
+
+      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateTimer(); 
+    const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
   }, [expiryDate]);
-
-  if (!timeLeft) return null; // hidden until 1 month before expiry
 
   return (
     <div
       style={{
         background: "#fff1f0",
         border: "1px solid #ffa39e",
-        padding: "16px",
-        borderRadius: "10px",
+        padding: "15px",
+        borderRadius: "12px",
         marginBottom: "20px",
       }}
     >
-      <h3 style={{ color: "#cf1322", margin: 0 }}>⏳ Subscription Expires In:</h3>
-      <h2 style={{ color: "#cf1322", margin: 0 }}>{timeLeft}</h2>
+      <h3 style={{ margin: 0, color: "#cf1322" }}>
+        ⏳ Subscription Expires In:
+      </h3>
+      <h2 style={{ margin: 0, color: "#cf1322" }}>{timeLeft}</h2>
     </div>
   );
 };

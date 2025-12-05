@@ -27,10 +27,12 @@ const createCart = async (req, res) => {
     }
 };
 exports.createCart = createCart;
-// Get all cart items
-const getAllCartItems = async (_req, res) => {
+// ✅ Get all cart items
+const getAllCartItems = async (req, res) => {
     try {
-        const carts = await (0, cart_service_1.getAllCarts)();
+        const userId = req.user.id;
+        console.log(userId);
+        const carts = await (0, cart_service_1.getAllCarts)(userId);
         res.status(200).json({ success: true, data: carts });
     }
     catch (error) {
@@ -90,7 +92,9 @@ exports.updateCartItem = updateCartItem;
 // Delete cart
 const deleteCartItem = async (req, res) => {
     try {
-        const deleted = await (0, cart_service_1.deleteCartById)(req.params.id);
+        const userId = req.user.id;
+        console.log(userId);
+        const deleted = await (0, cart_service_1.deleteCartById)(req.params.id, userId);
         if (!deleted)
             return res
                 .status(404)

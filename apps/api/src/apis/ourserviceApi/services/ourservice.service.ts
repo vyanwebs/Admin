@@ -20,7 +20,6 @@ class OurServiceService {
     const newService = new OurService(data);
     return newService.save();
   }
-
   // GET ALL → sabko accessible
   // async getAll(): Promise<IOurService[]> {
   //   return OurService.find().populate("addedBy", "name email").sort({ createdAt: -1 });
