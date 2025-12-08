@@ -163,7 +163,9 @@ class AppointmentService {
 				.tz("Asia/Kolkata")
 				.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
 				.tz("Asia/Kolkata")
-				.format("hh:mm A")}.`,
+				.format("hh:mm A")}. Your appointment code is ${
+				appointment.appointmentCode
+			}`,
 			userId,
 		});
 
