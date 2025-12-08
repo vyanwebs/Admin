@@ -225,6 +225,7 @@ export const getChairsByDateTime = async (req: Request, res: Response) => {
 		const user = req.user;
 		console.log(user);
 		const { date, time } = req.params;
+		console.log("user000000", user);
 
 		if (!date || !time) {
 			return res.status(400).json({
@@ -241,7 +242,7 @@ export const getChairsByDateTime = async (req: Request, res: Response) => {
 		const to = new Date(from);
 		to.setMinutes(to.getMinutes() + durationMinutes);
 
-		console.log("subadminId", user.subAdminId);
+		console.log("subadminIddd", user.subAdminId);
 		// Find overlapping appointments
 		const overlappingAppointments = await appointmentModel.find({
 			subAdminId: user.subAdminId,
