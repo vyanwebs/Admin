@@ -38,7 +38,19 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({
-	logo = <span className="text-xl font-bold text-white">Logo</span>,
+	//logo = <span className="text-xl font-bold text-white">Logo</span>,
+
+logo=(
+					<img
+						src="/src/assets/naushadlog.png"
+						alt="Logo"
+						style={{ height: "60px" }}
+					/>
+)
+,
+
+
+
 	navItems = [],
 	// user,
 	onSearch,
@@ -269,7 +281,7 @@ const Header: React.FC<HeaderProps> = ({
 											>
 												Your Profile
 											</Link>
-											<Link
+											{/* <Link
 												to={`${
 													user.role.toLocaleLowerCase() ===
 													"superadmin".toLocaleLowerCase()
@@ -279,7 +291,7 @@ const Header: React.FC<HeaderProps> = ({
 												className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
 											>
 												Settings
-											</Link>
+											</Link> */}
 											{/* <Link
                         to="/logout"
                         className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 border-t border-gray-700"

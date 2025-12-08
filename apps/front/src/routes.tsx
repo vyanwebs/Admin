@@ -58,6 +58,9 @@ const FemaleHomeService = lazy(()=>import("./subadminComponents/female/homeservi
 const ManageAboutUs = lazy(()=>import("./subadminComponents/documents/AboutUs/ManageAboutUs"));
 const ManagePrivacyPolicy = lazy(()=>import("./subadminComponents/documents/PrivacyPolicy/ManagePrivacyPolicy"));
 const ManageTermsCondition = lazy(()=>import("./subadminComponents/documents/TermsAndConditions/ManageTermsCondition"));
+const UsersTablePage = lazy(()=>import("../src/commonComp/Dashbordes/UsersTablePage"));
+
+
 
 export const router = createBrowserRouter([
   {
@@ -169,11 +172,20 @@ export const router = createBrowserRouter([
         </Suspense>
       ),
     },
+
      {
           path: "AdminDeshboard",
           element: (
             <Suspense fallback={Loader}>
               < AdminDeshboard/>
+            </Suspense>
+          ),
+        },
+        {
+          path: "totalusers",
+          element: (
+            <Suspense fallback={Loader}>
+              <UsersTablePage/>
             </Suspense>
           ),
         },

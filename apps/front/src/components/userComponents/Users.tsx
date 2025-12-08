@@ -571,14 +571,31 @@ const ManageUsers: React.FC = () => {
     }
   }, [error, dispatch]);
 
+  // const filteredUsers = users
+  //   .filter((user) => user.role === "admin")
+  //   .filter(
+  //     (user) =>
+  //       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       user.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+
   const filteredUsers = users
-    .filter((user) => user.role === "admin")
-    .filter(
-      (user) =>
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+  .filter((user) => user.role === "admin")
+  .filter((user) => {
+    const term = searchTerm.toLowerCase();
+
+    const email = user.email?.toLowerCase() || "";
+    const first = user.firstName?.toLowerCase() || "";
+    const last = user.lastName?.toLowerCase() || "";
+
+    return (
+      email.includes(term) ||
+      first.includes(term) ||
+      last.includes(term)
     );
+  });
+
 
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * pageSize,
@@ -733,7 +750,7 @@ const ManageUsers: React.FC = () => {
           
           {/* Search */}
           <Col xs={24} sm={12}>
-            <Search
+            {/* <Search
               placeholder="Search users..."
               allowClear
               enterButton={<Button type="primary" icon={<SearchOutlined />} />}
@@ -741,7 +758,16 @@ const ManageUsers: React.FC = () => {
               onSearch={handleSearch}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-[#2523232c]"
-            />
+            /> */}
+            <Search
+  placeholder="Search Subadmin..."
+  allowClear
+  size="large"
+  onChange={(e) => handleSearch(e.target.value)}
+  className="w-full"
+  prefix={<SearchOutlined />}
+/>
+
           </Col>
 
           {/* Desktop Add Button */}

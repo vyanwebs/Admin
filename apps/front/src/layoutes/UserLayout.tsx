@@ -100,7 +100,7 @@ export default function UserLayout() {
         >
           <Sidebar
             menuItems={menuItems}
-            logo={<span>logo...</span>}
+            logo={<span>newnew</span>}
             version="v2.1.0"
             activeItemClassName="bg-indigo-600 text-white"
             collapsed={!sidebarOpen}

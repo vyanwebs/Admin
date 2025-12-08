@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { Home, User, X, Upload } from "lucide-react";
+import { Home, User, X,  } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../commonComp/SideBarr/SideBarr";
 import Header from "../commonComp/Header/Header";
 import RouteTracker from "../commonComp/RouteTracker/RouteTracker";
 import { useAppDispatch } from "../redux/hooks";
 import { search } from "../redux/Slice/activeStatus/activeStatusSlice";
-
+import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined } from "@ant-design/icons";
 const menuItems = [
 	{
 		name: "Dashboard",
 		icon: <Home className="w-5 h-5" />,
 		path: "AdminDeshboard",
 	},
+
 	// {
 	//   name: "Users",
 	//   icon: <User className="w-5 h-5" />,
@@ -33,7 +34,7 @@ const menuItems = [
 
  {
     name: "Appointment",
-    icon: <Home className="w-5 h-5" />,
+    icon: <ScheduleOutlined className="w-5 h-5" />,
     path: "/admin/Appointment",
   },
     
@@ -134,38 +135,38 @@ const menuItems = [
 
   {
     name: "Upload Certificate",
-    icon: <Upload className="w-5 h-5" />,
+    icon: <SafetyCertificateOutlined   className="w-5 h-5" />,
     path: "/admin/Upload-Certificate",
   }, 
    {
     name: "Youtube",
-    icon: <Home className="w-5 h-5" />,
+    icon: <YoutubeOutlined className="w-5 h-5" />,
     path: "/admin/youtube",
   },
  {
   name: "About Our Salon",
-  icon: <Home className="w-5 h-5" />,
+  icon: <InfoCircleOutlined className="w-5 h-5" />,
   path: "/admin/about-salon",
 },
   
 
 	{
 		name: "Documents",
-		icon: <User className="w-4 h-4" />,
+		icon: <FileZipOutlined className="w-4 h-4" />,
 		subItems: [
 			{
 				name: "About Us",
-				icon: <Home className="w-5 h-5" />,
+				icon: <InfoCircleOutlined className="w-5 h-5" />,
 				path: "/admin/About-Us",
 			},
 			{
 				name: "Privacy Policy",
-				icon: <Home className="w-5 h-5" />,
+				icon: <SafetyOutlined className="w-5 h-5" />,
 				path: "/admin/Privacy-Policy",
 			},
 			{
 				name: "Terms & Conditions",
-				icon: <Home className="w-5 h-5" />,
+				icon: <FileDoneOutlined className="w-5 h-5" />,
 				path: "/admin/Terms-Conditions",
 			},
 		],

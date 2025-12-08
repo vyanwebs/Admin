@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { updateUserProfile, updateProfile } from '../../redux/Slice/authSlice';
-import { Form, Input, Button, Select, DatePicker, Switch, message, Card, Divider, Space } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Switch, message, Card, Space } from 'antd';
 import AvatarUpload from './AvatarUpload';
 import dayjs from 'dayjs';
 // import type { IUser, Gender, ThemePreference } from '../../redux/types/auth.types';
 
-const { TextArea } = Input;
+// const { TextArea } = Input;
 const { Option } = Select;
 
 const ProfileEdit: React.FC = () => {
@@ -195,7 +195,7 @@ const ProfileEdit: React.FC = () => {
               </Form.Item>
             </div>
 
-            <Divider orientation="left">Preferences</Divider>
+            {/* <Divider orientation="left">Preferences</Divider>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
@@ -246,7 +246,7 @@ const ProfileEdit: React.FC = () => {
               name="bio"
             >
               <TextArea rows={4} />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item>
               <Space>
