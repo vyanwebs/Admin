@@ -191,6 +191,7 @@ class AppointmentService {
 					price: `- ₹${appointment.appointmentAmount}`,
 					date: Date.now(),
 					userId: userId,
+					color: "red",
 				});
 				await walletTxn.save({ session: txn });
 
@@ -318,6 +319,7 @@ class AppointmentService {
 					title: "Appointment",
 					price: `- ₹${totalServiceAmount}`,
 					date: Date.now(),
+					color: "red",
 					userId,
 				});
 

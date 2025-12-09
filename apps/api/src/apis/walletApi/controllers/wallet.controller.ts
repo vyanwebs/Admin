@@ -28,6 +28,7 @@ export const addToWallet = async (req: Request, res: Response) => {
 			price: `+ ₹${amount}`,
 			date: Date.now(),
 			userId: userId,
+			color: "green",
 		});
 		await walletTxn.save({ session: txn });
 
