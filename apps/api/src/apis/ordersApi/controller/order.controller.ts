@@ -76,6 +76,7 @@ export const buyProduct = async (req: Request, res: Response) => {
 			title: `Purchase: ${productName}`,
 			price: `- ₹${amount}`,
 			date: Date.now(),
+			color: "red",
 			userId,
 		});
 
@@ -142,6 +143,7 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 			price: `- ₹${amount}`,
 			date: Date.now(),
 			userId,
+			color: "red",
 		});
 		await walletTxn.save({ session: txn });
 

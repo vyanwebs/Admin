@@ -7,6 +7,7 @@ export interface IWalletTransaction {
 	createdAt: Date;
 	updatedAt: Date;
 	userId: Types.ObjectId;
+	color: string;
 }
 
 const walletTransactionSchema = new mongoose.Schema<IWalletTransaction>(
@@ -15,6 +16,7 @@ const walletTransactionSchema = new mongoose.Schema<IWalletTransaction>(
 		price: { type: String, required: true },
 		date: { type: Date, required: true },
 		userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+		color: { type: String },
 	},
 	{ timestamps: true }
 );
