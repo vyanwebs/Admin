@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
 
 logo=(
 					<img
-						src="/src/assets/naushadlog.png"
+						src=""
 						alt="Logo"
 						style={{ height: "60px" }}
 					/>

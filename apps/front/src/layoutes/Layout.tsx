@@ -69,7 +69,7 @@ export default function Layout() {
 				>
 					<Sidebar
 						menuItems={menuItems}
-						logo={<span>Naushad</span>}
+						logo={<span>sms</span>}
 						version="v2.1.0"
 						activeItemClassName="bg-indigo-600 text-white"
 						collapsed={!sidebarOpen}

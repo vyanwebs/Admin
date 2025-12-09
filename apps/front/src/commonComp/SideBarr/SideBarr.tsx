@@ -29,7 +29,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({
 	menuItems,
-	logo = <h1 className="text-xl font-bold text-white">Naushad</h1>,
+	logo = <h1 className="text-xl font-bold text-white">SMS</h1>,
 	version = "v1.0.0",
 	className = "h-full bg-gray-900 text-gray-200 flex flex-col border-r border-gray-800 transition-all duration-300",
 	itemClassName = "flex items-center p-3 rounded-lg transition-colors hover:bg-gray-800 hover:text-white",

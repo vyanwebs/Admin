@@ -17,7 +17,7 @@ export const sendOTP = async (email: string) => {
 	await transporter.sendMail({
 		from: process.env.MAIL_SENDER,
 		to: email,
-		subject: "Your OTP code to log in to the Naushad app is",
+		subject: "Your OTP code to log in to the SMS app is",
 		text: `Your verification code is ${otp}`,
 	});
 

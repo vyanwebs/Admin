@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Home, User, X,  } from "lucide-react";
+import { Home, icons, User, X,  } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../commonComp/SideBarr/SideBarr";
 import Header from "../commonComp/Header/Header";
 import RouteTracker from "../commonComp/RouteTracker/RouteTracker";
 import { useAppDispatch } from "../redux/hooks";
 import { search } from "../redux/Slice/activeStatus/activeStatusSlice";
-import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined } from "@ant-design/icons";
+import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined, OrderedListOutlined,TruckOutlined } from "@ant-design/icons";
 const menuItems = [
 	{
 		name: "Dashboard",
@@ -38,6 +38,11 @@ const menuItems = [
     path: "/admin/Appointment",
   },
     
+  {
+	name: "Orders",
+	icon : <TruckOutlined  className="w-5 h-5"/>,
+	path: "/admin/orders"
+  },
      {
   name: "Gender",
   icon: <User className="w-5 h-5" />,
@@ -195,7 +200,7 @@ export default function AdminLayout() {
 			<Header
 				logo={
 					<img
-						src="/src/assets/naushadlog.png"
+						src=""
 						alt="Logo"
 						style={{ height: "60px" }}
 					/>
