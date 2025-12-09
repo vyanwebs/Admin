@@ -7,6 +7,10 @@ export interface IOrder extends Document {
 	productName: string;
 	productDescription: string;
 	orderCode: string;
+	productId: Types.ObjectId;
+	productPackageId: Types.ObjectId;
+	orderStatus: "Processing" | "Delivered";
+	walletTxnId: Types.ObjectId;
 }
 
 const OrderSchema = new Schema<IOrder>({
@@ -16,6 +20,10 @@ const OrderSchema = new Schema<IOrder>({
 	productDescription: { type: String },
 	productName: { type: String },
 	orderCode: { type: String },
+	productId: { type: mongoose.Schema.ObjectId, ref: "Product" },
+	productPackageId: { type: mongoose.Schema.ObjectId, ref: "ProductPackage" },
+	orderStatus: { type: String, default: "Processing" },
+	walletTxnId: { type: mongoose.Schema.Types.ObjectId },
 });
 
 export const Order = mongoose.model("order", OrderSchema);

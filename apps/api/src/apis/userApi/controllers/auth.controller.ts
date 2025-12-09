@@ -13,6 +13,7 @@ import { sendOTP } from "../../../config/mailconfig";
 import { EmailOTP } from "../models/UserOTP.model";
 import { nanoid } from "nanoid";
 import { parse } from "path";
+import bcrypt from "bcryptjs";
 export const register = async (req: Request, res: Response) => {
 	try {
 		const userData: CreateUserDto = req.body;
@@ -45,7 +46,9 @@ export const register = async (req: Request, res: Response) => {
 		// for production enable this
 		// const storedOTP = await EmailOTP.findOne({ email: userData.email });
 
-		// if (Number(userData.otp) === storedOTP?.otp) {
+		// if (Number(otp) !== storedOTP?.otp) {
+		// 	return res.status(403).json({ success: false, message: "Incorrect OTP" });
+		// }
 		// Normal registration
 
 		const userDetails = await User.findOne({
@@ -343,6 +346,7 @@ export const getUserProfile = async (
 				createdAt: foundUser.createdAt,
 				updatedAt: foundUser.updatedAt,
 				address: foundUser.address,
+				referralCode: foundUser.referralCode,
 			},
 		});
 	} catch (error) {
@@ -506,16 +510,16 @@ export const generateOTP = async (req: Request, res: Response) => {
 	try {
 		const { email } = req.body;
 		const otp = await sendOTP(email);
+
 		if (otp) {
 			return res
 				.status(200)
 				.json({ success: true, message: "OTP Generated Successfully" });
+		} else {
+			return res
+				.status(500)
+				.json({ success: false, message: "Failed to send otp" });
 		}
-		await EmailOTP.findOneAndUpdate(
-			{ email },
-			{ otp },
-			{ new: true, upsert: true }
-		);
 	} catch (error) {
 		return res
 			.status(500)
@@ -536,5 +540,43 @@ export const userLogout = async (req: Request, res: Response) => {
 			message: "Something went wrong",
 			error: (error as Error).message,
 		});
+	}
+};
+
+// forgot password
+export const forgotPassword = async (req: Request, res: Response) => {
+	try {
+		const { email, otp, password } = req.body;
+		const storedOTP = await EmailOTP.findOne({ email: email });
+
+		const user = await User.findOne({ email });
+
+		if (!user) {
+			return res
+				.status(404)
+				.json({ success: false, message: "email is not registered" });
+		}
+
+		if (Number(otp) !== storedOTP?.otp) {
+			return res.status(403).json({ success: false, message: "Incorrect OTP" });
+		}
+
+		const hashedPassword = await bcrypt.hash(password, 12);
+
+		const updatedUser = await User.findOneAndUpdate(
+			{ email },
+			{ password: hashedPassword },
+			{ new: true }
+		);
+
+		return res.status(200).json({
+			success: true,
+			message: "User Updated Successfully",
+			data: updatedUser,
+		});
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, error: (error as Error).message });
 	}
 };

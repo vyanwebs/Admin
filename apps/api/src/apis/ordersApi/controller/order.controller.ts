@@ -1,14 +1,32 @@
 import { Request, Response } from "express";
 import User from "../../userApi/models/User.model";
 import { Order } from "../model/order.model";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
+import { WalletTransaction } from "../../walletApi/model/wallet.transaction.model";
+import { InAppNotifications } from "../../inAppNotification/models/inAppNotification.model";
 
 // buy product
 export const buyProduct = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
 	try {
 		const userId = req.user.id;
-		const user = await User.findById(userId);
-		const { productName, amount, productDescription, quantity } = req.body;
+		const user = await User.findById(userId).session(txn);
+		const {
+			productName,
+			amount,
+			productDescription,
+			quantity,
+			productId,
+			productPackageId,
+		} = req.body;
+
+		if (!!productId !== !!productPackageId) {
+			return res.status(403).json({
+				success: true,
+				message: "either productId or productPackageId is missing, not both",
+			});
+		}
 
 		if (!productDescription || !productName || !amount || !quantity) {
 			return res
@@ -20,21 +38,52 @@ export const buyProduct = async (req: Request, res: Response) => {
 				.status(403)
 				.json({ success: false, message: "insufficient amount" });
 		}
-		const order = await Order.create({
+		const order = new Order({
 			userId: new Types.ObjectId(userId as string),
 			amount,
 			quantity,
 			productDescription,
 			productName,
+			...(productId && { productId: new Types.ObjectId(productId) }),
+			...(productPackageId && {
+				productPackageId: new Types.ObjectId(productPackageId),
+			}),
 		});
 
 		const uniquePart = order._id.toString().slice(-6).toUpperCase();
 		order.orderCode = `NAU${uniquePart}`;
 
-		await order.save();
+		await User.findByIdAndUpdate(
+			userId,
+			{
+				$inc: { wallet: -amount },
+			},
+			{ new: true, session: txn }
+		);
+
+		const walletTxn = new WalletTransaction({
+			title: `Purchase: ${productName}`,
+			price: `- ₹${amount}`,
+			date: Date.now(),
+			userId,
+		});
+
+		order.walletTxnId = walletTxn._id;
+		await walletTxn.save({ session: txn });
+		await order.save({ session: txn });
+
+		const notification = new InAppNotifications({
+			message: `Your order ${order.orderCode} for ${productName} has been placed successfully.`,
+			userId,
+		});
+		await notification.save({ session: txn });
+		await txn.commitTransaction();
+		txn.endSession();
 
 		return res.status(200).json({ success: true, data: order });
 	} catch (error) {
+		await txn.abortTransaction();
+		txn.endSession();
 		return res
 			.status(500)
 			.json({ success: false, error: (error as Error).message });
@@ -44,13 +93,15 @@ export const buyProduct = async (req: Request, res: Response) => {
 // update product order by id
 
 export const editProductOrderById = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
 	try {
 		const userId = req.user.id;
 		const { orderId } = req.params;
 		const { productName, productDescription, amount, quantity } = req.body;
 
-		const user = await User.findById(userId);
-		const order = await Order.findById(orderId);
+		const user = await User.findById(userId).session(txn);
+		const order = await Order.findById(orderId).session(txn);
 
 		if (!order) {
 			return res
@@ -60,6 +111,11 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 
 		user!.wallet = (user?.wallet ?? 0) + order.amount;
 
+		if (order.walletTxnId) {
+			await WalletTransaction.findByIdAndDelete(order.walletTxnId, {
+				session: txn,
+			});
+		}
 		// Step 2: Check if new amount is affordable
 		if (amount > (user?.wallet ?? 0)) {
 			return res
@@ -70,15 +126,31 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 		// Step 3: Deduct new amount
 		user!.wallet = (user?.wallet ?? 0) - amount;
 
+		const walletTxn = new WalletTransaction({
+			title: `Updated Order: ${productName}`,
+			price: `- ₹${amount}`,
+			date: Date.now(),
+			userId,
+		});
+		await walletTxn.save({ session: txn });
+
 		// Step 4: Update order
 		order.productName = productName;
 		order.productDescription = productDescription;
 		order.amount = amount;
 		order.quantity = quantity;
+		order.walletTxnId = walletTxn._id;
 
-		await user?.save();
-		await order.save();
+		await user?.save({ session: txn });
+		await order.save({ session: txn });
 
+		const notification = new InAppNotifications({
+			message: `Your order ${order.orderCode} has been updated successfully.`,
+			userId,
+		});
+		await notification.save({ session: txn });
+		await txn.commitTransaction();
+		txn.endSession();
 		return res.status(200).json({
 			success: true,
 			message: "Order updated successfully",
@@ -86,6 +158,8 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 			wallet: user?.wallet,
 		});
 	} catch (error) {
+		await txn.abortTransaction();
+		txn.endSession();
 		return res.status(500).json({
 			success: false,
 			error: (error as Error).message,

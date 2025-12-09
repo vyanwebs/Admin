@@ -1,23 +1,24 @@
 import express from "express";
 import {
-  register,
-  login,
-  updateToken,
-  updateProfile,
-  getUserProfile,
-  updateUserInfo,
-  checkUserEmailExists,
-  generateOTP,
-  userLogout,
+	register,
+	login,
+	updateToken,
+	updateProfile,
+	getUserProfile,
+	updateUserInfo,
+	checkUserEmailExists,
+	generateOTP,
+	userLogout,
+	forgotPassword,
 } from "../controllers/auth.controller";
 import { validate, validateLogin } from "../middlewares/validate";
 import { createUserSchema } from "../validators/user.validator";
 import { protect } from "../middlewares/auth.middleware";
 import upload from "../../mediaApi/services/multerConfig";
 import {
-  generateOrderId,
-  refundPayment,
-  verifyOrderId,
+	generateOrderId,
+	refundPayment,
+	verifyOrderId,
 } from "../../razorpay/controller/razorpay.controller";
 import { authorizeRole } from "../middlewares/authorizeRole";
 import { deleteUser, enableDisableUser } from "../controllers/user.controller";
@@ -25,10 +26,10 @@ import { deleteUser, enableDisableUser } from "../controllers/user.controller";
 const router = express.Router();
 router.post("/", protect, updateToken);
 router.post(
-  "/register",
-  upload.single("avatar"), //  handle avatar upload
-  // validate(createUserSchema),
-  register
+	"/register",
+	upload.single("avatar"), //  handle avatar upload
+	// validate(createUserSchema),
+	register
 );
 //router.post('/register', validate(createUserSchema), register);
 router.post("/login", validateLogin, login);
@@ -50,6 +51,7 @@ router.patch(
 	authorizeRole("admin", "superadmin"),
 	enableDisableUser
 );
+router.patch("/forgot-password", forgotPassword);
 
 // razorpay routes
 router.post("/generate-order-id", protect, generateOrderId);
