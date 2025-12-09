@@ -147,38 +147,37 @@ class AppointmentService {
 			}
 
 			// 4️⃣ Create appointment
-			const appointment = new Appointment(
-				{
-					...data,
-					fromDateTime: formattedFromDateTime,
-					toDateTime: formattedToDateTime,
-					email,
-					userId,
-					chairNo: Number(data.chairNo),
-					appointmentCode,
-					subAdminId: user?.subAdminId,
-					appointmentAmount: totalServiceAmount,
-				},
-				{ session: txn }
-			);
+			const appointment = new Appointment({
+				...data,
+				fromDateTime: formattedFromDateTime,
+				toDateTime: formattedToDateTime,
+				email,
+				userId,
+				chairNo: Number(data.chairNo),
+				appointmentCode,
+				subAdminId: user?.subAdminId,
+				appointmentAmount: totalServiceAmount,
+			});
 
 			// 5️⃣ Notification
 			await InAppNotifications.create(
-				{
-					message: `Your appointment has been booked for ${dayjs(
-						formattedFromDateTime
-					)
-						.tz("Asia/Kolkata")
-						.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
-						.tz("Asia/Kolkata")
-						.format("hh:mm A")}. Your appointment code is ${
-						appointment.appointmentCode
-					}`,
-					userId,
-				},
+				[
+					{
+						message: `Your appointment has been booked for ${dayjs(
+							formattedFromDateTime
+						)
+							.tz("Asia/Kolkata")
+							.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
+							.tz("Asia/Kolkata")
+							.format("hh:mm A")}. Your appointment code is ${
+							appointment.appointmentCode
+						}`,
+						userId,
+					},
+				],
 				{ session: txn }
 			);
-			const savedAppointment = await appointment.save();
+			const savedAppointment = await appointment.save({ session: txn });
 			if (savedAppointment) {
 				await User.findByIdAndUpdate(
 					userId,
@@ -287,18 +286,20 @@ class AppointmentService {
 			);
 			if (appointment) {
 				await InAppNotifications.create(
-					{
-						message: `Your appointment has been rescheduled for ${dayjs(
-							formattedFromDateTime
-						)
-							.tz("Asia/Kolkata")
-							.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
-							.tz("Asia/Kolkata")
-							.format("hh:mm A")}. Your appointment code is ${
-							appointment.appointmentCode
-						}`,
-						userId,
-					},
+					[
+						{
+							message: `Your appointment has been rescheduled for ${dayjs(
+								formattedFromDateTime
+							)
+								.tz("Asia/Kolkata")
+								.format("DD-MMM-YY")} at ${dayjs(formattedFromDateTime)
+								.tz("Asia/Kolkata")
+								.format("hh:mm A")}. Your appointment code is ${
+								appointment.appointmentCode
+							}`,
+							userId,
+						},
+					],
 					{ session: txn }
 				);
 				const newAmount = await User.findByIdAndUpdate(

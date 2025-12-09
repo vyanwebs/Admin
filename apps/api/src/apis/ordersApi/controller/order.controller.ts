@@ -9,6 +9,10 @@ import { InAppNotifications } from "../../inAppNotification/models/inAppNotifica
 export const buyProduct = async (req: Request, res: Response) => {
 	const txn = await mongoose.startSession();
 	txn.startTransaction();
+	// txn.startTransaction({
+	// 	readConcern: { level: "local" },
+	// 	writeConcern: { w: "majority" },
+	// });
 	try {
 		const userId = req.user.id;
 		const user = await User.findById(userId).session(txn);
@@ -20,11 +24,18 @@ export const buyProduct = async (req: Request, res: Response) => {
 			productId,
 			productPackageId,
 		} = req.body;
+		console.log("🚀 ~ buyProduct ~ body:", req.body);
 
-		if (!!productId !== !!productPackageId) {
+		const cleanProductId = productId || undefined;
+		const cleanPackageId = productPackageId || undefined;
+
+		if (!!cleanProductId === !!cleanPackageId) {
+			await txn.abortTransaction();
+			txn.endSession();
+
 			return res.status(403).json({
-				success: true,
-				message: "either productId or productPackageId is missing, not both",
+				success: false,
+				message: "Send only one: productId OR productPackageId",
 			});
 		}
 
