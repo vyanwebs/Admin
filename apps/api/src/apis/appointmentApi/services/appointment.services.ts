@@ -10,7 +10,6 @@ import User from "../../userApi/models/User.model";
 import { ChairsModel } from "../../salonChairsApi/model/chairs.model";
 import mongoose from "mongoose";
 import { WalletTransaction } from "../../walletApi/model/wallet.transaction.model";
-import { App } from "antd";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
