@@ -8,7 +8,7 @@ import {
 	getAppointmentsByUserId,
 	verifyAppointmentCode,
 	getChairsBySubAdminId,
-	getChairsByDateTime,
+	getChairsByDateTime,	
 } from "../controllers/appointment.controller";
 import { protect } from "../../userApi/middlewares/auth.middleware";
 import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
