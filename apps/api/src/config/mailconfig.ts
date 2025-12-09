@@ -21,7 +21,11 @@ export const sendOTP = async (email: string) => {
 		text: `Your verification code is ${otp}`,
 	});
 
-	await EmailOTP.create({ email, otp });
+	await EmailOTP.findOneAndUpdate(
+		{ email },
+		{ otp },
+		{ new: true, upsert: true }
+	);
 
 	return otp;
 };
