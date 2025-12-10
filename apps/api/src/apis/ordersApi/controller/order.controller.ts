@@ -184,7 +184,15 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 export const getAllProductOrders = async (req: Request, res: Response) => {
 	try {
 		const userId = req.user.id;
-		const orders = await Order.find({ userId });
+		const orders = await Order.find({ userId })
+			.populate({
+				path: "productId",
+				select: "image",
+			})
+			.populate({
+				path: "productPackageId",
+				select: "image",
+			});
 		if (orders.length === 0) {
 			return res.status(204).json({ success: true, message: "No order found" });
 		}
@@ -205,7 +213,15 @@ export const getAllProductOrders = async (req: Request, res: Response) => {
 export const getOrderByOrderId = async (req: Request, res: Response) => {
 	try {
 		const { orderId } = req.params;
-		const order = await Order.findById(orderId);
+		const order = await Order.findById(orderId)
+			.populate({
+				path: "productId",
+				select: "image",
+			})
+			.populate({
+				path: "productPackageId",
+				select: "image",
+			});
 		if (!order) {
 			return res.status(204).json({ success: true, message: "No order found" });
 		}
