@@ -211,8 +211,8 @@ class AppointmentService {
 		}
 	}
 
-	async getAll(): Promise<IAppointment[]> {
-		return Appointment.find().sort({ createdAt: -1 });
+	async getAll(userId: String): Promise<IAppointment[]> {
+		return Appointment.find({ subAdminId: userId }).sort({ createdAt: -1 });
 	}
 
 	async getById(id: string): Promise<IAppointment | null> {

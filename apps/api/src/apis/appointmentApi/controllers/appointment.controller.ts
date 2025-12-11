@@ -51,9 +51,10 @@ export const createAppointment = async (req: Request, res: Response) => {
 			.json({ success: false, error: error.message || "Something went wrong" });
 	}
 };
-export const getAppointments = async (req: Request, res: Response) => {
+export const getAppointmentsByAdminId = async (req: Request, res: Response) => {
 	try {
-		const data = await appointmentService.getAll();
+		const userId = req.user.id;
+		const data = await appointmentService.getAll(userId);
 		const formattedAppointments = data.map((item) => ({
 			...item.toObject(),
 			fromDateTime: dayjs(item.fromDateTime)

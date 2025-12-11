@@ -86,6 +86,7 @@ export const createCart = async (req: Request, res: Response) => {
 			...(productPackageId && {
 				productPackageId: new Types.ObjectId(productPackageId),
 			}),
+			subAdminId: new Types.ObjectId(user?.subAdminId),
 		});
 
 		const uniquePart = order._id.toString().slice(-6).toUpperCase();

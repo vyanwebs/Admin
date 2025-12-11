@@ -1,14 +1,14 @@
 import { Router } from "express";
 import {
 	createAppointment,
-	getAppointments,
 	getAppointmentById,
 	updateAppointment,
 	deleteAppointment,
 	getAppointmentsByUserId,
 	verifyAppointmentCode,
 	getChairsBySubAdminId,
-	getChairsByDateTime,	
+	getChairsByDateTime,
+	getAppointmentsByAdminId,
 } from "../controllers/appointment.controller";
 import { protect } from "../../userApi/middlewares/auth.middleware";
 import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
@@ -16,7 +16,7 @@ import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
 const router = Router();
 
 router.post("/", protect, createAppointment);
-router.get("/", getAppointments);
+router.get("/", protect, authorizeRole("admin"), getAppointmentsByAdminId);
 router.get("/fetch-by-userId/:userId", protect, getAppointmentsByUserId);
 router.get("/get-chairs", protect, getChairsBySubAdminId);
 router.get("/chairs/:date/:time", protect, getChairsByDateTime);
