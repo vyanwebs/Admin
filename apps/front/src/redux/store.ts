@@ -17,7 +17,7 @@ import termsConditionReducer from "./Slice/documents/termsConditionSlice";
 //import ourServiceReducer from "./Slice/OurService/ourService.slice"
 import commonServiceReducer from "./Slice/OurService/commonServiceSlice";
 import homeServicesReducer from "./Slice/homeservice/homeServiceSlice";
-
+import ordersReducer from "./Slice/Orders/orderSlice"
 
 export const store = configureStore({
   reducer: {
@@ -39,6 +39,8 @@ export const store = configureStore({
     termsCondition: termsConditionReducer, 
     commonService: commonServiceReducer,
     homeServices: homeServicesReducer,
+    orders: ordersReducer,
+
   },
 });
 

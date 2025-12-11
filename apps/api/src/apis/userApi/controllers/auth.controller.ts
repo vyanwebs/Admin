@@ -60,7 +60,7 @@ export const register = async (req: Request, res: Response) => {
 				message: "App Registration Code is incorrect",
 			});
 		}
-
+		
 		let imageId;
 		if (req.file) {
 			imageId = await saveUploadedFile(req.file);

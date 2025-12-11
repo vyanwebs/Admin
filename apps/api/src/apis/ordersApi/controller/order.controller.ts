@@ -9,6 +9,10 @@ import { InAppNotifications } from "../../inAppNotification/models/inAppNotifica
 export const buyProduct = async (req: Request, res: Response) => {
 	const txn = await mongoose.startSession();
 	txn.startTransaction();
+	// txn.startTransaction({
+	// 	readConcern: { level: "local" },
+	// 	writeConcern: { w: "majority" },
+	// });
 	try {
 		const userId = req.user.id;
 		const user = await User.findById(userId).session(txn);
@@ -20,11 +24,18 @@ export const buyProduct = async (req: Request, res: Response) => {
 			productId,
 			productPackageId,
 		} = req.body;
+		console.log("🚀 ~ buyProduct ~ body:", req.body);
 
-		if (!!productId !== !!productPackageId) {
+		const cleanProductId = productId || undefined;
+		const cleanPackageId = productPackageId || undefined;
+
+		if (!!cleanProductId === !!cleanPackageId) {
+			await txn.abortTransaction();
+			txn.endSession();
+
 			return res.status(403).json({
-				success: true,
-				message: "either productId or productPackageId is missing, not both",
+				success: false,
+				message: "Send only one: productId OR productPackageId",
 			});
 		}
 
@@ -65,6 +76,7 @@ export const buyProduct = async (req: Request, res: Response) => {
 			title: `Purchase: ${productName}`,
 			price: `- ₹${amount}`,
 			date: Date.now(),
+			color: "red",
 			userId,
 		});
 
@@ -131,6 +143,7 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 			price: `- ₹${amount}`,
 			date: Date.now(),
 			userId,
+			color: "red",
 		});
 		await walletTxn.save({ session: txn });
 
@@ -171,7 +184,15 @@ export const editProductOrderById = async (req: Request, res: Response) => {
 export const getAllProductOrders = async (req: Request, res: Response) => {
 	try {
 		const userId = req.user.id;
-		const orders = await Order.find({ userId });
+		const orders = await Order.find({ userId })
+			.populate({
+				path: "productId",
+				select: "image",
+			})
+			.populate({
+				path: "productPackageId",
+				select: "image",
+			});
 		if (orders.length === 0) {
 			return res.status(204).json({ success: true, message: "No order found" });
 		}
@@ -192,7 +213,15 @@ export const getAllProductOrders = async (req: Request, res: Response) => {
 export const getOrderByOrderId = async (req: Request, res: Response) => {
 	try {
 		const { orderId } = req.params;
-		const order = await Order.findById(orderId);
+		const order = await Order.findById(orderId)
+			.populate({
+				path: "productId",
+				select: "image",
+			})
+			.populate({
+				path: "productPackageId",
+				select: "image",
+			});
 		if (!order) {
 			return res.status(204).json({ success: true, message: "No order found" });
 		}
