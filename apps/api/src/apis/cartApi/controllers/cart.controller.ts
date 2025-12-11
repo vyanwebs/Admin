@@ -81,7 +81,7 @@ export const createCart = async (req: Request, res: Response) => {
 			quantity,
 			productDescription,
 			productName,
-			orderStatus: "IN_CART",
+			orderStatus: "Cart",
 			...(productId && { productId: new Types.ObjectId(productId) }),
 			...(productPackageId && {
 				productPackageId: new Types.ObjectId(productPackageId),
@@ -126,7 +126,7 @@ export const createCart = async (req: Request, res: Response) => {
 export const getAllCartItems = async (req: Request, res: Response) => {
 	try {
 		const userId = req.user.id;
-		const cartItems = await Order.find({ userId, orderStatus: "IN_CART" })
+		const cartItems = await Order.find({ userId, orderStatus: "Cart" })
 			.populate({
 				path: "productId",
 				select: "image",
@@ -319,7 +319,7 @@ export const deleteAllCartItems = async (req: Request, res: Response) => {
 		const userId = req.user.id;
 		const cartItems = await Order.deleteMany({
 			userId,
-			orderStatus: "IN_CART",
+			orderStatus: "Cart",
 		});
 
 		return res.status(200).json({
@@ -348,7 +348,7 @@ export const cartPayment = async (req: Request, res: Response) => {
 
 		const cartItems = await Order.find({
 			userId,
-			orderStatus: "IN_CART",
+			orderStatus: "Cart",
 		}).session(session);
 
 		if (cartItems.length === 0) {
