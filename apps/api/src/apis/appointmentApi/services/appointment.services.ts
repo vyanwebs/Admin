@@ -152,7 +152,7 @@ class AppointmentService {
 				fromDateTime: formattedFromDateTime,
 				toDateTime: formattedToDateTime,
 				email,
-				userId,
+				userId: new mongoose.Types.ObjectId(userId),
 				chairNo: Number(data.chairNo),
 				appointmentCode,
 				subAdminId: user?.subAdminId,
@@ -212,7 +212,9 @@ class AppointmentService {
 	}
 
 	async getAll(userId: String): Promise<IAppointment[]> {
-		return Appointment.find({ subAdminId: userId }).sort({ createdAt: -1 });
+		return Appointment.find({ subAdminId: userId })
+			.sort({ createdAt: -1 })
+			.populate({ path: "userId", select: "fullName" });
 	}
 
 	async getById(id: string): Promise<IAppointment | null> {

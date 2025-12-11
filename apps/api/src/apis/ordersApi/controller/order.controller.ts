@@ -272,7 +272,8 @@ export const getOrdersBySubAdminId = async (req: Request, res: Response) => {
 			.populate({
 				path: "productPackageId",
 				select: "image",
-			});
+			})
+			.populate({ path: "userId", select: "fullName" });
 		if (!order) {
 			return res.status(204).json({ success: true, message: "No order found" });
 		}
