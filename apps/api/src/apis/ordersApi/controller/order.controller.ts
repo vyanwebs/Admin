@@ -55,6 +55,7 @@ export const buyProduct = async (req: Request, res: Response) => {
 			quantity,
 			productDescription,
 			productName,
+			subAdminId: new Types.ObjectId(user?.subAdminId),
 			...(productId && { productId: new Types.ObjectId(productId) }),
 			...(productPackageId && {
 				productPackageId: new Types.ObjectId(productPackageId),
@@ -249,6 +250,35 @@ export const deleteOrderByOrderId = async (req: Request, res: Response) => {
 		return res.status(200).json({
 			success: true,
 			message: "Orders deleted successfully",
+			data: order,
+		});
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, error: (error as Error).message });
+	}
+};
+
+// get product order by sub admin id
+
+export const getOrdersBySubAdminId = async (req: Request, res: Response) => {
+	try {
+		const userId = req.user.id;
+		const order = await Order.find({ subAdminId: userId })
+			.populate({
+				path: "productId",
+				select: "image",
+			})
+			.populate({
+				path: "productPackageId",
+				select: "image",
+			});
+		if (!order) {
+			return res.status(204).json({ success: true, message: "No order found" });
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Orders fetched successfully",
 			data: order,
 		});
 	} catch (error) {

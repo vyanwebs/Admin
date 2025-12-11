@@ -11,10 +11,12 @@ export interface IOrder extends Document {
 	productPackageId: Types.ObjectId;
 	orderStatus: "Processing" | "Delivered" | "IN_CART";
 	walletTxnId: Types.ObjectId;
+	subAdminId: Types.ObjectId;
 }
 
 const OrderSchema = new Schema<IOrder>({
 	userId: { type: mongoose.Schema.ObjectId, ref: "User" },
+	subAdminId: { type: mongoose.Schema.ObjectId, ref: "User" },
 	amount: { type: Number },
 	quantity: { type: Number },
 	productDescription: { type: String },
