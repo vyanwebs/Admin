@@ -178,20 +178,21 @@ export const login = async (req: Request, res: Response) => {
 
 		let user: IUser | null = await User.findOne({ email }).select("+password");
 
+		if (!user) {
+			res.status(401).json({ error: "No user exists with this email address" });
+			return;
+		}
+
 		if (!user?.isActive) {
 			return res.status(401).json({
 				success: false,
 				message: "You have been blocked by sub admin",
 			});
 		}
-		if (!user) {
-			res.status(401).json({ error: "Invalid email or password" });
-			return;
-		}
 
 		const isMatch = await user.comparePassword(password);
 		if (!isMatch) {
-			res.status(401).json({ error: "Invalid email or password" });
+			res.status(401).json({ error: "Incorrect password." });
 			return;
 		}
 

@@ -23,7 +23,7 @@ router.get("/get-chairs", protect, getChairsBySubAdminId);
 router.get("/chairs/:date/:time", protect, getChairsByDateTime);
 router.get("/:id", getAppointmentById);
 router.put("/:id", protect, updateAppointment);
-router.delete("/:id", deleteAppointment);
+router.delete("/:id", protect, deleteAppointment);
 router.post(
 	"/verify-appointment",
 	protect,
