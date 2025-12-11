@@ -18,7 +18,6 @@ import termsConditionReducer from "./Slice/documents/termsConditionSlice";
 import commonServiceReducer from "./Slice/OurService/commonServiceSlice";
 import homeServicesReducer from "./Slice/homeservice/homeServiceSlice";
 import ordersReducer from "./Slice/Orders/orderSlice"
-
 export const store = configureStore({
   reducer: {
     youtube: youtubeReducer,
@@ -40,7 +39,7 @@ export const store = configureStore({
     commonService: commonServiceReducer,
     homeServices: homeServicesReducer,
     orders: ordersReducer,
-
+   
   },
 });
 

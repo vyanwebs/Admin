@@ -366,11 +366,11 @@ import {
   Grid,
   Tag,
   message,
+  Switch,
 } from "antd";
 import { ReloadOutlined } from "@ant-design/icons";
-
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { fetchUsers } from "../../redux/Slice/useSliceForAdmin/userSlice";
+import { fetchUsers ,toggleUserStatus} from "../../redux/Slice/useSliceForAdmin/userSlice";
 import type { ColumnsType } from "antd/es/table";
 import type { IUser } from "../../redux/types/usera.types";
 
@@ -444,6 +444,23 @@ const UsersTablePage: React.FC = () => {
       key: "gender",
       render: (g) => (g ? <Tag color="cyan">{g}</Tag> : "-"),
     },
+
+    {
+  title: "Status",
+  key: "status",
+  render: (_, r) => (
+    <Space>
+      <Tag color={r.isActive ? "green" : "red"}>
+        {r.isActive ? "Active" : "Inactive"}
+      </Tag>
+      <Switch
+        checked={r.isActive}
+        onChange={() => dispatch(toggleUserStatus(r._id))}
+      />
+    </Space>
+  ),
+},
+
     // {
     //   title: "Role",
     //   dataIndex: "role",

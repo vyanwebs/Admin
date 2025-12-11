@@ -80,6 +80,21 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+
+// ENABLE - DISABLE USER
+
+export const toggleUserStatus  = createAsyncThunk (
+  "user/toggleStatus",
+  async(id:string,{rejectWithValue}) => {
+    try{
+      const res = await API.patch(`/users/${id}/enable-disable`);
+      return res.data.data; 
+    } catch (err:any){
+       return rejectWithValue(err.response?.data?.message ||"failed to update user status");
+    }
+  }
+);
+
 // PROMOTE user
 export const promoteUser = createAsyncThunk(
   "user/promote",
@@ -185,7 +200,16 @@ const userSlice = createSlice({
       .addCase(demoteUser.fulfilled, (state, action) => {
         const idx = state.users.findIndex(u => u._id === action.payload._id);
         if (idx !== -1) state.users[idx] = action.payload;
-      });
+      })
+
+      .addCase(toggleUserStatus.fulfilled, (state, action) => {
+  const updated = action.payload;
+  const idx = state.users.findIndex((u) => u._id === updated._id);
+  if (idx !== -1) {
+    state.users[idx] = updated;
+  }
+})
+
   },
 });
 

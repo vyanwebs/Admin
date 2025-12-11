@@ -36,4 +36,12 @@ router.delete("/:id", protect, UserController.deleteUser);
 router.patch("/:id/promote", protect, UserController.promoteUser);
 router.patch("/:id/demote", protect, UserController.demoteUser);
 
+//enable - Disable  route 
+router.patch(
+  "/:id/enable-disable",
+  protect, 
+  authorizeRole("admin","superadmin"),
+  UserController.enableDisableUser
+);
+
 export default router;
