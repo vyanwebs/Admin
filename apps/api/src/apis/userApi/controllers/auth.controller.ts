@@ -177,6 +177,13 @@ export const login = async (req: Request, res: Response) => {
 		const { email, password } = req.body;
 
 		let user: IUser | null = await User.findOne({ email }).select("+password");
+
+		if (!user?.isActive) {
+			return res.status(401).json({
+				success: false,
+				message: "You have been blocked by sub admin",
+			});
+		}
 		if (!user) {
 			res.status(401).json({ error: "Invalid email or password" });
 			return;
@@ -332,9 +339,10 @@ export const getUserProfile = async (
 				role: foundUser.role,
 				firstName: foundUser.firstName,
 				lastName: foundUser.lastName,
-				fullName: `${foundUser.firstName} ${foundUser.lastName}`,
+				fullName: foundUser.fullName,
 				avatar: (foundUser.avatar as any)?.url || null,
-				phone: foundUser.phone || null,
+				// phone: foundUser.phone || null,
+				phoneNumber: foundUser.phoneNumber || null,
 				bio: foundUser.bio || null,
 				gender: foundUser.gender || null,
 				dateOfBirth: foundUser.dateOfBirth || null,

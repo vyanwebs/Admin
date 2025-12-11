@@ -72,9 +72,25 @@
 // export const { resetAppointmentState } = appointmentSlice.actions;
 // export default appointmentSlice.reducer;
 
+// redux/Slice/appointment/appointmentSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import API from "../../../api/axios"; // axios instance
-import type { IUser, IAppointment } from "../../types/usera.types";
+import API from "../../../api/axios";
+
+export interface IAppointment {
+  _id: string;
+  username?: string;
+  phone?: string;
+  service?: string;
+  date: string;
+  time: string;
+  appointmentStatus: "Pending" | "Accepted" | "Cancelled";
+  appointmentCode?: string;
+  chairNo?: number;
+  email?: string;
+  services?: string[];
+  fromDateTime?: string;
+  toDateTime?: string;
+}
 
 interface AppointmentState {
   appointments: IAppointment[];
@@ -88,75 +104,79 @@ const initialState: AppointmentState = {
   error: null,
 };
 
-// Fetch all appointments
+// Fetch All Appointments
 export const fetchAppointments = createAsyncThunk(
-  "appointment/fetchAll",
+  "appointments/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await API.get("/appointments");
-      return res.data;
+      const res = await API.get("/appointments"); // your backend endpoint
+      return res.data.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch appointments");
+      return rejectWithValue(err.response?.data?.message || "Failed to load appointments");
     }
   }
 );
 
-// Accept appointment
+// Accept Appointment
+// export const acceptAppointment = createAsyncThunk(
+//   "appointments/accept",
+//   async (id: string, { rejectWithValue }) => {
+//     try {
+//       // hitting your verify endpoint with appointmentCode and email
+//       await API.post("/appointments/verify-appointment", { appointmentCode: id });
+//       return id;
+//     } catch (err: any) {
+//       return rejectWithValue(err.response?.data?.message || "Failed to accept appointment");
+//     }
+//   }
+// );
+
+// redux/Slice/appointment/appointmentSlice.ts
 export const acceptAppointment = createAsyncThunk(
-  "appointment/accept",
-  async (id: string, { rejectWithValue }) => {
+  "appointments/accept",
+  async (appointment: { appointmentCode: string; email: string }, { rejectWithValue }) => {
     try {
-      const res = await API.patch(`/appointments/${id}/accept`);
-      return res.data;
+      await API.post("/appointments/verify-appointment", {
+        appointmentCode: appointment.appointmentCode,
+        email: appointment.email,
+      });
+      return appointment.appointmentCode;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || "Failed to accept appointment");
     }
   }
 );
 
-// Reject appointment
-export const rejectAppointment = createAsyncThunk(
-  "appointment/reject",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const res = await API.patch(`/appointments/${id}/reject`);
-      return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to reject appointment");
-    }
-  }
-);
 
-const appointmentSlice = createSlice({
-  name: "appointment",
+
+const appointmentsSlice = createSlice({
+  name: "appointments",
   initialState,
-  reducers: {
-    resetAppointmentState: (state) => {
-      state.appointments = [];
-      state.loading = false;
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch appointments
-      .addCase(fetchAppointments.pending, (state) => { state.loading = true; })
-      .addCase(fetchAppointments.fulfilled, (state, action) => { state.loading = false; state.appointments = action.payload; })
-      .addCase(fetchAppointments.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
-
-      // Accept appointment
-      .addCase(acceptAppointment.fulfilled, (state, action) => {
-        const idx = state.appointments.findIndex(a => a._id === action.payload._id);
-        if (idx !== -1) state.appointments[idx] = action.payload;
+      .addCase(fetchAppointments.pending, (state) => {
+        state.loading = true;
       })
-
-      // Reject appointment
-      .addCase(rejectAppointment.fulfilled, (state, action) => {
-        const idx = state.appointments.findIndex(a => a._id === action.payload._id);
-        if (idx !== -1) state.appointments[idx] = action.payload;
+      .addCase(fetchAppointments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.appointments = action.payload;
+      })
+      .addCase(fetchAppointments.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(acceptAppointment.fulfilled, (state, action) => {
+        // update appointment locally
+        const index = state.appointments.findIndex((a) => a.appointmentCode === action.payload);
+        if (index !== -1) {
+          state.appointments[index].appointmentStatus = "Accepted";
+        }
+      })
+      .addCase(acceptAppointment.rejected, (state, action: any) => {
+        state.error = action.payload;
       });
   },
 });
 
-export const { resetAppointmentState } = appointmentSlice.actions;
-export default appointmentSlice.reducer;
+export default appointmentsSlice.reducer;

@@ -7,7 +7,6 @@ import certificateReducer from "./Slice/Uploadcertificate/certificateSlice";
 import offerReducer from "./Slice/specialOffer/offerSlice";
 import packageReducer from "./Slice/package/packageSlice";
 import productPackagesReducer from "./Slice/productPackage/productPackageSlice";
-import appointmentReducer from "./Slice/appointment/appointmentSlice";
 import productReducer from "./Slice/product/productSlice";
 import youtubeReducer from "./Slice/Youtube/youtube.slice"; 
 import aboutSalonReducer from "./Slice/AboutOurSaloon/aboutSalonSlice";
@@ -18,6 +17,11 @@ import termsConditionReducer from "./Slice/documents/termsConditionSlice";
 import commonServiceReducer from "./Slice/OurService/commonServiceSlice";
 import homeServicesReducer from "./Slice/homeservice/homeServiceSlice";
 import ordersReducer from "./Slice/Orders/orderSlice"
+import appointmentsReducer from "./Slice/appointment/appointmentSlice";
+
+
+
+
 export const store = configureStore({
   reducer: {
     youtube: youtubeReducer,
@@ -29,7 +33,6 @@ export const store = configureStore({
     offers: offerReducer,
     packages:packageReducer,
     productPackages: productPackagesReducer ,
-    appointment: appointmentReducer,
     products: productReducer,
     youtubeVideos: youtubeReducer, 
     aboutSalons: aboutSalonReducer, 
@@ -39,6 +42,8 @@ export const store = configureStore({
     commonService: commonServiceReducer,
     homeServices: homeServicesReducer,
     orders: ordersReducer,
+    appointments: appointmentsReducer,
+
    
   },
 });

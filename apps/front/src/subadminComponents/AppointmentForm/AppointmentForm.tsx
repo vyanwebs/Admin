@@ -167,140 +167,121 @@
 
 // export default AppointmentForm;
 
-
-
 import React, { useEffect } from "react";
-import { Table, Card, Button, Tag, Space, message } from "antd";
+import { Table, Card, Tag, Space, Button, message } from "antd";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   fetchAppointments,
   acceptAppointment,
-  rejectAppointment,
 } from "../../redux/Slice/appointment/appointmentSlice";
 
-import type { ColumnsType } from "antd/es/table";
-import type { IAppointment } from "../../redux/types/usera.types";
+interface AppointmentRecord {
+  _id: string;
+  appointmentCode: string;
+  date: string;
+  time: string;
+  appointmentStatus: string;
+  chairNo: number;
+  email: string;
+  services: string[];
+  fromDateTime: string;
+  toDateTime: string;
+}
 
-const ManageAppointments: React.FC = () => {
+const AppointmentsPage: React.FC = () => {
   const dispatch = useAppDispatch();
-
-  // ⬇ Correct selector (same structure as AppointmentForm)
-  const { appointments, loading, error } = useAppSelector(
-    (state) => state.appointment
+  const { appointments, loading } = useAppSelector(
+    (state) => state.appointments
   );
 
-  // ⬇ Fetch appointments at mount
   useEffect(() => {
     dispatch(fetchAppointments());
   }, [dispatch]);
 
-  // ⬇ Show backend error
-  useEffect(() => {
-    if (error) message.error(error);
-  }, [error]);
-
-  // Accept
-  const handleAccept = (id: string) => {
-    dispatch(acceptAppointment(id));
+  // Accept Appointment
+  const handleAccept = async (appointment: { appointmentCode: string; email: string }) => {
+    try {
+      await dispatch(acceptAppointment(appointment)).unwrap();
+      message.success("Appointment accepted!");
+      dispatch(fetchAppointments()); // refresh list
+    } catch (err: any) {
+      message.error(err?.message || "Something went wrong");
+    }
   };
 
-  // Reject
-  const handleReject = (id: string) => {
-    dispatch(rejectAppointment(id));
-  };
-
-  // TABLE COLUMNS
-  const columns: ColumnsType<IAppointment> = [
-    {
-      title: "Appointment ID",
-      dataIndex: "_id",
-      key: "_id",
-      width: 200,
-    },
-    {
-      title: "Customer Name",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    {
-      title: "Service",
-      dataIndex: "serviceName",
-      key: "serviceName",
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Time",
-      dataIndex: "time",
-      key: "time",
-    },
-
+  const columns = [
+    { title: "Appointment Code", dataIndex: "appointmentCode", key: "appointmentCode" },
+    { title: "Date", dataIndex: "date", key: "date" },
+    { title: "Time", dataIndex: "time", key: "time" },
     {
       title: "Status",
+      dataIndex: "appointmentStatus",
       key: "status",
-      render: (_, record) => {
-        const statusColor =
-          record.status === "accepted"
-            ? "green"
-            : record.status === "rejected"
-            ? "red"
-            : "orange";
-
-        return <Tag color={statusColor}>{record.status.toUpperCase()}</Tag>;
-      },
-    },
-
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record) => (
+      render: (status: string, record: AppointmentRecord) => (
         <Space>
-          <Button
-            type="primary"
-            disabled={record.status !== "pending"}
-            onClick={() => handleAccept(record._id)}
+          <Tag
+            color={
+              status.toLowerCase() === "accepted"
+                ? "green"
+                : status.toLowerCase() === "pending"
+                ? "orange"
+                : "red"
+            }
           >
-            Accept
-          </Button>
-
-          <Button
-            danger
-            type="default"
-            disabled={record.status !== "pending"}
-            onClick={() => handleReject(record._id)}
-          >
-            Reject
-          </Button>
+            {status.toUpperCase()}
+          </Tag>
+          {status.toLowerCase() === "pending" && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() =>
+                handleAccept({
+                  appointmentCode: record.appointmentCode,
+                  email: record.email,
+                })
+              }
+            >
+              Accept
+            </Button>
+          )}
         </Space>
       ),
     },
+    { title: "Chair No", dataIndex: "chairNo", key: "chairNo" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    {
+      title: "Services",
+      dataIndex: "services",
+      key: "services",
+      render: (services: string[]) => services.join(", "),
+    },
+    { title: "From", dataIndex: "fromDateTime", key: "fromDateTime" },
+    { title: "To", dataIndex: "toDateTime", key: "toDateTime" },
   ];
 
   return (
-    <div className="p-5 flex justify-center">
+    <div className="p-5 flex justify-center bg-gray-50 min-h-screen">
       <Card
+        className="w-full max-w-7xl shadow-lg rounded-2xl"
         title={
-          <span className="text-xl font-semibold text-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-700">
             Manage Appointments
-          </span>
+          </h2>
         }
-        className="w-full max-w-6xl shadow-lg border border-gray-200 rounded-2xl bg-white"
       >
         <Table
-          columns={columns}
-          dataSource={appointments}
-          rowKey={(item) => item._id}
+          rowKey="_id"
           loading={loading}
-          pagination={{ pageSize: 8 }}
-          scroll={{ x: 800 }}
+          dataSource={appointments}
+          columns={columns}
+          pagination={{ pageSize: 10 }}
+          scroll={{ x: 1200 }}
           locale={{ emptyText: "No appointments found" }}
+          bordered
         />
       </Card>
     </div>
   );
 };
 
-export default ManageAppointments;
+export default AppointmentsPage;

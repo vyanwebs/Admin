@@ -4,7 +4,7 @@ export interface IAppointment extends Document {
 	date?: string;
 	time?: string;
 	appointmentStatus?: "Pending" | "Accepted";
-	userId?: string;
+	userId?: string | mongoose.Types.ObjectId;
 	appointmentCode?: string;
 	chairNo?: number;
 	fromDateTime?: Date;
@@ -25,7 +25,7 @@ const AppointmentSchema = new Schema<IAppointment>(
 			enum: ["Pending", "Accepted", "Rescheduled", "Cancelled"],
 			default: "Pending",
 		},
-		userId: { type: String },
+		userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		appointmentCode: { type: String },
 		chairNo: { type: Number },
 		fromDateTime: { type: Date },
