@@ -1,182 +1,32 @@
-// import React, { useEffect, useState } from "react";
-// import { Card, Form, Input, Button, message, Modal } from "antd";
-// import {
-//   MailOutlined,
-//   BarcodeOutlined,
-//   NumberOutlined,
-//   CheckCircleOutlined,
-// } from "@ant-design/icons";
-// import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-// import {
-//   verifyAppointment,
-//   resetAppointmentState,
-// } from "../../redux/Slice/appointment/appointmentSlice";
 
-// const AppointmentForm: React.FC = () => {
-//   const [form] = Form.useForm();
-//   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-//   const dispatch = useAppDispatch();
-
-//   const {
-//     loading,
-//     success,
-//     message: successMsg,
-//     error,
-//   } = useAppSelector((state) => state.appointment);
-
-//   const handleSubmit = (values: {
-//     email: string;
-//     appointmentCode: string;
-//     chairNo: string;
-//   }) => {
-//     dispatch(verifyAppointment(values));
-//   };
-
-//   useEffect(() => {
-//     if (success) {
-//       setIsSuccessModalVisible(true);
-//       form.resetFields();
-//     } else if (error) {
-//       message.error(error || "Verification failed");
-//       dispatch(resetAppointmentState());
-//     }
-//   }, [success, error, successMsg, dispatch, form]);
-
-//   const handleModalClose = () => {
-//     setIsSuccessModalVisible(false);
-//     dispatch(resetAppointmentState());
-//   };
-
-//   return (
-//     <div className="flex justify-center items-center min-h-screen bg-gray-50 px-4 py-8">
-//       {/* Success Confirmation Modal */}
-//       <Modal
-//         title={
-//           <div className="flex items-center gap-2 text-green-600">
-//             <CheckCircleOutlined className="text-2xl" />
-//             <span className="text-xl font-semibold">
-//               Appointment Confirmed!
-//             </span>
-//           </div>
-//         }
-//         open={isSuccessModalVisible}
-//         onOk={handleModalClose}
-//         onCancel={handleModalClose}
-//         okText="Great!"
-//         cancelButtonProps={{ style: { display: "none" } }}
-//         centered
-//         width={400}
-//       >
-//         <div className="py-4 text-center">
-//           <CheckCircleOutlined className="text-5xl text-green-500 mb-4" />
-//           <p className="text-lg text-gray-700 mb-2">
-//             {successMsg || "Your appointment has been successfully confirmed!"}
-//           </p>
-//           <p className="text-gray-500 text-sm">
-//             You can now proceed with your appointment.
-//           </p>
-//         </div>
-//       </Modal>
-
-//       <Card
-//         title={
-//           <span className="text-xl font-semibold text-gray-700">
-//             Verify Appointment
-//           </span>
-//         }
-//         className="w-full max-w-md sm:max-w-lg md:max-w-xl shadow-lg border border-gray-200 rounded-2xl bg-white"
-//       >
-//         <Form
-//           layout="vertical"
-//           form={form}
-//           onFinish={handleSubmit}
-//           requiredMark={false}
-//           className="mt-4 space-y-4"
-//         >
-//           {/* Email Field */}
-//           <Form.Item
-//             label={<span className="text-gray-600 font-medium">Email</span>}
-//             name="email"
-//             rules={[
-//               { required: true, message: "Please enter the email" },
-//               { type: "email", message: "Please enter a valid email" },
-//             ]}
-//           >
-//             <Input
-//               size="large"
-//               prefix={<MailOutlined className="text-gray-400" />}
-//               placeholder="Enter email address"
-//               className="rounded-lg"
-//             />
-//           </Form.Item>
-
-//           {/* Appointment Code */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 font-medium">
-//                 Appointment Code
-//               </span>
-//             }
-//             name="appointmentCode"
-//             rules={[
-//               { required: true, message: "Please enter appointment code" },
-//             ]}
-//           >
-//             <Input
-//               size="large"
-//               prefix={<BarcodeOutlined className="text-gray-400" />}
-//               placeholder="Enter appointment code"
-//               className="rounded-lg"
-//             />
-//           </Form.Item>
-
-//           {/* Chair Number */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 font-medium">Chair Number</span>
-//             }
-//             name="chairNo"
-//             rules={[{ required: true, message: "Please enter chair number" }]}
-//           >
-//             <Input
-//               size="large"
-//               prefix={<NumberOutlined className="text-gray-400" />}
-//               placeholder="Enter chair number"
-//               className="rounded-lg"
-//             />
-//           </Form.Item>
-
-//           {/* Submit Button */}
-//           <Form.Item>
-//             <Button
-//               type="primary"
-//               htmlType="submit"
-//               icon={<CheckCircleOutlined />}
-//               loading={loading}
-//               className="w-full mt-2 bg-blue-600 hover:bg-blue-700 rounded-lg"
-//               size="large"
-//             >
-//               {loading ? "Verifying..." : "Verify Appointment"}
-//             </Button>
-//           </Form.Item>
-//         </Form>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default AppointmentForm;
-
-import React, { useEffect } from "react";
-import { Table, Card, Tag, Space, Button, message } from "antd";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import React, { useEffect, useState } from "react";
 import {
-  fetchAppointments,
-  acceptAppointment,
-} from "../../redux/Slice/appointment/appointmentSlice";
+  Table,
+  Card,
+  Tag,
+  Space,
+  Button,
+  message,
+  Tabs,
+  DatePicker,
+  Badge,
+  Radio,
+} from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { fetchAppointments, acceptAppointment } from "../../redux/Slice/appointment/appointmentSlice";
+import { ReloadOutlined } from "@ant-design/icons";
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+
+const { TabPane } = Tabs;
 
 interface AppointmentRecord {
   _id: string;
+  userId: { _id: string; fullName: string };
   appointmentCode: string;
   date: string;
   time: string;
@@ -186,32 +36,82 @@ interface AppointmentRecord {
   services: string[];
   fromDateTime: string;
   toDateTime: string;
+  updatedAt: string;
 }
 
 const AppointmentsPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { appointments, loading } = useAppSelector(
-    (state) => state.appointments
-  );
+  const { appointments, loading } = useAppSelector((state) => state.appointments);
+
+  const [filterStatus, setFilterStatus] = useState<string>("All");
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [dateFilterType, setDateFilterType] = useState<"today" | "weekly" | "monthly" | "custom" | null>(null);
 
   useEffect(() => {
     dispatch(fetchAppointments());
   }, [dispatch]);
 
-  // Accept Appointment
   const handleAccept = async (appointment: { appointmentCode: string; email: string }) => {
     try {
       await dispatch(acceptAppointment(appointment)).unwrap();
       message.success("Appointment accepted!");
-      dispatch(fetchAppointments()); // refresh list
+      dispatch(fetchAppointments());
     } catch (err: any) {
       message.error(err?.message || "Something went wrong");
     }
   };
 
+  const handleRefresh = () => {
+    dispatch(fetchAppointments());
+    message.success("Appointments refreshed!");
+  };
+
+  const handleDateFilterChange = (value: typeof dateFilterType) => {
+    setDateFilterType(value);
+    if (value === "today") setSelectedDate(dayjs());
+    else setSelectedDate(null);
+  };
+
+  const filteredByDateAppointments = appointments.filter((a) => {
+    const appDate = dayjs(a.date, "YYYY-MM-DD");
+    switch (dateFilterType) {
+      case "today":
+        return appDate.isSame(dayjs(), "day");
+      case "weekly":
+        const startOfWeek = dayjs().startOf("week");
+        const endOfWeek = dayjs().endOf("week");
+        return appDate.isSameOrAfter(startOfWeek, "day") && appDate.isSameOrBefore(endOfWeek, "day");
+      case "monthly":
+        return appDate.isSame(dayjs(), "month");
+      case "custom":
+        return selectedDate ? appDate.isSame(selectedDate, "day") : true;
+      default:
+        return true;
+    }
+  });
+
+  const allCount = filteredByDateAppointments.length;
+  const pendingCount = filteredByDateAppointments.filter((a) => a.appointmentStatus.toLowerCase() === "pending").length;
+  const acceptedCount = filteredByDateAppointments.filter((a) => a.appointmentStatus.toLowerCase() === "accepted").length;
+
+  const filteredAppointments =
+    filterStatus === "All"
+      ? filteredByDateAppointments
+      : filteredByDateAppointments.filter((a) => a.appointmentStatus.toLowerCase() === filterStatus.toLowerCase());
+
   const columns = [
+    {
+      title: "Full Name",
+      key: "fullName",
+      render: (_: any, record: AppointmentRecord) => record.userId?.fullName || "N/A",
+    },
     { title: "Appointment Code", dataIndex: "appointmentCode", key: "appointmentCode" },
-    { title: "Date", dataIndex: "date", key: "date" },
+    {
+      title: "Booked At",
+      key: "bookedAt",
+      render: (_: any, record: AppointmentRecord) =>
+        dayjs(record.updatedAt).format("DDMMMYYYY hh:mm A"),
+    },
     { title: "Time", dataIndex: "time", key: "time" },
     {
       title: "Status",
@@ -253,31 +153,85 @@ const AppointmentsPage: React.FC = () => {
       title: "Services",
       dataIndex: "services",
       key: "services",
-      render: (services: string[]) => services.join(", "),
+      render: (services: string[]) => {
+        try {
+          const parsed = services
+            .map((s) => (typeof s === "string" && s.startsWith("[") ? JSON.parse(s) : s))
+            .flat();
+          return parsed.join(", ");
+        } catch {
+          return services.join(", ");
+        }
+      },
     },
     { title: "From", dataIndex: "fromDateTime", key: "fromDateTime" },
     { title: "To", dataIndex: "toDateTime", key: "toDateTime" },
   ];
 
   return (
-    <div className="p-5 flex justify-center bg-gray-50 min-h-screen">
-      <Card
-        className="w-full max-w-7xl shadow-lg rounded-2xl"
-        title={
-          <h2 className="text-2xl font-semibold text-gray-700">
-            Manage Appointments
-          </h2>
-        }
-      >
+    <div className="p-5 flex justify-center bg-gray-100 min-h-screen">
+      <Card className="w-full max-w-7xl shadow-2xl rounded-3xl">
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h2 className="text-3xl font-bold text-gray-800">Manage Appointments</h2>
+
+          <Space>
+            <Radio.Group onChange={(e) => handleDateFilterChange(e.target.value)} value={dateFilterType}>
+              <Radio.Button value="today">Today</Radio.Button>
+              <Radio.Button value="weekly">This Week</Radio.Button>
+              <Radio.Button value="monthly">This Month</Radio.Button>
+              <Radio.Button value="custom">Custom Date</Radio.Button>
+            </Radio.Group>
+
+            {dateFilterType === "custom" && (
+              <DatePicker
+                value={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                className="rounded-lg"
+              />
+            )}
+
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+            >
+              Refresh
+            </Button>
+          </Space>
+        </div>
+{/* 
+        <Tabs
+          defaultActiveKey="All"
+          onChange={(key) => setFilterStatus(key)}
+          size="large"
+          className="mb-4"
+        >
+          <TabPane tab={<Badge count={allCount} color="blue">All</Badge>} key="All" />
+          <TabPane tab={<Badge count={pendingCount} color="orange">Pending</Badge>} key="Pending" />
+          <TabPane tab={<Badge count={acceptedCount} color="green">Accepted</Badge>} key="Accepted" />
+        </Tabs> */}
+
+<Tabs
+  defaultActiveKey="Pending"
+  onChange={(key) => setFilterStatus(key)}
+  size="large"
+  className="mb-4"
+>
+  <TabPane tab={<Badge count={pendingCount} color="orange">Pending</Badge>} key="Pending" />
+  <TabPane tab={<Badge count={acceptedCount} color="green">Accepted</Badge>} key="Accepted" />
+  <TabPane tab={<Badge count={allCount} color="blue">All</Badge>} key="All" />
+</Tabs>
+
+
+
         <Table
           rowKey="_id"
           loading={loading}
-          dataSource={appointments}
+          dataSource={filteredAppointments}
           columns={columns}
           pagination={{ pageSize: 10 }}
-          scroll={{ x: 1200 }}
-          locale={{ emptyText: "No appointments found" }}
+          scroll={{ x: 1600 }}
           bordered
+          rowClassName={() => "hover:shadow-lg hover:bg-gray-50 transition duration-300"}
         />
       </Card>
     </div>
