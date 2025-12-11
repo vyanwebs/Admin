@@ -9,7 +9,7 @@ export interface IOrder extends Document {
 	orderCode: string;
 	productId: Types.ObjectId;
 	productPackageId: Types.ObjectId;
-	orderStatus: "Processing" | "Delivered" | "IN_CART";
+	orderStatus: "Processing" | "Delivered" | "Cart";
 	walletTxnId: Types.ObjectId;
 	subAdminId: Types.ObjectId;
 }
