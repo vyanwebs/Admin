@@ -157,6 +157,7 @@ class AppointmentService {
 				appointmentCode,
 				subAdminId: user?.subAdminId,
 				appointmentAmount: totalServiceAmount,
+				appointmentType: "Standard",
 			});
 
 			// 5️⃣ Notification
