@@ -90,6 +90,13 @@ export interface IAppointment {
   services?: string[];
   fromDateTime?: string;
   toDateTime?: string;
+  userId?: {
+    _id: string;
+    fullName: string;
+  };
+  updatedAt?: string;
+  
+ // fullName?: string;
 }
 
 interface AppointmentState {

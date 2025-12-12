@@ -1,106 +1,171 @@
-import React, { useState, useEffect } from "react";
-import { Table, Input, Button, Card } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  Table,
+  Button,
+  Input,
+  Row,
+  Col,
+  Tag,
+  message,
+  Select,
+} from "antd";
+import { ReloadOutlined } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   fetchOrders,
   updateOrderStatus,
 } from "../../redux/Slice/Orders/orderSlice";
 
-import OrderForm from "./OrderForm";
-import { EditOutlined } from "@ant-design/icons";
+const { Option } = Select;
 
-const ManageOrders = () => {
+const OrdersTablePage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { orders, loading } = useAppSelector((state) => state.orders);
+  const { orders = [], loading, error } = useAppSelector(
+    (state: any) => state.orders
+  );
 
-  const [search, setSearch] = useState("");
-  const [filteredOrders, setFilteredOrders] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [initialData, setInitialData] = useState<any>(null);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
   useEffect(() => {
-    setFilteredOrders(
-      orders.filter((o) =>
-        o?.userName?.toLowerCase().includes(search.toLowerCase())
-      )
-    );
-  }, [orders, search]);
+    if (error) message.error(error);
+  }, [error]);
 
-  const handleEdit = (record: any) => {
-    setInitialData(record);
-    setIsModalOpen(true);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Delivered":
+        return "green";
+      case "Processing":
+        return "gold";
+      case "Cart":
+        return "grey";
+      default:
+        return "red";
+    }
   };
 
-  const handleSubmit = async (values: any, id?: string) => {
-    await dispatch(updateOrderStatus({ id, data: values }));
-    setIsModalOpen(false);
-    setInitialData(null);
+  const handleStatusUpdate = async (id: string, newStatus: string) => {
+    try {
+      await dispatch(updateOrderStatus({ id, status: newStatus })).unwrap();
+      message.success("Status updated successfully");
+      dispatch(fetchOrders());
+    } catch (err: any) {
+      message.error(err || "Failed to update status");
+    }
   };
+
+  const filteredOrders = orders.filter((item: any) =>
+    item.productName?.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const columns = [
     {
-      title: "Customer",
-      dataIndex: "userName",
-      key: "userName",
+      title: "User Name",
+      dataIndex: "userId",
+      responsive: ["sm"],
+      render: (user: any) => user?.fullName || "N/A",
     },
     {
-      title: "Order ID",
-      dataIndex: "_id",
-      key: "_id",
+      title: "Order Code",
+      dataIndex: "orderCode",
+      responsive: ["xs", "sm", "md"],
+    },
+    {
+      title: "Product",
+      dataIndex: "productName",
+      responsive: ["xs", "sm", "md"],
     },
     {
       title: "Amount",
       dataIndex: "amount",
-      key: "amount",
-      render: (a: number) => `₹${a}`,
+      render: (amt: number) => `₹${amt}`,
+      responsive: ["sm", "md"],
+    },
+    {
+      title: "Qty",
+      dataIndex: "quantity",
+      responsive: ["sm", "md"],
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, record: any) => (
-        <Button
-          icon={<EditOutlined />}
-          onClick={() => handleEdit(record)}
-        >
-          Edit Status
-        </Button>
+      dataIndex: "orderStatus",
+      render: (status: string, record: any) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Tag color={getStatusColor(status)}>{status}</Tag>
+
+          {status !== "Cart" && (
+            <Select
+              defaultValue={status}
+              style={{
+                width: 140,
+                marginLeft: 8,
+                minWidth: 100,
+              }}
+              onChange={(val) => handleStatusUpdate(record._id, val)}
+            >
+              <Option value="Processing">Processing</Option>
+              <Option value="Delivered">Delivered</Option>
+            </Select>
+          )}
+        </div>
       ),
+      responsive: ["xs", "sm", "md"],
     },
   ];
 
   return (
-    <Card title="Manage Orders">
-      <Input
-        placeholder="Search by customer name"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ maxWidth: 300, marginBottom: 20 }}
-      />
+    <Card
+      style={{ borderRadius: 12 }}
+      title={<span style={{ fontSize: 20, fontWeight: 600 }}>Manage Orders</span>}
+      extra={
+        <Button
+          icon={<ReloadOutlined />}
+          loading={loading}
+          onClick={() => dispatch(fetchOrders())}
+          type="default"
+          style={{ borderRadius: 6 }}
+        >
+          Refresh
+        </Button>
+      }
+    >
+      {/* Search Input Responsive */}
+      <Row
+        gutter={[16, 16]}
+        justify="space-between"
+        align="middle"
+        style={{ marginBottom: 16 }}
+      >
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <Input
+            placeholder="Search product..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{
+              width: "100%",
+              borderRadius: 6,
+              padding: 8,
+            }}
+          />
+        </Col>
+      </Row>
 
+      {/* Orders Table */}
       <Table
-        rowKey="_id"
-        columns={columns}
         loading={loading}
+        columns={columns}
         dataSource={filteredOrders}
-      />
-
-      <OrderForm
-        visible={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-        initialData={initialData}
+        rowKey="_id"
+        pagination={{ pageSize: 10 }}
+        scroll={{ x: "max-content" }}
+        style={{ borderRadius: 12 }}
       />
     </Card>
   );
 };
 
-export default ManageOrders;
+export default OrdersTablePage;

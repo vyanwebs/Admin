@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Home, icons, User, X,  } from "lucide-react";
+import { Home, User, X,  } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../commonComp/SideBarr/SideBarr";
 import Header from "../commonComp/Header/Header";
 import RouteTracker from "../commonComp/RouteTracker/RouteTracker";
 import { useAppDispatch } from "../redux/hooks";
 import { search } from "../redux/Slice/activeStatus/activeStatusSlice";
-import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined, OrderedListOutlined,TruckOutlined } from "@ant-design/icons";
+import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined,TruckOutlined } from "@ant-design/icons";
 const menuItems = [
 	{
 		name: "Dashboard",
@@ -56,6 +56,11 @@ const menuItems = [
           icon: <User className="w-4 h-4" />,
           path: "/admin/male/special-offers",
         },
+		// {
+        //   name: "Create category",
+        //   icon: <User className="w-4 h-4" />,
+        //   path: "/admin/male/create-category",
+        // },
         {
           name: "Our Service",
           icon: <User className="w-4 h-4" />,
