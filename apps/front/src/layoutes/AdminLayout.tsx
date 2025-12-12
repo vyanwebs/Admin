@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { Home, User, X,  } from "lucide-react";
+import { Home, User, X } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../commonComp/SideBarr/SideBarr";
 import Header from "../commonComp/Header/Header";
 import RouteTracker from "../commonComp/RouteTracker/RouteTracker";
 import { useAppDispatch } from "../redux/hooks";
 import { search } from "../redux/Slice/activeStatus/activeStatusSlice";
-import { SafetyCertificateOutlined, ScheduleOutlined, InfoCircleOutlined, YoutubeOutlined ,FileZipOutlined, SafetyOutlined ,FileDoneOutlined,TruckOutlined } from "@ant-design/icons";
+import {
+	SafetyCertificateOutlined,
+	ScheduleOutlined,
+	InfoCircleOutlined,
+	YoutubeOutlined,
+	FileZipOutlined,
+	SafetyOutlined,
+	FileDoneOutlined,
+	TruckOutlined,
+} from "@ant-design/icons";
 const menuItems = [
 	{
 		name: "Dashboard",
@@ -32,128 +41,132 @@ const menuItems = [
 	//   ],
 	// },
 
- {
-    name: "Appointment",
-    icon: <ScheduleOutlined className="w-5 h-5" />,
-    path: "/admin/Appointment",
-  },
-    
-  {
-	name: "Orders",
-	icon : <TruckOutlined  className="w-5 h-5"/>,
-	path: "/admin/orders"
-  },
-     {
-  name: "Gender",
-  icon: <User className="w-5 h-5" />,
-  subItems: [
-    {
-      name: "Male",
-      icon: <User className="w-5 h-5" />,
-      subItems: [
-        {
-          name: "Special Offers",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/special-offers",
-        },
-        {
-          name: "Our Service",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/our-service",
-        },
-          {
-          name: "Products",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/products",
-        },
-        {
-          name: "Our Package",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/our-package",
-        },
-        {
-          name: "Product Package",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/product-package",
-        },
-		{
-          name: "Home Service",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/male/home-service",
-        },
-      ],
-    },
-    {
-      name: "Female",
-      icon: <User className="w-4 h-4" />,
-      subItems: [
-        {
-          name: "Special Offers",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/special-offers",
-        },
-        {
-          name: "Our Service",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/our-service",
-        },
-        // {
-        //   name: "Product",
-        //   icon: <User className="w-4 h-4" />,
-        //   subItems: [
-        //     {
-        //       name: "Products Details",
-        //       icon: <User className="w-4 h-4" />,
-        //       path: "/admin/female/products/details",
-        //     },
-        //     {
-        //       name: "Categories",
-        //       icon: <User className="w-4 h-4" />,
-        //       path: "/admin/female/products/categories",
-        //     },
-        //   ],
-        // },
-        {
-          name: "Products",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/products",
-        },
-        {
-          name: "Our Package",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/our-package",
-        },
-        {
-          name: "Product Package",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/product-package",
-        },
-		{
-          name: "Home service",
-          icon: <User className="w-4 h-4" />,
-          path: "/admin/female/home-service",
-        },
-      ],
-    },
-  ],
-},
+	{
+		name: "Appointments",
+		icon: <ScheduleOutlined className="w-5 h-5" />,
+		path: "/admin/Appointment",
+	},
 
-  {
-    name: "Upload Certificate",
-    icon: <SafetyCertificateOutlined   className="w-5 h-5" />,
-    path: "/admin/Upload-Certificate",
-  }, 
-   {
-    name: "Youtube",
-    icon: <YoutubeOutlined className="w-5 h-5" />,
-    path: "/admin/youtube",
-  },
- {
-  name: "About Our Salon",
-  icon: <InfoCircleOutlined className="w-5 h-5" />,
-  path: "/admin/about-salon",
-},
-  
+	{
+		name: "Orders",
+		icon: <TruckOutlined className="w-5 h-5" />,
+		path: "/admin/orders",
+	},
+	{
+		name: "Gender",
+		icon: <User className="w-5 h-5" />,
+		subItems: [
+			{
+				name: "Male",
+				icon: <User className="w-5 h-5" />,
+				subItems: [
+					{
+						name: "Special Offers",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/special-offers",
+					},
+					// {
+					//   name: "Create category",
+					//   icon: <User className="w-4 h-4" />,
+					//   path: "/admin/male/create-category",
+					// },
+					{
+						name: "Our Service",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/our-service",
+					},
+					{
+						name: "Products",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/products",
+					},
+					{
+						name: "Our Package",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/our-package",
+					},
+					{
+						name: "Product Package",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/product-package",
+					},
+					{
+						name: "Home Service",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/male/home-service",
+					},
+				],
+			},
+			{
+				name: "Female",
+				icon: <User className="w-4 h-4" />,
+				subItems: [
+					{
+						name: "Special Offers",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/special-offers",
+					},
+					{
+						name: "Our Service",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/our-service",
+					},
+					// {
+					//   name: "Product",
+					//   icon: <User className="w-4 h-4" />,
+					//   subItems: [
+					//     {
+					//       name: "Products Details",
+					//       icon: <User className="w-4 h-4" />,
+					//       path: "/admin/female/products/details",
+					//     },
+					//     {
+					//       name: "Categories",
+					//       icon: <User className="w-4 h-4" />,
+					//       path: "/admin/female/products/categories",
+					//     },
+					//   ],
+					// },
+					{
+						name: "Products",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/products",
+					},
+					{
+						name: "Our Package",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/our-package",
+					},
+					{
+						name: "Product Package",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/product-package",
+					},
+					{
+						name: "Home service",
+						icon: <User className="w-4 h-4" />,
+						path: "/admin/female/home-service",
+					},
+				],
+			},
+		],
+	},
+
+	{
+		name: "Upload Certificate",
+		icon: <SafetyCertificateOutlined className="w-5 h-5" />,
+		path: "/admin/Upload-Certificate",
+	},
+	{
+		name: "Youtube",
+		icon: <YoutubeOutlined className="w-5 h-5" />,
+		path: "/admin/youtube",
+	},
+	{
+		name: "About Our Salon",
+		icon: <InfoCircleOutlined className="w-5 h-5" />,
+		path: "/admin/about-salon",
+	},
 
 	{
 		name: "Documents",
@@ -198,13 +211,7 @@ export default function AdminLayout() {
 		<div className="h-[100vh] w-screen overflow-hidden flex flex-col bg-gray-50">
 			<RouteTracker />
 			<Header
-				logo={
-					<img
-						src=""
-						alt="Logo"
-						style={{ height: "60px" }}
-					/>
-				}
+				logo={<img src="" alt="Logo" style={{ height: "60px" }} />}
 				onSearch={onSearch}
 				onNotificationClick={() => console.log("Notifications clicked")}
 				onMobileMenuToggle={() => setMobileSidebarOpen(!mobileSidebarOpen)}
