@@ -14,6 +14,7 @@ export interface IAppointment extends Document {
 	subAdminId?: string | mongoose.Types.ObjectId;
 	appointmentAmount?: number;
 	walletTxnId?: mongoose.Types.ObjectId;
+	appointmentType: "Standard" | "Package" | "Home";
 }
 
 const AppointmentSchema = new Schema<IAppointment>(
@@ -35,6 +36,11 @@ const AppointmentSchema = new Schema<IAppointment>(
 		subAdminId: { type: mongoose.Schema.Types.ObjectId },
 		appointmentAmount: { type: Number },
 		walletTxnId: { type: mongoose.Schema.Types.ObjectId },
+		appointmentType: {
+			type: String,
+			enum: ["Standard", "Package", "Home"],
+			default: "Standard",
+		},
 	},
 	{ timestamps: true }
 );
