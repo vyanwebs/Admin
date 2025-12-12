@@ -7,7 +7,7 @@ import SubscriptionTimer from "./SubscriptionTimer";
 import dayjs from "dayjs";
 import { Card, Row, Col, Statistic, Typography } from "antd";
 import type { IUser } from "../../redux/types/usera.types";
-
+import DashboardCharts from "../../subadminComponents/ChartsAdmin/DashboardCharts"
 const { Title } = Typography;
 
 const AdminDashboard: React.FC = () => {
@@ -98,6 +98,8 @@ const AdminDashboard: React.FC = () => {
 
         {/* Future cards can be added here, e.g., total subadmins, active subscriptions */}
       </Row>
+      <DashboardCharts />
+
     </div>
   );
 };

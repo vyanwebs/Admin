@@ -56,11 +56,6 @@ const menuItems = [
           icon: <User className="w-4 h-4" />,
           path: "/admin/male/special-offers",
         },
-		// {
-        //   name: "Create category",
-        //   icon: <User className="w-4 h-4" />,
-        //   path: "/admin/male/create-category",
-        // },
         {
           name: "Our Service",
           icon: <User className="w-4 h-4" />,
