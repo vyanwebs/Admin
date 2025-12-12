@@ -80,6 +80,8 @@ export interface IUser {
   updatedAt: Date;
   fullName?: string;
   isSubscriptionActive?: boolean;
+subAdminId?: string | null;
+subAdminEmail?: string;
 
 
 //  appName?: string;
