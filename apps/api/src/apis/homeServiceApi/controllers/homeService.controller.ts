@@ -35,25 +35,25 @@ export const createHomeService = async (req: Request, res: Response) => {
 // 	}
 // };
 
-
 export const getHomeServices = async (req: Request, res: Response) => {
-  try {
-	let services
-	const subAdminId = req.user.id
-	if(req.user.role === "admin"){
-	  services = await HomeServiceService.getAll(subAdminId)
-		  res.status(200).json({ success: true, data: services });
+	try {
+		let services;
+		const subAdminId = req.user.id;
 
+		// if(req.user.role === "admin"){
+		//   services = await HomeServiceService.getAll(subAdminId)
+		// 	  res.status(200).json({ success: true, data: services });
+
+		// }
+		const addedBy = req.user.subAdminId;
+		services = await HomeServiceService.getAll(
+			new mongoose.Types.ObjectId(addedBy)
+		);
+		res.status(200).json({ success: true, data: services });
+	} catch (error) {
+		res.status(500).json({ success: false, error: (error as Error).message });
 	}
-	const addedBy = req.user.subAdminId
-	 services = await HomeServiceService.getAll( new mongoose.Types.ObjectId( addedBy));
-	res.status(200).json({ success: true, data: services });
-  } catch (error) {
-	res.status(500).json({ success: false, error: (error as Error).message });
-  }
 };
-
-
 
 export const getHomeServiceById = async (req: Request, res: Response) => {
 	try {
