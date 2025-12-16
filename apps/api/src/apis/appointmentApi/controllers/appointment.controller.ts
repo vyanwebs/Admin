@@ -7,8 +7,13 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { InAppNotifications } from "../../inAppNotification/models/inAppNotification.model";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
-
+import Package from "../../packageApi/models/packages.model";
 import { ChairsModel } from "../../salonChairsApi/model/chairs.model";
+import OurService from "../../ourserviceApi/models/ourservice.model";
+import Appointment from "../../appointmentApi/models/appointment.model";
+import mongoose from "mongoose";
+import { nanoid } from "nanoid";
+import { WalletTransaction } from "../../walletApi/model/wallet.transaction.model";
 
 dayjs.extend(customParseFormat);
 
@@ -271,6 +276,350 @@ export const getChairsByDateTime = async (req: Request, res: Response) => {
 		return res.status(500).json({
 			success: false,
 			error: (error as Error).message,
+		});
+	}
+};
+
+export const createPackageAppointment = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
+
+	try {
+		const userId = String(req.user._id);
+		const user = await User.findById(userId).session(txn);
+		if (!user) throw new Error("User not found");
+
+		const email = user.email;
+
+		/* ---------- TIME VALIDATION ---------- */
+		const rawTime = String(req.body.time).trim();
+
+		if (rawTime === "24:00" || rawTime.startsWith("24")) {
+			return res.status(403).json({
+				success: false,
+				message: "You can't book an appointment at this time",
+			});
+		}
+
+		const time = dayjs(rawTime, "HH:mm", true);
+		const start = dayjs("08:00", "HH:mm");
+		const end = dayjs("23:00", "HH:mm");
+
+		if (time.isBefore(start) || time.isAfter(end)) {
+			return res.status(403).json({
+				success: false,
+				message: "You can't book an appointment at this time",
+			});
+		}
+
+		/* ---------- PACKAGE + SERVICES ---------- */
+		let finalServices: string[] = [];
+		let totalAmount = 0;
+		let totalDuration = 0;
+		// ✅ Extra services
+
+		const packageNames = req.body.packageName
+			? Array.isArray(req.body.packageName)
+				? req.body.packageName
+				: String(req.body.packageName).split(",")
+			: [];
+
+		const servicesArray = req.body.services
+			? Array.isArray(req.body.services)
+				? req.body.services
+				: JSON.parse(req.body.services)
+			: [];
+
+		if (packageNames.length) {
+			const packages = await Package.find({
+				title: { $in: packageNames },
+			}).session(txn);
+
+			if (packages.length !== packageNames.length) {
+				throw new Error("One or more packages not found");
+			}
+
+			packages.forEach((pkg) => {
+				totalAmount += pkg.price;
+				totalDuration += pkg.estimatedTime;
+				finalServices.push(...pkg.services);
+			});
+		}
+
+		if (servicesArray.length) {
+			const matchedServices = await OurService.find({
+				serviceName: { $in: servicesArray },
+			}).session(txn);
+
+			if (matchedServices.length !== servicesArray.length) {
+				throw new Error("One or more services are invalid");
+			}
+
+			matchedServices.forEach((s: any) => {
+				totalAmount += s.price;
+				totalDuration += s.estimatedTime;
+				finalServices.push(s.serviceName);
+			});
+		}
+
+		finalServices = [...new Set(finalServices)];
+
+		/* ---------- WALLET CHECK ---------- */
+		if ((user.wallet ?? 0) < totalAmount) {
+			throw new Error("You don't have enough money in your wallet!!");
+		}
+
+		/* ---------- TIME RANGE ---------- */
+		const from = new Date(`${req.body.date}T${req.body.time}:00+05:30`);
+		const to = new Date(from);
+		to.setMinutes(to.getMinutes() + totalDuration + 10);
+
+		const fromDateTime = from.toISOString();
+		const toDateTime = to.toISOString();
+
+		/* ---------- OVERLAP CHECK ---------- */
+		const overlapping = await Appointment.find({
+			subAdminId: user.subAdminId,
+			chairNo: req.body.chairNo,
+			fromDateTime: { $lt: toDateTime },
+			toDateTime: { $gt: fromDateTime },
+		}).session(txn);
+
+		if (overlapping.length > 0) {
+			throw new Error("This chair is already booked in this time range.");
+		}
+
+		/* ---------- CREATE APPOINTMENT ---------- */
+		const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
+
+		const appointment = await Appointment.create(
+			[
+				{
+					...req.body,
+					services: finalServices,
+					fromDateTime,
+					toDateTime,
+					email,
+					userId,
+					chairNo: Number(req.body.chairNo),
+					subAdminId: user.subAdminId,
+					appointmentAmount: totalAmount,
+					estimatedTime: totalDuration,
+					appointmentType: "Package",
+					appointmentCode,
+				},
+			],
+			{ session: txn }
+		);
+
+		/* ---------- WALLET + TXN ---------- */
+		await User.findByIdAndUpdate(
+			userId,
+			{ $inc: { wallet: -totalAmount } },
+			{ session: txn }
+		);
+
+		const walletTxn = await WalletTransaction.create(
+			[
+				{
+					title: "Package Service Appointment",
+					price: `- ₹${totalAmount}`,
+					date: Date.now(),
+					userId,
+					color: "red",
+				},
+			],
+			{ session: txn }
+		);
+
+		await Appointment.findByIdAndUpdate(
+			appointment[0]._id,
+			{ walletTxnId: walletTxn[0]._id },
+			{ session: txn }
+		);
+
+		/* ---------- NOTIFICATION ---------- */
+		await InAppNotifications.create(
+			[
+				{
+					message: `Your appointment has been booked for ${dayjs(fromDateTime)
+						.tz("Asia/Kolkata")
+						.format("DD-MMM-YY")} at ${dayjs(fromDateTime)
+						.tz("Asia/Kolkata")
+						.format("hh:mm A")}. Your appointment code is ${appointmentCode}`,
+					userId,
+				},
+			],
+			{ session: txn }
+		);
+
+		await txn.commitTransaction();
+		txn.endSession();
+
+		res.status(201).json({
+			success: true,
+			message: "Appointment created successfully",
+			data: appointment[0],
+		});
+	} catch (error: any) {
+		await txn.abortTransaction();
+		txn.endSession();
+
+		res.status(500).json({
+			success: false,
+			error: error.message || "Something went wrong",
+		});
+	}
+};
+
+export const updatePackageAppointment = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
+
+	try {
+		const appointmentId = req.params.id;
+		const userId = String(req.user._id);
+
+		const user = await User.findById(userId).session(txn);
+		if (!user) throw new Error("User not found");
+
+		const appointment = await Appointment.findById(appointmentId).session(txn);
+		if (!appointment) throw new Error("Appointment not found");
+
+		/* ---------- REFUND OLD AMOUNT ---------- */
+		// await User.findByIdAndUpdate(
+		// 	userId,
+		// 	{ $inc: { wallet: appointment.appointmentAmount } },
+		// 	{ session: txn }
+		// );
+
+		/* ---------- TIME VALIDATION ---------- */
+		const rawTime = String(req.body.time).trim();
+		if (rawTime.startsWith("24")) {
+			throw new Error("Invalid appointment time");
+		}
+
+		/* ---------- PACKAGE + SERVICES ---------- */
+		let finalServices: string[] = [];
+		let totalAmount = 0;
+		let totalDuration = 0;
+
+		if (!req.body.packageName) {
+			return res
+				.status(400)
+				.json({ success: false, message: "Package is not selected" });
+		}
+
+		if (req.body.packageName) {
+			const pkg = await Package.findOne({
+				title: req.body.packageName,
+			}).session(txn);
+
+			if (!pkg) throw new Error("Package not found");
+
+			totalAmount += pkg.price;
+			totalDuration += pkg.estimatedTime;
+			finalServices.push(...pkg.services);
+		}
+
+		const servicesArray = req.body.services
+			? Array.isArray(req.body.services)
+				? req.body.services
+				: JSON.parse(req.body.services)
+			: [];
+
+		if (servicesArray.length) {
+			const matchedServices = await OurService.find({
+				serviceName: { $in: servicesArray },
+			}).session(txn);
+
+			if (matchedServices.length !== servicesArray.length) {
+				throw new Error("Invalid services");
+			}
+
+			matchedServices.forEach((s) => {
+				totalAmount += s.price;
+				totalDuration += s.estimatedTime;
+				finalServices.push(s.serviceName);
+			});
+		}
+
+		finalServices = [...new Set(finalServices)];
+
+		/* ---------- TIME RANGE ---------- */
+		const from = new Date(`${req.body.date}T${req.body.time}:00+05:30`);
+		const to = new Date(from);
+		to.setMinutes(to.getMinutes() + totalDuration + 10);
+
+		const fromDateTime = from.toISOString();
+		const toDateTime = to.toISOString();
+
+		/* ---------- OVERLAP CHECK (exclude self) ---------- */
+		const overlapping = await Appointment.find({
+			_id: { $ne: appointmentId },
+			subAdminId: appointment.subAdminId,
+			chairNo: req.body.chairNo,
+			fromDateTime: { $lt: toDateTime },
+			toDateTime: { $gt: fromDateTime },
+		}).session(txn);
+
+		if (overlapping.length) {
+			throw new Error("Chair already booked in this time slot");
+		}
+
+		/* ---------- WALLET ADJUSTMENT ---------- */
+		const walletDiff = appointment.appointmentAmount! - totalAmount;
+
+		if ((user.wallet ?? 0) + walletDiff < 0) {
+			throw new Error("Insufficient wallet balance");
+		}
+
+		await User.findByIdAndUpdate(
+			userId,
+			{ $inc: { wallet: walletDiff } },
+			{ session: txn }
+		);
+
+		/* ---------- UPDATE APPOINTMENT ---------- */
+		const updated = await Appointment.findByIdAndUpdate(
+			appointmentId,
+			{
+				...req.body,
+				services: finalServices,
+				fromDateTime,
+				toDateTime,
+				appointmentAmount: totalAmount,
+				estimatedTime: totalDuration,
+				appointmentType: "Package",
+			},
+			{ new: true, session: txn }
+		);
+
+		/* ---------- UPDATE SAME WALLET TXN ---------- */
+		await WalletTransaction.findByIdAndUpdate(
+			appointment.walletTxnId,
+			{
+				price: `- ₹${totalAmount}`,
+				date: Date.now(),
+			},
+			{ session: txn }
+		);
+
+		await txn.commitTransaction();
+		txn.endSession();
+
+		res.status(200).json({
+			success: true,
+			message: "Appointment updated successfully",
+			data: updated,
+		});
+	} catch (error: any) {
+		await txn.abortTransaction();
+		txn.endSession();
+
+		res.status(500).json({
+			success: false,
+			error: error.message || "Something went wrong",
 		});
 	}
 };

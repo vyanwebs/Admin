@@ -3,7 +3,7 @@ import { IOurService } from "../types/ourservice.type";
 
 const ourServiceSchema = new Schema<IOurService>(
 	{
-		serviceName: { type: String, required: true },
+		serviceName: { type: String, required: true, unique: true },
 		price: { type: Number, required: true },
 		title: { type: String, required: true },
 		highlights: { type: [String], default: [] },

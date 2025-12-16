@@ -1,55 +1,58 @@
 import { Request, Response } from "express";
 import OurServiceService from "../services/ourservice.service";
+import OurService from "../../ourserviceApi/models/ourservice.model";
+import Package from "../../packageApi/models/packages.model";
 import mongoose from "mongoose";
+import User from "../../userApi/models/User.model";
 // CREATE
 export const createOurService = async (req: Request, res: Response) => {
-  const customReq = req as any;
+	const customReq = req as any;
 
-  try {
-    const {
-      serviceName,
-      price,
-      title,
-      highlights,
-      extra,
-      estimatedTime,
-      category,
-      gender,
-    } = req.body;
+	try {
+		const {
+			serviceName,
+			price,
+			title,
+			highlights,
+			extra,
+			estimatedTime,
+			category,
+			gender,
+		} = req.body;
 
-    if (!customReq.user?._id) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+		if (!customReq.user?._id) {
+			return res.status(401).json({ success: false, message: "Unauthorized" });
+		}
 
-    if (!customReq.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Service image is required!" });
-    }
+		if (!customReq.file) {
+			return res
+				.status(400)
+				.json({ success: false, message: "Service image is required!" });
+		}
 
-    const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
+		const imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
 
-    const newService = await OurServiceService.create({
-      serviceName,
-      price,
-      title,
-      highlights,
-      extra,
-      estimatedTime,
-      category,
-      gender,
-      imageUrl,
-      addedBy: customReq.user._id,
-    });
+		const newService = await OurServiceService.create({
+			serviceName,
+			price,
+			title,
+			highlights,
+			extra,
+			estimatedTime,
+			category,
+			gender,
+			imageUrl,
+			addedBy: customReq.user._id,
+		});
 
-    res.status(201).json({
-      success: true,
-      message: "Service created successfully",
-      data: newService,
-    });
-  } catch (error: unknown) {
-    res.status(500).json({ success: false, error: (error as Error).message });
-  }
+		res.status(201).json({
+			success: true,
+			message: "Service created successfully",
+			data: newService,
+		});
+	} catch (error: unknown) {
+		res.status(500).json({ success: false, error: (error as Error).message });
+	}
 };
 
 // GET ALL
@@ -70,89 +73,124 @@ export const createOurService = async (req: Request, res: Response) => {
 // };
 
 export const getAllOurServices = async (req: Request, res: Response) => {
-  try {
-    let services;
-    const subAdminId = req.user.id;
-    if (req.user.role === "admin") {
-      services = await OurServiceService.getAll(subAdminId);
-      res.status(200).json({ success: true, data: services });
-    }
-    const addedBy = req.user.subAdminId;
-    services = await OurServiceService.getAll(
-      new mongoose.Types.ObjectId(addedBy)
-    );
-    res.status(200).json({ success: true, data: services });
-  } catch (error) {
-    res.status(500).json({ success: false, error: (error as Error).message });
-  }
+	try {
+		let services;
+		const subAdminId = req.user.id;
+		if (req.user.role === "admin") {
+			services = await OurServiceService.getAll(subAdminId);
+			res.status(200).json({ success: true, data: services });
+		}
+		const addedBy = req.user.subAdminId;
+		services = await OurServiceService.getAll(
+			new mongoose.Types.ObjectId(addedBy)
+		);
+		res.status(200).json({ success: true, data: services });
+	} catch (error) {
+		res.status(500).json({ success: false, error: (error as Error).message });
+	}
 };
 
 // GET BY ID
 export const getOurServiceById = async (req: Request, res: Response) => {
-  try {
-    const service = await OurServiceService.getById(req.params.id);
+	try {
+		const service = await OurServiceService.getById(req.params.id);
 
-    if (!service) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Service not found" });
-    }
+		if (!service) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Service not found" });
+		}
 
-    return res.status(200).json({ success: true, data: service });
-  } catch (error: unknown) {
-    res.status(500).json({ success: false, error: (error as Error).message });
-  }
+		return res.status(200).json({ success: true, data: service });
+	} catch (error: unknown) {
+		res.status(500).json({ success: false, error: (error as Error).message });
+	}
 };
 
 // UPDATE
 export const updateOurService = async (req: Request, res: Response) => {
-  const customReq = req as any;
+	const customReq = req as any;
 
-  try {
-    const data = req.body;
+	try {
+		const data = req.body;
 
-    if (customReq.file) {
-      data.imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
-    }
+		if (customReq.file) {
+			data.imageUrl = `${process.env.URL}/uploads/images/${customReq.file.filename}`;
+		}
 
-    const updatedService = await OurServiceService.updateById(
-      req.params.id,
-      data
-    );
+		const updatedService = await OurServiceService.updateById(
+			req.params.id,
+			data
+		);
 
-    if (!updatedService) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Service not found" });
-    }
+		if (!updatedService) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Service not found" });
+		}
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Service updated successfully",
-        data: updatedService,
-      });
-  } catch (error: unknown) {
-    res.status(500).json({ success: false, error: (error as Error).message });
-  }
+		res.status(200).json({
+			success: true,
+			message: "Service updated successfully",
+			data: updatedService,
+		});
+	} catch (error: unknown) {
+		res.status(500).json({ success: false, error: (error as Error).message });
+	}
 };
 
 // DELETE
 export const deleteOurService = async (req: Request, res: Response) => {
-  try {
-    const deleted = await OurServiceService.deleteById(req.params.id);
+	try {
+		const deleted = await OurServiceService.deleteById(req.params.id);
 
-    if (!deleted) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Service not found" });
-    }
+		if (!deleted) {
+			return res
+				.status(404)
+				.json({ success: false, message: "Service not found" });
+		}
 
-    res
-      .status(200)
-      .json({ success: true, message: "Service deleted successfully" });
-  } catch (error: unknown) {
-    res.status(500).json({ success: false, error: (error as Error).message });
-  }
+		res
+			.status(200)
+			.json({ success: true, message: "Service deleted successfully" });
+	} catch (error: unknown) {
+		res.status(500).json({ success: false, error: (error as Error).message });
+	}
+};
+
+// get all services except services there in package
+export const getAvailableServices = async (req: Request, res: Response) => {
+	try {
+		const userId = req.user.id;
+
+		const user = await User.findById(userId);
+
+		let { packageName } = req.query;
+
+		if (!packageName) {
+			const services = await OurService.find({ addedBy: user!.subAdminId });
+			return res.json({ success: true, data: services });
+		}
+
+		const names = Array.isArray(packageName)
+			? packageName
+			: String(packageName).split(",");
+
+		const packages = await Package.find({
+			title: { $in: names },
+		});
+
+		const excludedServices = [
+			...new Set(packages.flatMap((p: any) => p.services)),
+		];
+
+		const services = await OurService.find({
+			addedBy: user!.subAdminId,
+			serviceName: { $nin: excludedServices },
+		});
+
+		res.json({ success: true, data: services });
+	} catch (err: any) {
+		res.status(500).json({ success: false, error: err.message });
+	}
 };
