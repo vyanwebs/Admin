@@ -9,6 +9,6 @@ export interface IOurService extends Document {
 	imageUrl: string;
 	addedBy: Types.ObjectId;
 	estimatedTime: number;
-	category: string; 
-	gender?:string;
+	category: string;
+	gender?: string;
 }

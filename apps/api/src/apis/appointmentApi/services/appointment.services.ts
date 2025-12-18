@@ -158,6 +158,7 @@ class AppointmentService {
 				subAdminId: user?.subAdminId,
 				appointmentAmount: totalServiceAmount,
 				appointmentType: "Standard",
+				services: matchedServices.map((s) => s.serviceName),
 			});
 
 			// 5️⃣ Notification
