@@ -970,7 +970,7 @@ const ProfileEdit: React.FC = () => {
      SET FORM VALUES
      =========================== */
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?._id) return;
 
     form.setFieldsValue({
       fullName:
@@ -986,7 +986,7 @@ const ProfileEdit: React.FC = () => {
       subscriptionStatus: user.subscriptionStatus || "",
       dateOfBirth: user.dateOfBirth ? dayjs(user.dateOfBirth) : null,
     });
-  }, [user?.id, form]);
+  }, [user?._id, form]);
 
   /* ===========================
      AVATAR UPLOAD

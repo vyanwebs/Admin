@@ -445,17 +445,38 @@ const UsersTablePage: React.FC = () => {
       render: (g) => (g ? <Tag color="cyan">{g}</Tag> : "-"),
     },
 
-    {
+//     {
+//   title: "Status",
+//   key: "status",
+//   render: (_, r) => (
+//     <Space>
+//       <Tag color={r.isActive ? "green" : "red"}>
+//         {r.isActive ? "Active" : "Inactive"}
+//       </Tag>
+//       <Switch
+//         checked={r.isActive}
+//         onChange={() => dispatch(toggleUserStatus(r._id))}
+//       />
+//     </Space>
+//   ),
+// },
+
+{
   title: "Status",
   key: "status",
   render: (_, r) => (
     <Space>
-      <Tag color={r.isActive ? "green" : "red"}>
-        {r.isActive ? "Active" : "Inactive"}
-      </Tag>
+  
+
       <Switch
         checked={r.isActive}
+        checkedChildren="Active"
+        unCheckedChildren="Inactive"
+        loading={loading}
         onChange={() => dispatch(toggleUserStatus(r._id))}
+        style={{
+          backgroundColor: r.isActive ? "#16a34a" : "#dc2626",
+        }}
       />
     </Space>
   ),
