@@ -23,6 +23,6 @@
     "@ant-design/charts": "^2.6.6",
     "antd": "^5.28.0",
     "mongoose": "^8.19.0",
-    "recharts": "^3.5.1"
+    "recharts": "^3.6.0"
   }
 }
