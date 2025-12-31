@@ -186,7 +186,7 @@ export const login = async (req: Request, res: Response) => {
 		if (!user?.isActive) {
 			return res.status(401).json({
 				success: false,
-				message: "You have been blocked by sub admin",
+				message: "You have been blocked by Owner",
 			});
 		}
 

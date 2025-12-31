@@ -2,10 +2,24 @@ import React, { useState, useRef,type ChangeEvent } from "react";
 import { Avatar } from "antd";
 import { UploadOutlined, UserOutlined, LoadingOutlined } from "@ant-design/icons";
 
+// interface AvatarUploadProps {
+//   currentAvatar?: string;
+//   onUpload: (file: File) => Promise<void>;
+//   size?: number;
+//   shape?: "circle" | "square";
+// }
+// interface AvatarUploadProps {
+//   currentAvatar?: string;
+//   onUpload: (file: File) => Promise<void>;
+//   size?: number;
+//   shape?: "circle" | "square";
+// }
+
 interface AvatarUploadProps {
   currentAvatar?: string;
-  onUpload: (file: File) => Promise<void>;
+  onUpload: (file: File) => void;
   size?: number;
+  loading?: boolean; // ✅ ADD THIS
   shape?: "circle" | "square";
 }
 

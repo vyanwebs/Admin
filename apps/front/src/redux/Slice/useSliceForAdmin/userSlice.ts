@@ -113,13 +113,22 @@ export const demoteUser = createAsyncThunk(
   }
 );
 
+// const initialState: UserState = {
+//   user: null,
+//   users: [],
+//   UsersI:[],
+//   loading: false,
+//   error: null,
+// };
 const initialState: UserState = {
   user: null,
   users: [],
-  UsersI:[],
+  UsersI: [],
+  usersBackup: [], // ✅ ADD THIS
   loading: false,
   error: null,
 };
+
 
 const userSlice = createSlice({
   name: "user",
@@ -133,12 +142,19 @@ const userSlice = createSlice({
     filterUsers: (state, action) => {
   const searchTerm = action.payload.toLowerCase();
   if (state.UsersI) {
+    // state.users = state.UsersI.filter(
+    //   (user) =>
+    //     user.firstName.toLowerCase().includes(searchTerm) ||
+    //     user.lastName.toLowerCase().includes(searchTerm) ||
+    //     user.email.toLowerCase().includes(searchTerm)
+    // );
     state.users = state.UsersI.filter(
-      (user) =>
-        user.firstName.toLowerCase().includes(searchTerm) ||
-        user.lastName.toLowerCase().includes(searchTerm) ||
-        user.email.toLowerCase().includes(searchTerm)
-    );
+  (user) =>
+    user.firstName?.toLowerCase().includes(searchTerm) ||   
+    user.lastName?.toLowerCase().includes(searchTerm) ||    
+    user.email.toLowerCase().includes(searchTerm)
+);
+
   }
 }
 

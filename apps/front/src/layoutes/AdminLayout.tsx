@@ -40,13 +40,17 @@ const menuItems = [
 	//     },
 	//   ],
 	// },
-
+     {
+		name: "Users",
+		icon: <User className="w-5 h-5" />,
+		path: "/admin/totalusers",
+	},
 	{
 		name: "Appointments",
 		icon: <ScheduleOutlined className="w-5 h-5" />,
 		path: "/admin/Appointment",
 	},
-
+	
 	{
 		name: "Orders",
 		icon: <TruckOutlined className="w-5 h-5" />,
