@@ -253,6 +253,12 @@ class AppointmentService {
 
 			const updatedUser = await User.findById(userId).session(txn);
 			if (!updatedUser) throw new Error("User not found after refund");
+
+			if ((updatedUser?.wallet ?? 0) > 49) {
+				throw new Error(
+					"Insufficient balance! Please keep at least ₹49 in your wallet to proceed."
+				);
+			}
 			const servicesArray = data.services
 				? Array.isArray(data.services)
 					? data.services
@@ -270,12 +276,6 @@ class AppointmentService {
 				(sum, s) => sum + Number(s.price || 0),
 				0
 			);
-
-			if ((updatedUser?.wallet ?? 0) > 49) {
-				throw new Error(
-					"Insufficient balance! Please keep at least ₹49 in your wallet to proceed."
-				);
-			}
 
 			// parse IST time properly
 			const from = new Date(`${data.date}T${data.time}:00+05:30`);
