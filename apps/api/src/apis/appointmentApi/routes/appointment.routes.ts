@@ -11,6 +11,7 @@ import {
 	getAppointmentsByAdminId,
 	createPackageAppointment,
 	updatePackageAppointment,
+	createHomeAppointment,
 } from "../controllers/appointment.controller";
 import { protect } from "../../userApi/middlewares/auth.middleware";
 import { authorizeRole } from "../../userApi/middlewares/authorizeRole";
@@ -28,6 +29,7 @@ router.get("/:id", getAppointmentById);
 router.put("/:id", protect, updateAppointment);
 router.delete("/:id", protect, deleteAppointment);
 router.post("/package-appointment", protect, createPackageAppointment);
+router.post("/home-appointment", protect, createHomeAppointment);
 router.patch("/package-appointment/:id", protect, updatePackageAppointment);
 router.post(
 	"/verify-appointment",

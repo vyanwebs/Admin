@@ -101,6 +101,12 @@ class AppointmentService {
 			const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
 			const user = await User.findById(userId).session(txn);
 
+			if ((user?.wallet ?? 0) < 49) {
+				throw new Error(
+					"Insufficient balance! Please keep at least ₹ 49 in your wallet to proceed."
+				);
+			}
+
 			// 1️⃣ Parse services
 			const servicesArray = data.services
 				? Array.isArray(data.services)
@@ -122,9 +128,9 @@ class AppointmentService {
 				0
 			);
 
-			if ((user?.wallet ?? 0) < totalServiceAmount) {
-				throw new Error("You don't have enough money in your wallet!!");
-			}
+			// if ((user?.wallet ?? 0) < totalServiceAmount) {
+			// 	throw new Error("You don't have enough money in your wallet!!");
+			// }
 
 			// 2️⃣ Build from/to based on service duration
 			const from = new Date(`${data.date}T${data.time}:00+05:30`);
@@ -265,8 +271,10 @@ class AppointmentService {
 				0
 			);
 
-			if ((updatedUser?.wallet ?? 0) < totalServiceAmount) {
-				throw new Error("You don't have enough money in your wallet!!");
+			if ((updatedUser?.wallet ?? 0) > 49) {
+				throw new Error(
+					"Insufficient balance! Please keep at least ₹49 in your wallet to proceed."
+				);
 			}
 
 			// parse IST time properly

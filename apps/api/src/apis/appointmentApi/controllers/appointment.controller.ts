@@ -14,6 +14,7 @@ import Appointment from "../../appointmentApi/models/appointment.model";
 import mongoose from "mongoose";
 import { nanoid } from "nanoid";
 import { WalletTransaction } from "../../walletApi/model/wallet.transaction.model";
+import HomeService from "../../homeServiceApi/models/homeService.model";
 
 dayjs.extend(customParseFormat);
 
@@ -612,6 +613,182 @@ export const updatePackageAppointment = async (req: Request, res: Response) => {
 			success: true,
 			message: "Appointment updated successfully",
 			data: updated,
+		});
+	} catch (error: any) {
+		await txn.abortTransaction();
+		txn.endSession();
+
+		res.status(500).json({
+			success: false,
+			error: error.message || "Something went wrong",
+		});
+	}
+};
+
+export const createHomeAppointment = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
+
+	try {
+		const userId = String(req.user._id);
+		const user = await User.findById(userId).session(txn);
+		if (!user) throw new Error("User not found");
+
+		const email = user.email;
+
+		/* ---------- PACKAGE + SERVICES ---------- */
+		let finalServices: string[] = [];
+		let totalAmount = 0;
+		let totalDuration = 0;
+
+		const servicesArray = req.body.services
+			? Array.isArray(req.body.services)
+				? req.body.services
+				: JSON.parse(req.body.services)
+			: [];
+
+		if (servicesArray.length) {
+			const matchedServices = await HomeService.find({
+				serviceName: { $in: servicesArray },
+			}).session(txn);
+
+			if (matchedServices.length !== servicesArray.length) {
+				throw new Error("One or more services are invalid");
+			}
+
+			matchedServices.forEach((s: any) => {
+				totalAmount += s.price;
+				totalDuration += s.estimatedTime;
+				finalServices.push(s.serviceName);
+			});
+		}
+
+		finalServices = [...new Set(finalServices)];
+
+		/* ---------- CREATE APPOINTMENT ---------- */
+		const appointmentCode = `NAU${nanoid(4).toUpperCase()}`;
+
+		const appointment = await Appointment.create(
+			[
+				{
+					...req.body,
+					services: finalServices,
+					email,
+					userId,
+					subAdminId: user.subAdminId,
+					appointmentAmount: totalAmount,
+					estimatedTime: totalDuration,
+					appointmentType: "Home",
+					appointmentCode,
+				},
+			],
+			{ session: txn }
+		);
+
+		/* ---------- NOTIFICATION ---------- */
+		await InAppNotifications.create(
+			[
+				{
+					message: `Your appointment has been booked for ${dayjs(req.body.date)
+						.tz("Asia/Kolkata")
+						.format("DD-MMM-YY")}. Your appointment code is ${appointmentCode}`,
+					userId,
+				},
+			],
+			{ session: txn }
+		);
+
+		await txn.commitTransaction();
+		txn.endSession();
+
+		res.status(201).json({
+			success: true,
+			message: "Appointment created successfully",
+			data: appointment[0],
+		});
+	} catch (error: any) {
+		await txn.abortTransaction();
+		txn.endSession();
+
+		res.status(500).json({
+			success: false,
+			error: error.message || "Something went wrong",
+		});
+	}
+};
+
+export const updateHomeAppointment = async (req: Request, res: Response) => {
+	const txn = await mongoose.startSession();
+	txn.startTransaction();
+
+	try {
+		const userId = String(req.user._id);
+		const { appointmentId } = req.params;
+
+		const appointment = await Appointment.findOne({
+			_id: appointmentId,
+			userId,
+			appointmentType: "Home",
+		}).session(txn);
+
+		if (!appointment) throw new Error("Appointment not found");
+
+		/* ---------- SERVICES ---------- */
+		let finalServices: string[] = [];
+		let totalAmount = 0;
+		let totalDuration = 0;
+
+		if (req.body.services) {
+			const servicesArray = Array.isArray(req.body.services)
+				? req.body.services
+				: JSON.parse(req.body.services);
+
+			const matchedServices = await HomeService.find({
+				serviceName: { $in: servicesArray },
+			}).session(txn);
+
+			if (matchedServices.length !== servicesArray.length) {
+				throw new Error("One or more services are invalid");
+			}
+
+			matchedServices.forEach((s: any) => {
+				totalAmount += s.price;
+				totalDuration += s.estimatedTime;
+				finalServices.push(s.serviceName);
+			});
+
+			appointment.services = [...new Set(finalServices)];
+			appointment.appointmentAmount = totalAmount;
+		}
+
+		/* ---------- DATE ---------- */
+		if (req.body.date) {
+			appointment.date = req.body.date;
+		}
+
+		await appointment.save({ session: txn });
+
+		await InAppNotifications.create(
+			[
+				{
+					message: `Your appointment has been updated to ${dayjs(
+						appointment.date
+					)
+						.tz("Asia/Kolkata")
+						.format("DD-MMM-YY")}`,
+					userId,
+				},
+			],
+			{ session: txn }
+		);
+
+		await txn.commitTransaction();
+		txn.endSession();
+
+		res.status(200).json({
+			success: true,
+			message: "Appointment updated successfully",
+			data: appointment,
 		});
 	} catch (error: any) {
 		await txn.abortTransaction();
