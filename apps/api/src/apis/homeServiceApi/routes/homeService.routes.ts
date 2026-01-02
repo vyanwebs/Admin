@@ -23,8 +23,8 @@ router.put("/:id", protect, authorizeRole("admin", "superadmin"), upload.single(
 router.get("/", protect,authorizeRole("admin", "superadmin", "user"), getHomeServices);
 
 
-
 router.get("/:id", protect, getHomeServiceById);
 router.delete("/:id", protect, authorizeRole("admin", "superadmin"), deleteHomeService);
+
 
 export default router;

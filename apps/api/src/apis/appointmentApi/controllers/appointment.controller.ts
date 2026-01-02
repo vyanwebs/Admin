@@ -544,7 +544,7 @@ export const updatePackageAppointment = async (req: Request, res: Response) => {
 				finalServices.push(s.serviceName);
 			});
 		}
-
+		
 		finalServices = [...new Set(finalServices)];
 
 		/* ---------- TIME RANGE ---------- */

@@ -19,6 +19,9 @@ import cartRoutes from "./apis/cartApi/routes/cart.routes";
 import notificationRoutes from "./apis/inAppNotification/routes/notification.routes";
 import walletRoutes from "./apis/walletApi/routes/wallet.routes";
 import orderRoutes from "./apis/ordersApi/routes/order.routes";
+import userHomeServiceRoutes from "./apis/homeServiceApi/routes/userHomeService.routes"
+
+
 //import  {login}  from "./apis/userApi/controllers/auth.controller";
 //app.use("/api/login",login)
 app.use("/api/auth", authRoutes);
@@ -36,6 +39,8 @@ app.use("/api/terms-and-conditions", termsConditionRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/user-home-service", userHomeServiceRoutes);
+
 // razorpay routes
 app.use("/api/razorpay", razorpayRoutes);
 app.use("/api/cart", cartRoutes);
