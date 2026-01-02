@@ -1,17 +1,21 @@
 import { Request, Response } from "express";
 import UserHomeServiceService from "../services/userHomeService.services";
 
-// USER appointment booking
 export const createUserHomeService = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user._id;
 
     const { amount, service, phoneNumber } = req.body;
 
-    if (!amount || !service || !phoneNumber) {
+    if (
+      !amount ||
+      !phoneNumber ||
+      !Array.isArray(service) ||
+      service.length === 0
+    ) {
       return res.status(400).json({
         success: false,
-        message: "amount, service and phoneNumber are required",
+        message: "amount, phoneNumber and service array are required",
       });
     }
 

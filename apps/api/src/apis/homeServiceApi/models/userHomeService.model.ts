@@ -2,12 +2,13 @@ import { Schema, model, Types } from "mongoose";
 
 export interface IUserHomeService {
   userId: Types.ObjectId;
-  service: Types.ObjectId;     // HomeService ID
+  service: {
+    name: string;
+    price: number;
+  }[];
   amount: number;
   phoneNumber: string;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
-  createdAt: Date;
-  updatedAt: Date;
+  status: "pending" | "accepted";
 }
 
 const userHomeServiceSchema = new Schema<IUserHomeService>(
@@ -18,11 +19,12 @@ const userHomeServiceSchema = new Schema<IUserHomeService>(
       required: true,
     },
 
-    service: {
-      type: Schema.Types.ObjectId,
-      ref: "HomeService",
-      required: true,
-    },
+    service: [
+      {
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+      },
+    ],
 
     amount: {
       type: Number,
@@ -36,13 +38,11 @@ const userHomeServiceSchema = new Schema<IUserHomeService>(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
+      enum: ["pending", "accepted",],
       default: "pending",
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default model<IUserHomeService>(
